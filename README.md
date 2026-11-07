@@ -121,20 +121,23 @@ Models are named profiles in `config/profiles.toml`.
 
 | Profile | Model | Where |
 |---|---|---|
-| `ensemble` | per-criterion vote of `h200-gemma` (per criterion) + `h200-q27` + `h200-flashnext` (single) | self-hosted, 9× H200 in total |
 | `h200-gemma` | Gemma 4 31B | self-hosted vLLM, 4 replicas × 1 H200 |
-| `h200-q27` | Qwen3.8-27B (thinking off) | self-hosted vLLM, 1× H200 |
-| `h200-flashnext` | Qwen3.8-Flash-Next FP8 MoE (thinking off) | self-hosted vLLM, 4× H200 (TP4) |
 | `h200-kz` | ISSAI Qwen3.5-35B-A3B-Kazakh | self-hosted vLLM, 1× H200 |
 | `h200-glimmer` | Muse-Glimmer-30B | self-hosted vLLM, 1× H200 |
 | `aigw-sonnet` / `aigw-luna` / `aigw-alemllm` | Claude Sonnet 5.5 / GPT-6 Luna / AlemLLM | cloud, via gateway |
 | `alem-deepseek` / `alem-kimi` / `alem-glm` / `alem-qwen27b` / `aigw-flashnext` | DeepSeek-V4.1-Flash / Kimi-K2.6 / GLM-5.3 / Qwen3.8-27B / Qwen3.8-Flash-Next | open weights on Alem.Cloud, via gateway |
+| `ensemble` | per-criterion vote of `h200-gemma` (per criterion) + `alem-qwen27b` + `aigw-flashnext` (single) | hybrid |
 
 An `ensemble` profile (`provider = "ensemble"`, `members = ["profile:mode", …]`) runs every member on the dialog and takes, per criterion, the majority verdict; on scales it takes the median. The first member breaks ties and supplies the explanation and evidence when it agrees. A member that fails is dropped with a warning on the items; the dialog fails only if all members fail.
 
 The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). The gold so far is an **LLM consensus**: 4 blind labelings per dialog by GPT-6 Astra and Claude Opus 5.5, with ties settled by the checklist text. It is not yet human-labelled. Human rows in `bench/gold/labels.<login>.csv` override it, and `--gold human` ranks models on those rows only. We prefer a self-hosted model unless a cloud model is more than 5 pp better.
 
-**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. It came out best on the 65-dialog consensus gold: 0.918 weighted agreement on the chats, against 0.884 for the best cloud model. That number is in-sample, because the same dialogs were used to tune the checklist notes.
+**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. On the 65-dialog consensus gold it scores **0.929 weighted agreement** on the chats (mean of 3 runs, 0.927–0.930), with 99.6% of verdicts identical between runs. It was compared against 11 other models and setups:
+- the best cloud model reached 0.884 (GPT-6 Luna);
+- the best open-weight single judge reached 0.919 (Qwen3.8-27B);
+- a three-judge ensemble tied gemma at 0.928, though with a lower total error (MAE 4.55 against 4.91).
+
+These numbers are in-sample, because the same dialogs were used to tune the checklist notes. The details are in `docs/research/benchmark-phase1.md`.
 
 **Cost of one evaluation** (all calls included):
 - **Self-hosted:** an H200 costs $5.35/GPU-hour (median on-demand price of Vast, RunPod, Nebius and CoreWeave, 2026-11; see `docs/research/llm-candidates.md`). The cost per evaluation is `$/h × GPU-seconds ÷ concurrency ÷ 3600`.

@@ -139,3 +139,36 @@ Criterion columns are matches out of 60. Summaries: gemma in `bench/results/2026
 - **The more honest estimate for unseen chats is therefore ~0.91, not 0.918.**
 - The control run keeps the realistic examples. They are correct applications of the organizers' rule («итог или предложение помощи + прощание»), so they can't hurt.
 - Changing only the notes also moved c06 by 3 verdicts. Any notes edit perturbs every criterion, because the whole notes text goes into each call; treat ±3 verdicts per criterion as noise.
+
+## Round 3: more models, voting, more GPUs (2026-11-07 21:00–21:20)
+
+All runs use the final notes (C3, C7 and C8 rules) and are scored on the 60 chats of the 65-dialog consensus gold. Hits are matching criterion verdicts out of 480.
+
+| run | weighted agreement | hits | total MAE | bias |
+|---|---|---|---|---|
+| **h200-gemma · per_criterion**, 3 runs | **0.929** (0.927–0.930) | 450–451 | 4.91 | −1.1 |
+| h200-gemma · per_criterion · k=3 (t=0.7, median vote) | 0.924 | 449 | 4.91 | −1.7 |
+| Qwen3.8-27B · single (Alem and hk-q27) | 0.901–0.919 | 437–446 | 5.4–6.4 | +2.8 |
+| Qwen3.8-27B · per_criterion | 0.880 | 429 | 7.06 | −4.0 |
+| Qwen3.8-Flash-Next · single (aigw and hk-big1) | 0.908–0.915 | 444–446 | 4.5–5.4 | +4.3 |
+| Qwen3.8-Flash-Next · per_criterion | 0.903 | 441 | 5.54 | −1.5 |
+| DeepSeek-V4.1-Flash · single | 0.896 | 439 | 6.22 | −2.3 |
+| Kimi-K2.6 · single | 0.851 | 422 | 7.63 | +0.3 |
+| **ensemble** gemma-pc + Qwen-27B + Flash-Next (per-criterion majority, median on scales), 12 offline combinations of the runs above | **0.928** (0.918–0.940) | 452 | **4.55** | +2.3 |
+| ensemble, live: 2 runs (Qwen members via aigw, then self-hosted) | 0.924, 0.926 | 449, 451 | 4.53, 4.54 | +2.5 |
+
+All models ran with thinking off. GLM-5.3 ignores `enable_thinking=false` (4.9k reasoning characters on a one-line probe), so it was not benchmarked.
+
+**Decision: the control stays on `h200-gemma · per_criterion · k=1`.**
+- The ensemble ties it on agreement (0.928 against 0.929). The first offline figure of 0.940 was a lucky combination of runs.
+- The ensemble has a lower total error, but it needs three endpoints. It is also more lenient (bias +2.3 against −1.1).
+- Gemma alone repeats 99.6% of its verdicts between runs (477–479 of 480), which matches the organizers' stress on reproducibility (#2981). It also needs a single endpoint.
+- The `ensemble` profile stays available for the demo; the UI shows the vote per criterion. hk-big1 and hk-q27 were released at 21:20.
+- Neither k=3 voting nor thinking mode helped.
+
+**What external benchmarks say** (`docs/research/dsml-models.md`, m3 research): DeepSeek-V4.1-Flash leads on the Russian MERA board, and DeepSeek V3 has the best open KazMMLU score. On our task, though, it is 3 pp below gemma. DSML.KZ's Kazakh arena rates the Gemma family «стабильно сильные». General-language leaderboards don't predict rubric-judging accuracy here.
+
+**Where the remaining errors are.** 28 verdicts are wrong in all 3 gemma runs.
+- 19 of them sit where the gold itself is split (2:2 or 3:1), so only a human decision can settle them.
+- The other 9 are single cases spread over c02, c04, c05, c06 and c07, with no shared pattern; a rule for any of them would be fitted to one DEV dialog.
+- **Further prompt tuning on this gold is at its noise floor.**

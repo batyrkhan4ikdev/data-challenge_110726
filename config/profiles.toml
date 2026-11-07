@@ -8,7 +8,7 @@ api_key_env = "H200_API_KEY"
 model = "gemma-4:31b"
 supports_n = true
 structured = "json_schema"
-max_concurrency = 16
+max_concurrency = 32  # hk-gemma runs 4 replicas until 17:00 Nov 8
 max_tokens = 4096
 extra_body = {}
 cost = { kind = "gpu", usd_per_hour = 5.35, concurrency = 16 }
@@ -24,19 +24,6 @@ max_concurrency = 16
 max_tokens = 12288
 extra_body = { chat_template_kwargs = { enable_thinking = true } }
 cost = { kind = "gpu", usd_per_hour = 5.35, concurrency = 16 }
-
-# Qwen3.8-27B dense bf16 on one H200 (tunnel hk-q27, replaced gpt-oss at 21:00 Nov 7); thinking off server-side.
-[profiles.h200-q27]
-provider = "openai"
-base_url_env = "H200_Q27_BASE_URL"
-api_key_env = "H200_API_KEY"
-model = "qwen3.8-27b"
-supports_n = true
-structured = "json_schema"
-max_concurrency = 32
-max_tokens = 4096
-extra_body = { chat_template_kwargs = { enable_thinking = false } }
-cost = { kind = "gpu", usd_per_hour = 5.35, concurrency = 32 }
 
 [profiles.h200-kz]
 provider = "openai"
@@ -170,26 +157,9 @@ max_tokens = 4096
 extra_body = { chat_template_kwargs = { enable_thinking = false } }
 hosting = "external_api"
 
-# The same Qwen3.8-Flash-Next FP8 MoE self-hosted on 4×H200 (TP4, tunnel hk-big1); thinking off per request.
-[profiles.h200-flashnext]
-provider = "openai"
-base_url_env = "H200_BIG1_BASE_URL"
-api_key_env = "H200_API_KEY"
-model = "qwen3.8-flash-next"
-supports_n = true
-structured = "json_schema"
-max_concurrency = 32
-max_tokens = 4096
-extra_body = { chat_template_kwargs = { enable_thinking = false } }
-cost = { kind = "gpu", usd_per_hour = 21.40, concurrency = 32 }
-
 # Per-criterion vote of three judges (majority; scales take the median; gemma breaks ties and leads the evidence).
-# All three self-hosted on H200 (results.json model.mode = local). A dead member is dropped with a warning.
+# Same accuracy as gemma alone on the 65-dialog gold (0.928 vs 0.929, see docs/research/benchmark-phase1.md),
+# lower total error (MAE 4.55 vs 4.91); kept as an option, not the control default.
 [profiles.ensemble]
-provider = "ensemble"
-members = ["h200-gemma:per_criterion", "h200-q27:single", "h200-flashnext:single"]
-
-# The same vote with Qwen members via the Alem.Cloud gateway (validated first, 0.940 offline on the 65-dialog gold).
-[profiles.ensemble-aigw]
 provider = "ensemble"
 members = ["h200-gemma:per_criterion", "alem-qwen27b:single", "aigw-flashnext:single"]
