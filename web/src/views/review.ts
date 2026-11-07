@@ -1,8 +1,8 @@
 import { t } from '../i18n.js';
-import { hrefEvaluation } from '../router.js';
+import { DEFAULT_GROUP, hrefDialogs, hrefEvaluation } from '../router.js';
 import type { Ctx } from '../router.js';
 import type { AppealQueueItem, EvaluationView, Record as DialogRecord } from '../types.gen.js';
-import { allowedVerdicts, badge, banner, errorDetails, errorMessage, fmt, h, heading, rangeOf, verdictLabel, verdictTone } from '../ui/dom.js';
+import { allowedVerdicts, badge, banner, errorDetails, errorMessage, fmt, h, rangeOf, verdictLabel, verdictTone } from '../ui/dom.js';
 import { renderTranscript } from '../ui/transcript.js';
 
 interface Loaded {
@@ -40,32 +40,88 @@ async function loadFor(ctx: Ctx, q: AppealQueueItem, views: Map<string, Promise<
 
 function card(ctx: Ctx, q: AppealQueueItem, loaded: Loaded, onResolved: () => void): HTMLElement {
   const { appeal, criterion, item } = q;
-  const status = h('div', { class: 'cqa-status' });
+  const base = `cqa-appeal-${appeal.id}`;
+  const titleId = `${base}-title`;
+  const reasonErrorId = `${base}-reason-error`;
   const allowed = allowedVerdicts(criterion);
+  const dialogHref = hrefEvaluation(q.evaluation_id);
 
-  let fragment: HTMLElement | null = null;
+  // Доказательство: фрагмент транскрипта вокруг evidence/expected_range.
+  let evidence: HTMLElement | null = null;
   if (loaded.record) {
     const range = fragmentRange(item, loaded.record.transcript.length);
     const tr = renderTranscript(loaded.record, { range, audio: false });
     tr.highlight(item.evidence_idx, item.verdict === 'no' ? rangeOf(item.expected_range) : null);
-    fragment = h('div', { class: 'cqa-fragment' }, h('h3', null, t.review.fragment), tr.el);
+    evidence = h(
+      'section',
+      { class: 'cqa-appeal-evidence', 'aria-labelledby': `${base}-fragment` },
+      h('h3', { id: `${base}-fragment` }, t.review.fragment),
+      h('div', { class: 'cqa-fragment', tabindex: '0', role: 'region', 'aria-label': t.review.fragment }, tr.el),
+    );
   }
 
+  const context = h(
+    'div',
+    { class: 'cqa-appeal-context' },
+    h(
+      'p',
+      { class: 'cqa-appeal-verdict' },
+      h('span', { class: 'cqa-field-label' }, t.review.original),
+      badge(verdictLabel(item.verdict), verdictTone(criterion, item.verdict)),
+    ),
+    h('div', { class: 'cqa-appeal-text' }, h('h3', null, t.review.explanation), h('p', null, item.explanation)),
+    h('div', { class: 'cqa-appeal-text cqa-appeal-comment' }, h('h3', null, t.review.comment), h('p', null, appeal.comment)),
+  );
+
+  // Форма решения.
   const action = { confirm: true };
+  let busy = false;
   const newVerdict = h(
     'select',
-    { class: 'cqa-input', 'aria-label': t.review.newVerdict },
+    { class: 'cqa-input', id: `${base}-verdict` },
     allowed.map((v) => h('option', { value: v }, verdictLabel(v))),
   );
-  newVerdict.hidden = true;
+  newVerdict.value = allowed.find((v) => v !== item.verdict) ?? allowed[0] ?? '';
+  const verdictField = h(
+    'label',
+    { class: 'cqa-field cqa-appeal-newverdict', for: newVerdict.id },
+    h('span', { class: 'cqa-field-label' }, t.review.newVerdict),
+    newVerdict,
+  );
+  verdictField.hidden = true;
   const reason = h('textarea', {
     class: 'cqa-input cqa-textarea',
-    rows: 2,
+    id: `${base}-reason`,
+    rows: 3,
     required: true,
     placeholder: t.review.reasonPlaceholder,
-    'aria-label': t.review.reason,
   });
+  const errors = h('div', { id: reasonErrorId, class: 'cqa-form-errors' });
   const submit = h('button', { type: 'submit', class: 'cqa-btn cqa-btn--primary' }, t.review.submit);
+  const status = h('div', { class: 'cqa-status', role: 'status' });
+
+  const setInvalid = (invalid: boolean) => {
+    if (invalid) {
+      reason.setAttribute('aria-invalid', 'true');
+      reason.setAttribute('aria-describedby', reasonErrorId);
+    } else {
+      reason.removeAttribute('aria-invalid');
+      reason.removeAttribute('aria-describedby');
+    }
+  };
+  const setBusy = (on: boolean) => {
+    busy = on;
+    submit.disabled = on;
+    submit.textContent = on ? t.review.saving : t.review.submit;
+    if (on) submit.setAttribute('aria-busy', 'true');
+    else submit.removeAttribute('aria-busy');
+  };
+  reason.addEventListener('input', () => {
+    if (reason.getAttribute('aria-invalid') === 'true' && reason.value.trim()) {
+      errors.replaceChildren();
+      setInvalid(false);
+    }
+  });
 
   const radio = (value: 'confirm' | 'change', label: string) =>
     h(
@@ -78,26 +134,32 @@ function card(ctx: Ctx, q: AppealQueueItem, loaded: Loaded, onResolved: () => vo
         checked: value === 'confirm',
         onchange: () => {
           action.confirm = value === 'confirm';
-          newVerdict.hidden = action.confirm;
+          verdictField.hidden = action.confirm;
         },
       }),
       h('span', null, label),
     );
+
+  const stateBadge = badge(t.review.open, 'warn');
 
   const form = h(
     'form',
     {
       class: 'cqa-form cqa-decision',
       novalidate: true,
+      'aria-labelledby': `${base}-decision`,
       onsubmit: async (e: Event) => {
         e.preventDefault();
-        status.replaceChildren();
+        if (busy) return;
+        errors.replaceChildren();
         if (!reason.value.trim()) {
-          status.appendChild(banner(t.common.reasonRequired));
+          errors.appendChild(banner(t.common.reasonRequired));
+          setInvalid(true);
           reason.focus();
           return;
         }
-        submit.disabled = true;
+        setInvalid(false);
+        setBusy(true);
         try {
           const result = await ctx.api.decide(appeal.id, {
             action: action.confirm ? 'confirm' : 'change',
@@ -105,50 +167,56 @@ function card(ctx: Ctx, q: AppealQueueItem, loaded: Loaded, onResolved: () => vo
             reason: reason.value.trim(),
           });
           const before = loaded.view?.evaluation.score.total;
-          status.replaceChildren(
-            banner(
-              t.review.decided,
-              [before === undefined ? fmt(result.final.score.total) : t.review.totalChange(fmt(before), fmt(result.final.score.total))],
-              'ok',
+          const summary = h(
+            'div',
+            { class: 'cqa-banner cqa-banner--ok cqa-appeal-result', tabindex: '-1' },
+            h('strong', null, t.review.decided),
+            h('p', null, action.confirm ? t.review.decidedConfirm : t.review.decidedChange(verdictLabel(newVerdict.value))),
+            h(
+              'p',
+              { class: 'cqa-appeal-total' },
+              before === undefined ? fmt(result.final.score.total) : t.review.totalChange(fmt(before), fmt(result.final.score.total)),
             ),
+            h('a', { class: 'cqa-link', href: dialogHref }, t.review.backToDialog),
           );
-          form.hidden = true;
+          status.replaceChildren(summary);
+          form.remove();
           el.classList.add('is-resolved');
+          stateBadge.className = 'cqa-badge cqa-badge--good';
+          stateBadge.textContent = t.review.resolved;
+          summary.focus();
           onResolved();
         } catch (err) {
-          status.replaceChildren(banner(errorMessage(err), errorDetails(err)));
-          submit.disabled = false;
+          setBusy(false);
+          errors.replaceChildren(banner(errorMessage(err), errorDetails(err)));
         }
       },
     },
-    h('h3', null, t.review.decision),
-    h('div', { class: 'cqa-radios' }, radio('confirm', t.review.confirm), radio('change', t.review.change), newVerdict),
-    h('label', { class: 'cqa-field' }, h('span', { class: 'cqa-field-label' }, t.review.reason), reason),
-    submit,
+    h('h3', { id: `${base}-decision` }, t.review.decision),
+    h('fieldset', { class: 'cqa-radios', 'aria-labelledby': `${base}-decision` }, radio('confirm', t.review.confirm), radio('change', t.review.change)),
+    verdictField,
+    h('label', { class: 'cqa-field', for: reason.id }, h('span', { class: 'cqa-field-label' }, t.review.reason), reason),
+    errors,
+    h('div', { class: 'cqa-decision-actions' }, submit),
   );
 
+  // Порядок DOM = порядок чтения: критерий → пояснение/комментарий → фрагмент → решение.
   const el = h(
     'article',
-    { class: 'cqa-card cqa-appeal', 'data-appeal': appeal.id },
+    { class: 'cqa-card cqa-appeal', 'data-appeal': appeal.id, 'aria-labelledby': titleId },
     h(
-      'div',
+      'header',
       { class: 'cqa-appeal-head' },
-      h('strong', null, `${criterion.id} · ${criterion.title}`),
-      h('a', { class: 'cqa-link', href: hrefEvaluation(q.evaluation_id) }, `${q.conversation_id} — ${t.review.openDialog}`),
+      h('h2', { id: titleId, class: 'cqa-appeal-title' }, `${criterion.id} · ${criterion.title}`),
+      stateBadge,
+      h('a', { class: 'cqa-link cqa-appeal-dialog', href: dialogHref }, `${q.conversation_id} — ${t.review.openDialog}`),
     ),
     h(
       'div',
-      { class: 'cqa-appeal-cols' },
-      h(
-        'div',
-        null,
-        h('p', null, h('span', { class: 'cqa-muted' }, `${t.review.original}: `), badge(verdictLabel(item.verdict), verdictTone(criterion, item.verdict))),
-        h('p', null, h('span', { class: 'cqa-muted' }, `${t.review.explanation}: `), item.explanation),
-        h('p', { class: 'cqa-appeal-comment' }, h('span', { class: 'cqa-muted' }, `${t.review.comment}: `), appeal.comment),
-        status,
-        form,
-      ),
-      fragment,
+      { class: evidence ? 'cqa-appeal-cols' : 'cqa-appeal-cols cqa-appeal-cols--single' },
+      context,
+      evidence,
+      h('div', { class: 'cqa-appeal-decision' }, status, form),
     ),
   );
   return el;
@@ -161,17 +229,27 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   const loaded = await Promise.all(queue.map((q) => loadFor(ctx, q, views)));
   if (ctx.signal.aborted) return;
 
-  let open = queue.length;
-  const count = h('span', { class: 'cqa-muted' }, t.review.count(open));
-  const list = h('div', { class: 'cqa-appeals' });
-  const empty = h('p', { class: 'cqa-muted cqa-empty' }, t.review.empty);
-  empty.hidden = open > 0;
+  const title = h('h1', { class: 'cqa-page-title' }, t.review.title);
+  if (!queue.length) {
+    root.replaceChildren(
+      h('div', { class: 'cqa-page-head' }, h('div', null, title)),
+      h(
+        'section',
+        { class: 'cqa-card cqa-review-empty', 'aria-labelledby': 'cqa-review-empty-title' },
+        h('h2', { id: 'cqa-review-empty-title' }, t.review.empty),
+        h('p', { class: 'cqa-muted' }, t.review.emptyHint),
+        h('a', { class: 'cqa-btn', href: hrefDialogs(DEFAULT_GROUP) }, t.review.toDialogs),
+      ),
+    );
+    return;
+  }
 
+  let open = queue.length;
+  const count = h('p', { class: 'cqa-page-subtitle' }, t.review.count(open));
   const onResolved = () => {
     open -= 1;
     count.textContent = t.review.count(open);
-    empty.hidden = open > 0;
   };
-  list.append(...queue.map((q, i) => card(ctx, q, loaded[i], onResolved)));
-  root.replaceChildren(heading(t.review.title, count), list, empty);
+  const list = h('div', { class: 'cqa-appeals' }, queue.map((q, i) => card(ctx, q, loaded[i], onResolved)));
+  root.replaceChildren(h('div', { class: 'cqa-page-head' }, h('div', null, title, count)), list);
 }

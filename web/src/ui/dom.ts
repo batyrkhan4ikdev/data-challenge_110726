@@ -27,6 +27,8 @@ export function h<K extends keyof HTMLElementTagNameMap>(
     if (v === null || v === undefined || v === false) continue;
     if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2).toLowerCase(), v as EventListener);
     else if (k === 'class') el.className = String(v);
+    // Строка style через setAttribute нарушает строгий CSP (style-src-attr); запись через CSSOM разрешена.
+    else if (k === 'style') el.style.cssText = String(v);
     else if (PROPERTY_ATTRS.has(k)) props.push([k, v]);
     else el.setAttribute(k, v === true ? '' : String(v));
   }

@@ -2,14 +2,14 @@ import { t } from '../i18n.js';
 import { hrefDialogs, hrefEvaluation } from '../router.js';
 import type { Ctx } from '../router.js';
 import type { BatchRequest, Criterion, EvaluationSummary, EvaluationView, RawCall, Record as DialogRecord } from '../types.gen.js';
-import { openAppealModal } from '../ui/appeal-modal.js';
-import { renderCriteriaTable } from '../ui/criteria-table.js';
+import { openAppealModal } from '../ui/appealModal.js';
+import { renderCriteriaTable } from '../ui/criteriaTable.js';
 import { badge, banner, errorDetails, errorMessage, fmt, fmtDate, h, heading, rangeOf } from '../ui/dom.js';
 import { factsCard } from '../ui/facts.js';
 import { checkIcon, crossIcon, scoreRing } from '../ui/icons.js';
 import { renderTranscript } from '../ui/transcript.js';
 import type { TranscriptView } from '../ui/transcript.js';
-import { API_SOURCE, createTranscriptPanel, defaultSource, loadSources, sourceLabel } from '../ui/transcript-panel.js';
+import { API_SOURCE, createTranscriptPanel, defaultSource, loadSources, sourceLabel } from '../ui/transcriptPanel.js';
 
 /** Красный бейдж «Грубая ошибка»: по клику прокручивает к критерию с грубой ошибкой (пояснение и подтверждения). */
 function grossBadge(view: EvaluationView): HTMLElement {
@@ -22,9 +22,10 @@ function grossBadge(view: EvaluationView): HTMLElement {
     const details = scope?.querySelector<HTMLDetailsElement>('.cqa-details');
     if (details) details.open = true;
     const rowEls = ids.map((id) => scope?.querySelector<HTMLElement>(`tr[data-criterion="${CSS.escape(id)}"]`) ?? null);
-    rowEls.find((r) => r !== null)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    rowEls.find((r) => r !== null)?.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
     for (const r of rowEls) {
-      if (!r) continue;
+      if (!r || reduced) continue;
       r.classList.remove('is-flash');
       void r.offsetWidth;
       r.classList.add('is-flash');
@@ -116,22 +117,22 @@ function pageHeader(
   const ev = view.evaluation;
   const reBtn = h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary', id: 'cqa-reevaluate' }, t.result.reevaluate);
   const source = ev.transcript_source ?? API_SOURCE;
-  reBtn.addEventListener('click', () =>
-    void runAndOpen(
-      ctx,
-      {
-        group_id: ev.group_id,
-        conversation_ids: [ev.conversation_id],
-        checklist_id: ev.checklist_id,
-        profile: ev.profile,
-        mode: ev.mode,
-        k: ev.k,
-        transcript_source: source === API_SOURCE ? null : source,
-      },
-      status,
-      (busy) => (reBtn.disabled = busy),
-    ),
-  );
+  reBtn.addEventListener('click', () => {
+    const req: BatchRequest = {
+      group_id: ev.group_id,
+      conversation_ids: [ev.conversation_id],
+      checklist_id: ev.checklist_id,
+      profile: ev.profile,
+      mode: ev.mode,
+      k: ev.k,
+      transcript_source: source === API_SOURCE ? null : source,
+    };
+    void runAndOpen(ctx, req, status, (busy) => {
+      reBtn.disabled = busy;
+      reBtn.textContent = busy ? t.result.reevaluating : t.result.reevaluate;
+      reBtn.setAttribute('aria-busy', String(busy));
+    });
+  });
   const subtitle = [ev.conversation_id, record ? (t.channel[record.channel] ?? record.channel) : null, record?.language, durationOf(record)]
     .filter((x): x is string => !!x)
     .join(' · ');
@@ -194,7 +195,7 @@ function scoreCard(opts: ScoreCardOptions): HTMLElement {
       if (!full) lost.push({ c, text: it?.explanation ?? '' });
     }
     icon = h('span', { class: `cqa-mark cqa-mark--${state}` }, state === 'ok' ? checkIcon() : state === 'na' ? 'N/A' : crossIcon());
-    rows.push(h('li', { class: 'cqa-score-row', 'data-criterion': c.id }, icon, h('span', { class: 'cqa-score-title', title: c.title }, c.title), h('span', { class: 'cqa-score-pts' }, pts)));
+    rows.push(h('li', { class: 'cqa-score-row', 'data-criterion': c.id }, icon, h('span', { class: 'cqa-score-title' }, c.title), h('span', { class: 'cqa-score-pts' }, pts)));
   }
 
   const why = lost.length
@@ -205,14 +206,15 @@ function scoreCard(opts: ScoreCardOptions): HTMLElement {
         return h(
           'li',
           { class: 'cqa-why-row', 'data-criterion': c.id },
-          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl', title: text }, text)),
+          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl' }, text)),
           h(
             'div',
             { class: 'cqa-why-actions' },
-            h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary cqa-btn--small', disabled: !hasFragment, title: hasFragment ? undefined : t.result.noFragment, onclick: () => opts.onJump(c) }, t.result.jumpToFragment),
+            h('button', { type: 'button', class: 'cqa-btn cqa-btn--tint cqa-btn--small cqa-jump', disabled: !hasFragment, 'data-has-fragment': String(hasFragment), onclick: () => opts.onJump(c) }, t.result.jumpToFragment),
+            !hasFragment ? h('span', { class: 'cqa-muted cqa-no-fragment' }, t.result.noFragment) : null,
             hasOpen
               ? badge(t.result.appealOpen, 'warn')
-              : h('button', { type: 'button', class: 'cqa-btn cqa-btn--outline cqa-btn--small', onclick: () => opts.onAppeal(c) }, t.result.appealButton),
+              : h('button', { type: 'button', class: 'cqa-btn cqa-btn--small', onclick: () => opts.onAppeal(c) }, t.result.appealButton),
           ),
         );
       })
@@ -295,7 +297,7 @@ function detailsBlock(
     h('div', { class: 'cqa-result-actions' }, rawToggle),
     rawBody,
     h('h3', null, t.result.detailsTable),
-    h('div', { class: 'cqa-table-wrap' }, table),
+    h('div', { class: 'cqa-table-wrap', tabindex: '0', role: 'region', 'aria-label': t.result.detailsTable }, table),
   );
 }
 
@@ -402,13 +404,25 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     }
   });
 
-  const status = h('div', { class: 'cqa-status' });
+  const status = h('div', { class: 'cqa-status', role: 'status' });
+  const score = scoreCard({ view, onJump: jump, onAppeal: appeal });
   const transcriptLabel = isCall ? sourceLabel(sources, evSource) : null;
-  root.replaceChildren(
-    pageHeader(view, ctx, record, status, transcriptLabel),
-    h('div', { class: 'cqa-split' }, left, scoreCard({ view, onJump: jump, onAppeal: appeal })),
-    detailsBlock(view, record, history, rawToggle, rawBody, table, transcriptLabel),
-  );
+  const header = pageHeader(view, ctx, record, status, transcriptLabel);
+  if (isCall) {
+    // The call's audio lives in the transcript panel and is re-rendered on a source switch: resolve it at click time.
+    const link = h('a', { class: 'cqa-link cqa-audio-jump', href: '#cqa-call-audio' }, t.result.audioJump);
+    link.addEventListener('click', (event) => {
+      const audio = root.querySelector<HTMLAudioElement>('#cqa-call-audio');
+      if (!audio) return;
+      event.preventDefault();
+      audio.focus({ preventScroll: true });
+      audio.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+    header.appendChild(link);
+  }
+  root.replaceChildren(header,
+    h('div', { class: 'cqa-split' }, score, left),
+    detailsBlock(view, record, history, rawToggle, rawBody, table, transcriptLabel));
 }
 
 /** Диалог без оценок: только транскрипт и кнопка «Оценить». Оценённый диалог открывает последнюю оценку. */
@@ -425,7 +439,7 @@ export async function renderTranscriptOnly(root: HTMLElement, ctx: Ctx): Promise
     location.replace(hrefEvaluation(latest.id));
     return;
   }
-  const status = h('div', { class: 'cqa-status' });
+  const status = h('div', { class: 'cqa-status', role: 'status' });
   const isCall = record.channel === 'voice call';
   if (isCall) {
     // Звонок: транскрипт выбирается переключателем (по умолчанию FreedomSpeech), оценка идёт по выбранному.
@@ -456,9 +470,14 @@ export async function renderTranscriptOnly(root: HTMLElement, ctx: Ctx): Promise
   }
   const transcript = renderTranscript(record, { ids: true });
   const btn = h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary' }, t.dialogs.evaluateOne);
-  btn.addEventListener('click', () =>
-    void runAndOpen(ctx, { group_id: group, conversation_ids: [cid], checklist_id: null }, status, (busy) => (btn.disabled = busy)),
-  );
+  btn.addEventListener('click', () => {
+    const req: BatchRequest = { group_id: group, conversation_ids: [cid], checklist_id: null };
+    void runAndOpen(ctx, req, status, (busy) => {
+      btn.disabled = busy;
+      btn.textContent = busy ? t.result.reevaluating : t.dialogs.evaluateOne;
+      btn.setAttribute('aria-busy', String(busy));
+    });
+  });
   root.replaceChildren(
     heading(cid, badge(t.channel[record.channel] ?? record.channel), badge(record.language), btn, h('a', { class: 'cqa-link', href: hrefDialogs(group) }, `← ${group}`)),
     banner(t.dialogs.transcriptOnly, null, 'info'),

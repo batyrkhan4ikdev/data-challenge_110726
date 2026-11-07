@@ -4,13 +4,19 @@ import type { Ctx } from '../router.js';
 import type { BatchRequest, ChecklistSummary, ConversationSummary, Job } from '../types.gen.js';
 import { badge, banner, errorDetails, errorMessage, fmt, h, heading } from '../ui/dom.js';
 
+/** Подпись, видимая только в мобильной карточке, где заголовок колонки скрыт. */
+function cellLabel(text: string): HTMLElement {
+  return h('span', { class: 'cqa-cell-label' }, text);
+}
+
 function totalCell(row: ConversationSummary): HTMLElement {
   const l = row.latest;
-  if (!l) return h('td', { class: 'cqa-num cqa-muted' }, t.dialogs.notEvaluated);
+  if (!l) return h('td', { role: 'cell', class: 'cqa-num cqa-cell-total cqa-muted' }, t.dialogs.notEvaluated);
   const changed = l.final_total !== l.total;
   return h(
     'td',
-    { class: 'cqa-num' },
+    { role: 'cell', class: 'cqa-num cqa-cell-total' },
+    cellLabel(`${t.dialogs.colTotal} `),
     fmt(l.total),
     changed ? h('span', { class: 'cqa-chain-arrow' }, ' → ') : null,
     changed ? h('strong', null, fmt(l.final_total)) : null,
@@ -24,7 +30,8 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   let checklists: ChecklistSummary[] = [];
   let running = false;
 
-  const groupInput = h('input', { class: 'cqa-input', type: 'text', value: group, 'aria-label': t.dialogs.group, size: 10 });
+  const groupInput = h('input', { class: 'cqa-input cqa-input--group', type: 'text', value: group, size: 10 });
+  const refreshBtn = h('button', { type: 'submit', class: 'cqa-btn' }, t.dialogs.refresh);
   const channelFilter = h(
     'select',
     { class: 'cqa-input', 'aria-label': t.dialogs.channel, onchange: () => drawRows() },
@@ -38,23 +45,24 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     h('option', { value: '' }, `${t.dialogs.language}: ${t.dialogs.all}`),
     ['RU', 'KZ', 'EN'].map((l) => h('option', { value: l }, l)),
   );
-  const checklistSelect = h('select', { class: 'cqa-input', 'aria-label': t.dialogs.checklist }, h('option', { value: '' }, t.dialogs.byChannel));
+  const checklistSelect = h('select', { class: 'cqa-input' }, h('option', { value: '' }, t.dialogs.byChannel));
   const modeSelect = h(
     'select',
-    { class: 'cqa-input', 'aria-label': t.dialogs.mode },
+    { class: 'cqa-input' },
     h('option', { value: '' }, t.dialogs.modeDefault),
     h('option', { value: 'single' }, t.dialogs.modeSingle),
     h('option', { value: 'per_criterion' }, t.dialogs.modePerCriterion),
   );
-  const kInput = h('input', { class: 'cqa-input cqa-input--num', type: 'number', min: '1', max: '9', placeholder: t.dialogs.kDefault, 'aria-label': t.dialogs.k });
+  const kInput = h('input', { class: 'cqa-input cqa-input--num', type: 'number', min: '1', max: '9', placeholder: t.dialogs.kDefault });
   const evaluateBtn = h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary', onclick: () => void evaluate() }, t.dialogs.evaluate);
-  const selectedLabel = h('span', { class: 'cqa-muted' });
-  const countLabel = h('span', { class: 'cqa-muted' });
+  const selectedLabel = h('span', { class: 'cqa-muted cqa-batch-count', 'aria-live': 'polite' });
+  const countLabel = h('span', { class: 'cqa-muted cqa-filter-count' });
   const notices = h('div', { class: 'cqa-notices' });
   const progress = h('div', { class: 'cqa-progress-wrap' });
-  const tbody = h('tbody');
+  const tbody = h('tbody', { role: 'rowgroup' });
   const allBox = h('input', { type: 'checkbox', 'aria-label': t.dialogs.selectAll, onchange: () => toggleAll(allBox.checked) });
-  const grossOnly = h('input', { type: 'checkbox', 'aria-label': t.dialogs.grossOnly, onchange: () => drawRows() });
+  const grossOnly = h('input', { type: 'checkbox', onchange: () => drawRows() });
+  const tableWrap = h('div', { class: 'cqa-table-wrap', role: 'region', tabindex: '0', 'aria-label': t.dialogs.tableLabel });
 
   function visibleRows(): ConversationSummary[] {
     return rows.filter(
@@ -82,47 +90,71 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     drawRows();
   }
 
+  function resetFilters(): void {
+    channelFilter.value = '';
+    langFilter.value = '';
+    grossOnly.checked = false;
+    drawRows();
+  }
+
+  function emptyRow(): HTMLElement {
+    // Фильтры сузили непустой список: предлагаем их сбросить; иначе данных просто нет.
+    const filtered = rows.length > 0;
+    return h(
+      'tr',
+      { role: 'row', class: 'cqa-row-empty' },
+      h(
+        'td',
+        { role: 'cell', colspan: 7, class: 'cqa-empty' },
+        h('p', { class: 'cqa-muted' }, filtered ? t.dialogs.emptyFiltered : t.dialogs.empty),
+        filtered ? h('button', { type: 'button', class: 'cqa-btn', onclick: () => resetFilters() }, t.dialogs.resetFilters) : null,
+      ),
+    );
+  }
+
   function drawRows(): void {
     const vis = visibleRows();
     tbody.replaceChildren(
       ...vis.map((r) =>
         h(
           'tr',
-          { 'data-cid': r.conversation_id, class: selected.has(r.conversation_id) ? 'is-selected' : '' },
+          { role: 'row', 'data-cid': r.conversation_id, class: selected.has(r.conversation_id) ? 'is-selected' : '' },
           h(
             'td',
-            { class: 'cqa-check-cell' },
-            h('input', {
-              type: 'checkbox',
-              checked: selected.has(r.conversation_id),
-              'aria-label': r.conversation_id,
-              onchange: (e: Event) => {
-                if ((e.target as HTMLInputElement).checked) selected.add(r.conversation_id);
-                else selected.delete(r.conversation_id);
-                drawRows();
-              },
-            }),
+            { role: 'cell', class: 'cqa-check-cell' },
+            h(
+              'label',
+              { class: 'cqa-check-hit' },
+              h('input', {
+                type: 'checkbox',
+                checked: selected.has(r.conversation_id),
+                'aria-label': r.conversation_id,
+                onchange: (e: Event) => {
+                  if ((e.target as HTMLInputElement).checked) selected.add(r.conversation_id);
+                  else selected.delete(r.conversation_id);
+                  drawRows();
+                },
+              }),
+            ),
           ),
           h(
             'td',
-            null,
+            { role: 'cell', class: 'cqa-cell-id' },
             h(
               'a',
               { class: 'cqa-link', href: r.latest ? hrefEvaluation(r.latest.id) : hrefTranscript(group, r.conversation_id) },
               r.conversation_id,
             ),
           ),
-          h('td', null, t.channel[r.channel] ?? r.channel),
-          h('td', null, r.language),
-          h('td', { class: 'cqa-num' }, String(r.turns)),
+          h('td', { role: 'cell', class: 'cqa-cell-channel' }, t.channel[r.channel] ?? r.channel),
+          h('td', { role: 'cell', class: 'cqa-cell-lang' }, r.language),
+          h('td', { role: 'cell', class: 'cqa-num cqa-cell-turns' }, String(r.turns), cellLabel(` ${t.dialogs.turnsSuffix}`)),
           totalCell(r),
-          h('td', null, r.latest?.gross_error ? badge(t.dialogs.gross, 'bad') : null),
+          h('td', { role: 'cell', class: 'cqa-cell-gross' }, r.latest?.gross_error ? badge(t.dialogs.gross, 'bad') : null),
         ),
       ),
     );
-    if (!vis.length) {
-      tbody.appendChild(h('tr', null, h('td', { colspan: 7, class: 'cqa-muted cqa-empty' }, t.dialogs.empty)));
-    }
+    if (!vis.length) tbody.appendChild(emptyRow());
     countLabel.textContent = t.dialogs.count(vis.length, rows.length);
     updateSelection();
   }
@@ -130,6 +162,9 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   async function load(refresh: boolean): Promise<void> {
     notices.replaceChildren();
     const next = groupInput.value.trim() || DEFAULT_GROUP;
+    // Прежние строки остаются на месте, пока идёт загрузка.
+    tableWrap.setAttribute('aria-busy', 'true');
+    refreshBtn.disabled = true;
     try {
       const data = await ctx.api.conversations(next, refresh);
       if (ctx.signal.aborted) return;
@@ -143,6 +178,9 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
       const notice = banner(`${t.dialogs.datasetError}: ${errorMessage(e)}`, errorDetails(e));
       if (rows.length) notice.appendChild(h('div', null, t.dialogs.previousRows));
       notices.appendChild(notice);
+    } finally {
+      tableWrap.removeAttribute('aria-busy');
+      refreshBtn.disabled = false;
     }
     drawRows();
   }
@@ -188,52 +226,77 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     }
   }
 
+  const headers: [string, string][] = [
+    [t.dialogs.colId, 'cqa-cell-id'],
+    [t.dialogs.colChannel, 'cqa-cell-channel'],
+    [t.dialogs.colLang, 'cqa-cell-lang'],
+    [t.dialogs.colTurns, 'cqa-num cqa-cell-turns'],
+    [t.dialogs.colTotal, 'cqa-num cqa-cell-total'],
+    [t.dialogs.colGross, 'cqa-cell-gross'],
+  ];
+  // Явные role сохраняют семантику таблицы, когда на узком экране строки становятся карточками (display:grid).
+  tableWrap.appendChild(
+    h(
+      'table',
+      { role: 'table', class: 'cqa-table cqa-table--dialogs' },
+      h(
+        'thead',
+        { role: 'rowgroup' },
+        h(
+          'tr',
+          { role: 'row' },
+          h(
+            'th',
+            { role: 'columnheader', scope: 'col', class: 'cqa-check-cell' },
+            h('label', { class: 'cqa-check-hit' }, allBox, h('span', { class: 'cqa-cell-label', 'aria-hidden': 'true' }, t.dialogs.selectAll)),
+          ),
+          headers.map(([label, cls]) => h('th', { role: 'columnheader', scope: 'col', class: cls }, label)),
+        ),
+      ),
+      tbody,
+    ),
+  );
+
   root.replaceChildren(
     heading(t.dialogs.title),
     h(
       'form',
       {
-        class: 'cqa-toolbar',
+        class: 'cqa-toolbar cqa-toolbar--filters',
+        'aria-label': t.dialogs.filtersLabel,
         onsubmit: (e: Event) => {
           e.preventDefault();
           void load(true);
         },
       },
-      h('label', { class: 'cqa-inline' }, h('span', null, t.dialogs.group), groupInput),
-      h('button', { type: 'submit', class: 'cqa-btn' }, t.dialogs.refresh),
+      h('label', { class: 'cqa-inline cqa-filter-group' }, h('span', null, t.dialogs.group), groupInput),
+      refreshBtn,
       channelFilter,
       langFilter,
-      h('label', { class: 'cqa-inline' }, grossOnly, h('span', null, t.dialogs.grossOnly)),
+      h('label', { class: 'cqa-inline cqa-filter-gross' }, grossOnly, h('span', null, t.dialogs.grossOnly)),
       countLabel,
     ),
     h(
       'div',
-      { class: 'cqa-toolbar cqa-toolbar--batch' },
-      h('label', { class: 'cqa-inline' }, h('span', null, t.dialogs.checklist), checklistSelect),
-      h('label', { class: 'cqa-inline' }, h('span', null, t.dialogs.mode), modeSelect),
-      h('label', { class: 'cqa-inline' }, h('span', null, t.dialogs.k), kInput),
+      { class: 'cqa-toolbar cqa-toolbar--batch', role: 'group', 'aria-label': t.dialogs.batchLabel },
+      h('label', { class: 'cqa-inline cqa-batch-checklist' }, h('span', null, t.dialogs.checklist), checklistSelect),
       evaluateBtn,
       selectedLabel,
+      h(
+        'details',
+        { class: 'cqa-batch-params' },
+        h('summary', null, t.dialogs.params),
+        h(
+          'div',
+          { class: 'cqa-batch-params-body' },
+          h('label', { class: 'cqa-inline' }, h('span', null, t.dialogs.mode), modeSelect),
+          h('label', { class: 'cqa-inline' }, h('span', null, t.dialogs.k), kInput),
+        ),
+      ),
     ),
     notices,
     progress,
-    h(
-      'table',
-      { class: 'cqa-table cqa-dialogs' },
-      h(
-        'thead',
-        null,
-        h(
-          'tr',
-          null,
-          h('th', { scope: 'col', class: 'cqa-check-cell' }, allBox),
-          [t.dialogs.colId, t.dialogs.colChannel, t.dialogs.colLang, t.dialogs.colTurns, t.dialogs.colTotal, t.dialogs.colGross].map((label) =>
-            h('th', { scope: 'col' }, label),
-          ),
-        ),
-      ),
-      tbody,
-    ),
+    tableWrap,
   );
 
   // Список чек-листов подгружается параллельно; без него «по каналу» остаётся единственным пунктом.

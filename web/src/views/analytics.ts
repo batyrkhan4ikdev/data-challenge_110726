@@ -1,10 +1,11 @@
 import { t } from '../i18n.js';
-import { hrefEvaluation } from '../router.js';
+import { hrefDialogs, hrefTranscript } from '../router.js';
 import type { Ctx } from '../router.js';
 import type { BreakdownRow, GroupAnalytics } from '../types.gen.js';
-import { fmt, h } from '../ui/dom.js';
+import { banner, errorDetails, errorMessage, fmt, h } from '../ui/dom.js';
+import type { Child } from '../ui/dom.js';
 
-function kpi(label: string, value: string, hint?: string, tone = ''): HTMLElement {
+function kpi(label: string, value: Child, hint?: string, tone = ''): HTMLElement {
   return h(
     'div',
     { class: `cqa-card cqa-kpi ${tone}` },
@@ -18,35 +19,46 @@ function barTone(pct: number | null): string {
   return pct === null ? 'none' : pct >= 85 ? 'good' : pct >= 70 ? 'warn' : 'bad';
 }
 
+/** Пока данные грузятся: подписи KPI уже известны, вместо чисел спокойные статичные плашки (не нули). */
+function skeleton(): HTMLElement[] {
+  const block = (cls: string) => h('span', { class: `cqa-skel ${cls}`, 'aria-hidden': 'true' });
+  return [
+    h('p', { class: 'cqa-loading', role: 'status' }, t.common.loading),
+    h(
+      'div',
+      { class: 'cqa-kpis' },
+      [t.analytics.kpiEvaluated, t.analytics.kpiMean, t.analytics.kpiGross, t.analytics.kpiNa].map((label) =>
+        h('div', { class: 'cqa-card cqa-kpi' }, h('div', { class: 'cqa-kpi-label' }, label), block('cqa-skel--value')),
+      ),
+    ),
+    h(
+      'div',
+      { class: 'cqa-analytics-grid', 'aria-hidden': 'true' },
+      h('div', { class: 'cqa-card' }, block('cqa-skel--title'), [1, 2, 3, 4].map(() => block('cqa-skel--row'))),
+      h('div', { class: 'cqa-card' }, block('cqa-skel--title'), block('cqa-skel--chart')),
+    ),
+  ];
+}
+
 function breakdown(title: string, rows: BreakdownRow[], label: (k: string) => string): HTMLElement {
   return h(
     'section',
-    { class: 'cqa-card' },
+    { class: 'cqa-card cqa-breakdown' },
     h('h2', { class: 'cqa-card-title' }, title),
     h(
-      'table',
-      { class: 'cqa-table' },
-      h('thead', null, h('tr', null, [t.analytics.colKey, t.analytics.colCount, t.analytics.colMean].map((x, i) => h('th', { scope: 'col', class: i ? 'cqa-num' : '' }, x)))),
-      h('tbody', null, rows.map((r) => h('tr', null, h('td', null, label(r.key)), h('td', { class: 'cqa-num' }, String(r.count)), h('td', { class: 'cqa-num' }, fmt(r.mean_total))))),
+      'div',
+      { class: 'cqa-table-wrap', tabindex: '0', role: 'region', 'aria-label': title },
+      h(
+        'table',
+        { class: 'cqa-table' },
+        h('thead', null, h('tr', null, [t.analytics.colKey, t.analytics.colCount, t.analytics.colMean].map((x, i) => h('th', { scope: 'col', class: i ? 'cqa-num' : '' }, x)))),
+        h('tbody', null, rows.map((r) => h('tr', null, h('td', null, label(r.key)), h('td', { class: 'cqa-num' }, String(r.count)), h('td', { class: 'cqa-num' }, fmt(r.mean_total))))),
+      ),
     ),
   );
 }
 
-export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
-  const group = ctx.params.group;
-  const data: GroupAnalytics = await ctx.api.analytics(group);
-  if (ctx.signal.aborted) return;
-
-  const head = h(
-    'div',
-    { class: 'cqa-page-head' },
-    h('div', null, h('h1', { class: 'cqa-page-title' }, t.analytics.title), h('p', { class: 'cqa-page-subtitle' }, t.analytics.subtitle(group))),
-  );
-  if (data.evaluated === 0) {
-    root.replaceChildren(head, h('div', { class: 'cqa-card cqa-empty cqa-muted' }, t.analytics.empty));
-    return;
-  }
-
+function content(data: GroupAnalytics, group: string): HTMLElement[] {
   const slots = data.criteria.reduce((n, c) => n + c.applicable + c.na, 0);
   const naTotal = data.criteria.reduce((n, c) => n + c.na, 0);
   const naShare = slots ? (naTotal / slots) * 100 : 0;
@@ -55,11 +67,17 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     'div',
     { class: 'cqa-kpis' },
     kpi(t.analytics.kpiEvaluated, String(data.evaluated), t.analytics.kpiOf(data.dialogs)),
-    kpi(t.analytics.kpiMean, data.mean_total === null ? t.common.none : `${fmt(data.mean_total)} / 100`, undefined, `cqa-kpi--${barTone(data.mean_total)}`),
+    kpi(
+      t.analytics.kpiMean,
+      data.mean_total === null ? t.common.none : [fmt(data.mean_total), h('span', { class: 'cqa-kpi-unit' }, ' / 100')],
+      undefined,
+      `cqa-kpi--${barTone(data.mean_total)}`,
+    ),
     kpi(t.analytics.kpiGross, String(data.gross_error_count), undefined, data.gross_error_count ? 'cqa-kpi--bad' : ''),
     kpi(t.analytics.kpiNa, `${fmt(Math.round(naShare * 10) / 10)} %`),
   );
 
+  // Полоса декоративна (aria-hidden): значение читается из видимой подписи справа.
   const criteria = h(
     'section',
     { class: 'cqa-card' },
@@ -72,25 +90,23 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
           'li',
           { class: 'cqa-bar-row', 'data-criterion': c.criterion_id },
           h('div', { class: 'cqa-bar-label' }, h('strong', null, c.title), h('span', { class: 'cqa-muted' }, t.analytics.criteriaHint(c.applicable, c.yes, c.no, c.na))),
-          h(
-            'div',
-            { class: 'cqa-bar', role: 'img', 'aria-label': `${c.title}: ${fmt(c.mean_pct)} %` },
-            h('div', { class: `cqa-bar-fill cqa-bar-fill--${barTone(c.mean_pct)}`, style: `width:${c.mean_pct ?? 0}%` }),
-          ),
+          h('div', { class: 'cqa-bar', 'aria-hidden': 'true' }, h('div', { class: `cqa-bar-fill cqa-bar-fill--${barTone(c.mean_pct)}`, style: `width:${c.mean_pct ?? 0}%` })),
           h('span', { class: 'cqa-bar-value' }, c.mean_pct === null ? t.common.none : `${fmt(c.mean_pct)} %`),
         ),
       ),
     ),
   );
 
+  // Цвет диапазона дублируется подписью диапазона и числом над столбцом; для чтения с экрана — одна строка.
   const max = Math.max(1, ...data.histogram.map((b) => b.count));
   const hist = h(
     'section',
     { class: 'cqa-card' },
     h('h2', { class: 'cqa-card-title' }, t.analytics.histogram),
+    h('p', { class: 'cqa-muted cqa-hist-note' }, t.analytics.histNote),
     h(
       'div',
-      { class: 'cqa-hist' },
+      { class: 'cqa-hist', role: 'img', 'aria-label': t.analytics.histAria(data.histogram.map((b) => t.analytics.histRange(b.label, b.count)).join('; ')) },
       data.histogram.map((b, i) =>
         h(
           'div',
@@ -103,30 +119,52 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     ),
   );
 
-  // Ссылка на оценку: ведёт в карточку последней оценки диалога.
+  // Маршрут диалога сам открывает последнюю оценку (renderTranscriptOnly), поэтому href настоящий и без лишнего запроса.
   const grossList = h(
     'section',
     { class: 'cqa-card' },
     h('h2', { class: 'cqa-card-title' }, t.analytics.grossList),
     data.gross_error_ids.length
-      ? h('ul', { class: 'cqa-gross-list' }, data.gross_error_ids.map((id) => h('li', null, h('a', { class: 'cqa-link', href: '#', 'data-cid': id }, id))))
+      ? h('ul', { class: 'cqa-gross-list' }, data.gross_error_ids.map((id) => h('li', null, h('a', { href: hrefTranscript(group, id), 'data-cid': id }, id))))
       : h('p', { class: 'cqa-muted' }, t.analytics.grossNone),
   );
-  for (const a of Array.from(grossList.querySelectorAll<HTMLAnchorElement>('a[data-cid]'))) {
-    const cid = a.dataset.cid ?? '';
-    a.addEventListener('click', (e: Event) => {
-      e.preventDefault();
-      void ctx.api.evaluationsFor(cid).then((list) => {
-        const latest = list[0];
-        if (latest) ctx.navigate(hrefEvaluation(latest.id));
-      });
-    });
-  }
 
-  root.replaceChildren(
-    head,
+  return [
     kpis,
     h('div', { class: 'cqa-analytics-grid' }, criteria, h('div', null, hist, breakdown(t.analytics.byChannel, data.by_channel, (k) => t.channel[k] ?? k), breakdown(t.analytics.byLanguage, data.by_language, (k) => k))),
     grossList,
+  ];
+}
+
+export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
+  const group = ctx.params.group;
+  const head = h(
+    'div',
+    { class: 'cqa-page-head' },
+    h('div', null, h('h1', { class: 'cqa-page-title' }, t.analytics.title), h('p', { class: 'cqa-page-subtitle' }, t.analytics.subtitle(group))),
   );
+
+  const load = async (): Promise<void> => {
+    root.replaceChildren(head, ...skeleton());
+    let data: GroupAnalytics;
+    try {
+      data = await ctx.api.analytics(group);
+    } catch (e) {
+      if (ctx.signal.aborted) return;
+      const alert = banner(errorMessage(e), errorDetails(e));
+      alert.append(h('div', { class: 'cqa-analytics-retry' }, h('button', { type: 'button', class: 'cqa-btn', onclick: () => void load() }, t.analytics.retry)));
+      root.replaceChildren(head, alert);
+      return;
+    }
+    if (ctx.signal.aborted) return;
+    if (data.evaluated === 0) {
+      root.replaceChildren(
+        head,
+        h('div', { class: 'cqa-card cqa-empty' }, h('p', { class: 'cqa-muted' }, t.analytics.empty), h('a', { href: hrefDialogs(group) }, t.analytics.toDialogs)),
+      );
+      return;
+    }
+    root.replaceChildren(head, ...content(data, group));
+  };
+  await load();
 }

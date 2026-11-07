@@ -7,6 +7,8 @@ export interface CriteriaTableOptions {
   onEvidence: (idx: number) => void;
   onExpected: (range: [number, number]) => void;
   onAppeal: (criterion: Criterion) => void;
+  /** Callers must compare both transcript source and audio identity before enabling evidence. */
+  evidenceEnabled?: boolean;
 }
 
 function verdictChip(c: Criterion | undefined, verdict: string): HTMLElement {
@@ -46,13 +48,13 @@ function evidenceCell(item: Item | undefined, opts: CriteriaTableOptions): HTMLE
   if (!item) return cell;
   for (const idx of item.evidence_idx) {
     cell.appendChild(
-      h('button', { type: 'button', class: 'cqa-link cqa-evidence-link', onclick: () => opts.onEvidence(idx) }, t.result.evidenceLabel(idx)),
+      h('button', { type: 'button', class: 'cqa-link cqa-evidence-link', disabled: opts.evidenceEnabled === false, onclick: () => opts.onEvidence(idx) }, t.result.evidenceLabel(idx)),
     );
   }
   const range = item.verdict === 'no' ? rangeOf(item.expected_range) : null;
   if (range) {
     cell.appendChild(
-      h('button', { type: 'button', class: 'cqa-link cqa-expected-link', onclick: () => opts.onExpected(range) }, t.result.expectedHere),
+      h('button', { type: 'button', class: 'cqa-link cqa-expected-link', disabled: opts.evidenceEnabled === false, onclick: () => opts.onExpected(range) }, t.result.expectedHere),
     );
   }
   return cell;

@@ -1,7 +1,7 @@
 import type { Api } from '../api.js';
 import { t } from '../i18n.js';
 import type { Record as DialogRecord, TranscriptSourceInfo } from '../types.gen.js';
-import { openCustomTranscriptModal } from './custom-transcript-modal.js';
+import { openCustomTranscriptModal } from './customTranscriptModal.js';
 import { badge, banner, errorDetails, errorMessage, fmt, h } from './dom.js';
 import { renderTranscript } from './transcript.js';
 import type { TranscriptView } from './transcript.js';
