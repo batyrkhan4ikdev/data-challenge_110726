@@ -64,6 +64,22 @@ def test_unknown_speaker():
         normalize_response(payload, 'X')
 
 
+def test_rejects_collects_bad_records_without_failing_the_group():
+    good = {'conversation_id': 'ok-1', 'channel': 'agent chat', 'language': 'RU',
+            'transcript': [{'timestamp': '00:00', 'speaker': 'client', 'text': 'x'}]}
+    bad_speaker = {**good, 'conversation_id': 'bad-1', 'transcript': [{'timestamp': '00:00', 'speaker': 'alien', 'text': 'x'}]}
+    no_transcript = {'conversation_id': 'bad-2', 'channel': 'agent chat', 'language': 'RU'}
+    payload = {'isSuccess': True, 'data': {'records': [good, bad_speaker, 'junk', no_transcript]}}
+    rejects: dict[str, str] = {}
+    records = normalize_response(payload, 'X', rejects)
+    assert [r.conversation_id for r in records] == ['ok-1']
+    assert list(rejects) == ['bad-1', '<record 2>', 'bad-2']
+    assert 'alien' in rejects['bad-1']
+    # Without a collector the strict contract holds.
+    with pytest.raises(DatasetError, match='alien'):
+        normalize_response(payload, 'X')
+
+
 class _Resp:
     def __init__(self, status_code, payload=None, text=''):
         self.status_code = status_code

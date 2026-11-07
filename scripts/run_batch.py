@@ -136,6 +136,10 @@ def write_outputs(
                 '' if ev is None else ev.score.gross_error,
                 failed.get(r.conversation_id, ''),
             ])
+        known = {r.conversation_id for r in records}
+        for cid, reason in failed.items():  # records the loader could not parse
+            if cid not in known:
+                w.writerow([cid, '', '', '', '', '', *('' for _ in criteria), '', '', reason])
     return json_path, csv_path
 
 
@@ -158,11 +162,14 @@ async def main(argv: list[str] | None = None) -> int:
     except ValueError as e:
         print(f'ошибка: {e}', file=sys.stderr)
         return 2
+    rejects: dict[str, str] = {}
     try:
-        records = await load_dataset(args.group_id, args.refresh)
+        records = await load_dataset(args.group_id, args.refresh, rejects=rejects)
     except DatasetError as e:
         print(f'Датасет недоступен: {e}', file=sys.stderr)
         return 2
+    for cid, reason in rejects.items():
+        print(f'skipped {cid}: {reason}', file=sys.stderr)
 
     store = Store(STORE)
     checklists = ChecklistStore(STORE / 'checklists')
@@ -172,14 +179,17 @@ async def main(argv: list[str] | None = None) -> int:
     print(f'{args.group_id}: {len(records)} dialogs · profile {profile.name} ({profile.model}) · {mode} · k={k}')
 
     t0 = time.perf_counter()
-    try:
-        job = await runner.start(req, {r.conversation_id: r for r in records})
-    except NotFound as e:
-        print(f'ошибка: {e}', file=sys.stderr)
-        return 2
-    job = await runner.wait(job.id)
-    evs = {ev.conversation_id: ev for ev in [await store.get_evaluation(i) for i in job.evaluation_ids]}
-    failed = dict(job.failed)
+    evs: dict[str, Evaluation] = {}
+    failed: dict[str, str] = {}
+    if records:
+        try:
+            job = await runner.start(req, {r.conversation_id: r for r in records})
+        except NotFound as e:
+            print(f'ошибка: {e}', file=sys.stderr)
+            return 2
+        job = await runner.wait(job.id)
+        evs = {ev.conversation_id: ev for ev in [await store.get_evaluation(i) for i in job.evaluation_ids]}
+        failed = dict(job.failed)
 
     if failed and args.fallback_profile:
         if args.fallback_profile not in profiles:
@@ -193,6 +203,7 @@ async def main(argv: list[str] | None = None) -> int:
             evs[ev.conversation_id] = ev
             failed.pop(ev.conversation_id, None)
         failed.update(retry.failed)
+    failed.update(rejects)  # unparseable records stay visible as errors; never dropped, never zeroed
     wall = time.perf_counter() - t0
 
     rows = [['id', 'channel', 'lang', 'total', 'gross', 'profile', 'error']]
@@ -207,6 +218,7 @@ async def main(argv: list[str] | None = None) -> int:
             ev.profile if ev else '',
             failed.get(r.conversation_id, ''),
         ])
+    rows += [[cid, '', '', '', '', '', reason] for cid, reason in rejects.items()]
     print_table(rows)
 
     done = list(evs.values())
@@ -214,7 +226,7 @@ async def main(argv: list[str] | None = None) -> int:
     completion = sum(e.usage.completion_tokens for e in done)
     model_seconds = sum(e.usage.seconds for e in done)
     print()
-    print(f'evaluated {len(done)}/{len(records)}, failed {len(failed)}')
+    print(f'evaluated {len(done)}/{len(records) + len(rejects)}, failed {len(failed)}')
     print(f'tokens: prompt {prompt}, completion {completion}, total {prompt + completion}')
     print(f'seconds: wall {wall:.1f}, summed per dialog {model_seconds:.1f}')
     for name in sorted({e.profile for e in done}):
@@ -225,19 +237,19 @@ async def main(argv: list[str] | None = None) -> int:
     json_path, csv_path = write_outputs(args.group_id, records, evs, failed)
     print(f'wrote {json_path.as_posix()} and {csv_path.as_posix()}')
     if args.submit:
-        problems = write_submission(args.submit, args.team_name, records, evs, failed, profiles)
+        ids = [r.conversation_id for r in records] + list(rejects)
+        problems = write_submission(args.submit, args.team_name, ids, evs, failed, profiles, profile)
         if problems:
             return 1
     return 1 if failed else 0
 
 
 def write_submission(
-    which: str, team_name: str, records: list[Record], evs: dict[str, Evaluation], failed: dict[str, str],
-    profiles: dict[str, Profile],
+    which: str, team_name: str, ids: list[str], evs: dict[str, Evaluation], failed: dict[str, str],
+    profiles: dict[str, Profile], primary: Profile,
 ) -> list[str]:
     """Write results/<which>/results.json; print and return validation problems (the file is written anyway)."""
-    ids = [r.conversation_id for r in records]
-    doc = submission.build(team_name.strip(), ids, evs, failed, profiles)
+    doc = submission.build(team_name.strip(), ids, evs, failed, profiles, primary)
     path = RESULTS / which / 'results.json'
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

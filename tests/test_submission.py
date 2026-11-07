@@ -31,7 +31,7 @@ def evaluation(cid: str, verdicts: dict[str, str], profile: str = 'h200-gemma') 
 
 
 def test_build_maps_values_turns_and_errors():
-    doc = submission.build('Team', ['p1', 'p2'], {'p1': evaluation('p1', B)}, {'p2': 'timeout'}, PROFILES)
+    doc = submission.build('Team', ['p1', 'p2'], {'p1': evaluation('p1', B)}, {'p2': 'timeout'}, PROFILES, PROFILES['h200-gemma'])
     ok, err = doc['results']
     values = {c['criterion_id']: c['value'] for c in ok['criteria']}
     assert values == {'contact': True, 'discovery': False, 'identification': None, 'consultation': 15,
@@ -46,12 +46,20 @@ def test_build_maps_values_turns_and_errors():
 
 def test_fallback_dialog_makes_model_hybrid():
     evs = {'p1': evaluation('p1', B), 'p2': evaluation('p2', B, 'aigw-sonnet')}
-    doc = submission.build('Team', ['p1', 'p2'], evs, {}, PROFILES)
+    doc = submission.build('Team', ['p1', 'p2'], evs, {}, PROFILES, PROFILES['h200-gemma'])
     assert doc['model'] == {'mode': 'hybrid', 'name': 'anthropic/claude-sonnet-5-5, gemma-4:31b'}
 
 
+def test_all_failed_still_valid_and_names_requested_model():
+    doc = submission.build('Team', ['p1', 'p2'], {}, {'p1': 'timeout'}, PROFILES, PROFILES['aigw-sonnet'])
+    assert [r['status'] for r in doc['results']] == ['error', 'error']
+    assert doc['results'][1]['error'] == 'Оценка не получена.'
+    assert doc['model'] == {'mode': 'external_api', 'name': 'anthropic/claude-sonnet-5-5'}
+    assert submission.validate(doc, ['p1', 'p2']) == []
+
+
 def test_validate_rejects_appendix_violations():
-    good = submission.build('Team', ['p1'], {'p1': evaluation('p1', B)}, {}, PROFILES)
+    good = submission.build('Team', ['p1'], {'p1': evaluation('p1', B)}, {}, PROFILES, PROFILES['h200-gemma'])
 
     def broken(mutate):
         doc = copy.deepcopy(good)

@@ -89,8 +89,12 @@ def build(
     evaluations: Mapping[str, Evaluation],
     failed: Mapping[str, str],
     profiles: Mapping[str, Profile],
+    primary: Profile,
 ) -> dict[str, Any]:
-    """One entry per id in dataset order; dialogs without an evaluation become `status: error`."""
+    """One entry per id in dataset order; dialogs without an evaluation become `status: error`.
+
+    `model` lists the profiles that actually scored dialogs; `primary` (the requested one) only if none did.
+    """
     results = []
     for cid in conversation_ids:
         ev = evaluations.get(cid)
@@ -98,7 +102,7 @@ def build(
             results.append(result_entry(ev))
         else:
             results.append(error_entry(cid, failed.get(cid) or 'Оценка не получена.'))
-    used = [profiles[ev.profile] for ev in evaluations.values()]
+    used = [profiles[ev.profile] for ev in evaluations.values()] or [primary]
     return {
         'schema_version': SCHEMA_VERSION,
         'team_name': team_name,

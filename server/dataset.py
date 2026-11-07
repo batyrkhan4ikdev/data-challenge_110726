@@ -65,7 +65,10 @@ def _build_record(rec: Any) -> Record:
         raise DatasetError(f'bad record {cid}') from None
 
 
-def normalize_response(payload: dict, group_id: str) -> list[Record]:
+def normalize_response(payload: dict, group_id: str, rejects: dict[str, str] | None = None) -> list[Record]:
+    """Parse the API payload. A malformed record raises `DatasetError`, unless `rejects` is given:
+    then it is recorded there as {conversation_id: reason} and skipped, so one bad record cannot sink a run.
+    """
     if not isinstance(payload, dict) or payload.get('isSuccess') is not True:
         err = payload.get('error') if isinstance(payload, dict) else None
         raise DatasetError(err or 'isSuccess=false')
@@ -73,7 +76,16 @@ def normalize_response(payload: dict, group_id: str) -> list[Record]:
     records = data.get('records') if isinstance(data, dict) else None
     if not isinstance(records, list):
         raise DatasetError(f'bad shape: data.records is not a list (group {group_id})')
-    return [_build_record(r) for r in records]
+    if rejects is None:
+        return [_build_record(r) for r in records]
+    out: list[Record] = []
+    for n, raw in enumerate(records):
+        try:
+            out.append(_build_record(raw))
+        except DatasetError as e:
+            cid = raw.get('conversation_id') if isinstance(raw, dict) else None
+            rejects[cid if isinstance(cid, str) and cid else f'<record {n}>'] = f'Запись не разобрана: {e}'
+    return out
 
 
 def load_fixture(path: Path = Path('tests/fixtures/dev.json')) -> list[Record]:
@@ -88,12 +100,14 @@ def _with_group(url: str, group_id: str) -> str:
 
 
 async def load_dataset(
-    group_id: str, refresh: bool = False, session=None, cache_dir: Path = Path('data/cache')
+    group_id: str, refresh: bool = False, session=None, cache_dir: Path = Path('data/cache'),
+    rejects: dict[str, str] | None = None,
 ) -> list[Record]:
+    """Fetch (or read the cache of) a group. `rejects`: see `normalize_response`."""
     cache = Path(cache_dir) / f'{group_id}.json'
     if cache.exists() and not refresh:
         try:
-            return normalize_response(json.loads(cache.read_text(encoding='utf-8')), group_id)
+            return normalize_response(json.loads(cache.read_text(encoding='utf-8')), group_id, rejects)
         except ValueError as e:
             raise DatasetError(f'bad cache {cache.name}: {type(e).__name__}') from None
     base = os.environ.get('DATASET_URL')
@@ -112,7 +126,7 @@ async def load_dataset(
         payload = resp.json()
     except Exception:
         raise DatasetError(f'{host} returned non-JSON response') from None
-    records = normalize_response(payload, group_id)
+    records = normalize_response(payload, group_id, rejects)
     cache.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=cache.parent, prefix=f'.{group_id}.', suffix='.tmp')
     try:
