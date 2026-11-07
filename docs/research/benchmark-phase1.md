@@ -131,3 +131,10 @@ Criterion columns are matches out of 60. Summaries: gemma in `bench/results/2026
 - **These numbers are in-sample.** The same 65 DEV dialogs shaped the C7 rule and scored it, and the gold is LLM-made. Two of the labelers (Opus, Astra) belong to the same families as our cloud fallbacks. Don't read 0.918 as the expected accuracy on the control set. What carries over is the ranking, and that the C7 rule is general: it fixed 9 dialogs across RU and KZ and broke none.
 - The run-to-run noise is about 1% of verdicts (507/512 above), so differences of 1–2 verdicts per criterion are inside it.
 - c04 and c06 remain the main gap: 8 and 10 misses. Most of them are 2:2 ties in the gold (see the notes column in `labels.consensus.csv`), so they need a human decision rather than another rule.
+
+**Leak check of the C7 rule (20:36).** The C7 note gives four example phrases, and they are taken verbatim from DEV dialogs. For this check I replaced them with paraphrases that occur nowhere in DEV, then re-ran: c07 52/60 (instead of 56), weighted agreement 0.910, MAE 5.02 (`bench/results/20261107-203620/`).
+- So about 4 of the 9 c07 gains came from the model matching the exact DEV phrases (p1-ru-007, p1-ru-009, p1-ru-013, p1-ru-002).
+- The rule on its own is still worth +5 verdicts (47 → 52).
+- **The more honest estimate for unseen chats is therefore ~0.91, not 0.918.**
+- The control run keeps the realistic examples. They are correct applications of the organizers' rule («итог или предложение помощи + прощание»), so they can't hurt.
+- Changing only the notes also moved c06 by 3 verdicts. Any notes edit perturbs every criterion, because the whole notes text goes into each call; treat ±3 verdicts per criterion as noise.
