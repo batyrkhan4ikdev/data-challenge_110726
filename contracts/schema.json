@@ -208,6 +208,36 @@
       "title": "BatchRequest",
       "type": "object"
     },
+    "BreakdownRow": {
+      "properties": {
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "mean_total": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mean Total"
+        }
+      },
+      "required": [
+        "key",
+        "count",
+        "mean_total"
+      ],
+      "title": "BreakdownRow",
+      "type": "object"
+    },
     "Checklist": {
       "properties": {
         "channel_default": {
@@ -448,6 +478,56 @@
         "na_condition"
       ],
       "title": "Criterion",
+      "type": "object"
+    },
+    "CriterionStat": {
+      "properties": {
+        "applicable": {
+          "title": "Applicable",
+          "type": "integer"
+        },
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "mean_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mean Pct"
+        },
+        "na": {
+          "title": "Na",
+          "type": "integer"
+        },
+        "no": {
+          "title": "No",
+          "type": "integer"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "yes": {
+          "title": "Yes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "title",
+        "applicable",
+        "yes",
+        "no",
+        "na",
+        "mean_pct"
+      ],
+      "title": "CriterionStat",
       "type": "object"
     },
     "Decision": {
@@ -757,6 +837,104 @@
         "score"
       ],
       "title": "FinalResult",
+      "type": "object"
+    },
+    "GroupAnalytics": {
+      "properties": {
+        "by_channel": {
+          "items": {
+            "$ref": "#/$defs/BreakdownRow"
+          },
+          "title": "By Channel",
+          "type": "array"
+        },
+        "by_language": {
+          "items": {
+            "$ref": "#/$defs/BreakdownRow"
+          },
+          "title": "By Language",
+          "type": "array"
+        },
+        "criteria": {
+          "items": {
+            "$ref": "#/$defs/CriterionStat"
+          },
+          "title": "Criteria",
+          "type": "array"
+        },
+        "dialogs": {
+          "title": "Dialogs",
+          "type": "integer"
+        },
+        "evaluated": {
+          "title": "Evaluated",
+          "type": "integer"
+        },
+        "gross_error_count": {
+          "title": "Gross Error Count",
+          "type": "integer"
+        },
+        "gross_error_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Gross Error Ids",
+          "type": "array"
+        },
+        "group_id": {
+          "title": "Group Id",
+          "type": "string"
+        },
+        "histogram": {
+          "items": {
+            "$ref": "#/$defs/HistogramBin"
+          },
+          "title": "Histogram",
+          "type": "array"
+        },
+        "mean_total": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mean Total"
+        }
+      },
+      "required": [
+        "group_id",
+        "dialogs",
+        "evaluated",
+        "mean_total",
+        "gross_error_count",
+        "gross_error_ids",
+        "by_channel",
+        "by_language",
+        "criteria",
+        "histogram"
+      ],
+      "title": "GroupAnalytics",
+      "type": "object"
+    },
+    "HistogramBin": {
+      "properties": {
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "count"
+      ],
+      "title": "HistogramBin",
       "type": "object"
     },
     "Item": {

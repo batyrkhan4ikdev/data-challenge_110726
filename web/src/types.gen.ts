@@ -47,6 +47,9 @@ export type GroupId = string;
 export type K = number | null;
 export type Mode = ("single" | "per_criterion") | null;
 export type Profile = string | null;
+export type Count = number;
+export type Key = string;
+export type MeanTotal = number | null;
 export type ChannelDefault = ("agent chat" | "voice call") | null;
 export type Criteria = Criterion[];
 export type Id2 = string;
@@ -72,24 +75,31 @@ export type GrossError = boolean;
 export type Id5 = string;
 export type Total = number | null;
 export type Turns = number;
+export type Applicable = number;
+export type CriterionId3 = string;
+export type MeanPct = number | null;
+export type Na = number;
+export type No = number;
+export type Title2 = string;
+export type Yes = number;
 export type Action1 = "confirm" | "change";
 export type NewVerdict1 = string | null;
 export type Reason1 = string;
-export type CriterionId3 = string;
+export type CriterionId4 = string;
 export type FinalVerdict = string;
 export type OriginalVerdict = string;
 export type Items = FinalItem[];
 export type ApplicableWeight = number;
 export type GrossError1 = boolean;
-export type Applicable = boolean;
-export type CriterionId4 = string;
+export type Applicable1 = boolean;
+export type CriterionId5 = string;
 export type EffectivePoints = number | null;
 export type MaxPoints = number;
 export type Points = number | null;
 export type Verdict1 = string;
 export type Items1 = ScoreItem[];
 export type SectionId1 = string;
-export type Title2 = string;
+export type Title3 = string;
 export type Total1 = number | null;
 export type Sections1 = SectionScore[];
 export type Total2 = number | null;
@@ -109,6 +119,18 @@ export type CompletionTokens = number;
 export type PromptTokens = number;
 export type Seconds = number;
 export type Appeals = Appeal[];
+export type ByChannel = BreakdownRow[];
+export type ByLanguage = BreakdownRow[];
+export type Criteria1 = CriterionStat[];
+export type Dialogs = number;
+export type Evaluated = number;
+export type GrossErrorCount = number;
+export type GrossErrorIds = string[];
+export type GroupId2 = string;
+export type Count1 = number;
+export type Label = string;
+export type Histogram = HistogramBin[];
+export type MeanTotal1 = number | null;
 export type Done = number;
 export type EvaluationIds = string[];
 export type Id7 = string;
@@ -252,6 +274,16 @@ export interface BatchRequest {
 }
 /**
  * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "BreakdownRow".
+ */
+export interface BreakdownRow {
+  count: Count;
+  key: Key;
+  mean_total: MeanTotal;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "Checklist".
  */
 export interface Checklist {
@@ -313,6 +345,20 @@ export interface EvaluationSummary {
 }
 /**
  * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "CriterionStat".
+ */
+export interface CriterionStat {
+  applicable: Applicable;
+  criterion_id: CriterionId3;
+  mean_pct: MeanPct;
+  na: Na;
+  no: No;
+  title: Title2;
+  yes: Yes;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "DecisionCreate".
  */
 export interface DecisionCreate {
@@ -344,7 +390,7 @@ export interface FinalResult {
  * via the `definition` "FinalItem".
  */
 export interface FinalItem {
-  criterion_id: CriterionId3;
+  criterion_id: CriterionId4;
   decision: Decision | null;
   final_verdict: FinalVerdict;
   original_verdict: OriginalVerdict;
@@ -367,8 +413,8 @@ export interface Score {
  * via the `definition` "ScoreItem".
  */
 export interface ScoreItem {
-  applicable: Applicable;
-  criterion_id: CriterionId4;
+  applicable: Applicable1;
+  criterion_id: CriterionId5;
   effective_points: EffectivePoints;
   max_points: MaxPoints;
   points: Points;
@@ -381,7 +427,7 @@ export interface ScoreItem {
  */
 export interface SectionScore {
   section_id: SectionId1;
-  title: Title2;
+  title: Title3;
   total: Total1;
   [k: string]: unknown;
 }
@@ -425,6 +471,32 @@ export interface EvaluationView {
   checklist: Checklist;
   evaluation: Evaluation;
   final: FinalResult;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "GroupAnalytics".
+ */
+export interface GroupAnalytics {
+  by_channel: ByChannel;
+  by_language: ByLanguage;
+  criteria: Criteria1;
+  dialogs: Dialogs;
+  evaluated: Evaluated;
+  gross_error_count: GrossErrorCount;
+  gross_error_ids: GrossErrorIds;
+  group_id: GroupId2;
+  histogram: Histogram;
+  mean_total: MeanTotal1;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "HistogramBin".
+ */
+export interface HistogramBin {
+  count: Count1;
+  label: Label;
   [k: string]: unknown;
 }
 /**

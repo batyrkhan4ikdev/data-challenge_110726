@@ -2,7 +2,10 @@ import { Api } from './api.js';
 import { t } from './i18n.js';
 import { startRouter } from './router.js';
 import type { Ctx, Route, RouteName, View } from './router.js';
+import { navIcon } from './ui/icons.js';
+import type { NavIcon } from './ui/icons.js';
 import { badge, banner, errorDetails, errorMessage, h } from './ui/dom.js';
+import { render as renderAnalytics } from './views/analytics.js';
 import { render as renderChecklistEditor } from './views/checklist-editor.js';
 import { render as renderChecklists } from './views/checklists.js';
 import { render as renderDialogs } from './views/dialogs.js';
@@ -24,24 +27,29 @@ const views: { [K in RouteName]: View } = {
   review: renderReview,
   checklists: renderChecklists,
   checklist: renderChecklistEditor,
+  analytics: renderAnalytics,
   notfound: notFound,
 };
 
-/** К какому пункту верхнего меню относится маршрут. */
-const NAV_OF: { [K in RouteName]: 'dialogs' | 'review' | 'checklists' | null } = {
+type NavKey = 'dialogs' | 'checklists' | 'review' | 'analytics';
+
+/** К какому пункту меню относится маршрут. */
+const NAV_OF: { [K in RouteName]: NavKey | null } = {
   dialogs: 'dialogs',
   transcript: 'dialogs',
   evaluation: 'dialogs',
   review: 'review',
   checklists: 'checklists',
   checklist: 'checklists',
+  analytics: 'analytics',
   notfound: null,
 };
 
-const NAV_ITEMS: ['dialogs' | 'review' | 'checklists', string][] = [
-  ['dialogs', '#/dialogs/DEV'],
-  ['review', '#/review'],
-  ['checklists', '#/checklists'],
+const NAV_ITEMS: [NavKey, string, NavIcon][] = [
+  ['dialogs', '#/dialogs/DEV', 'dialogs'],
+  ['checklists', '#/checklists', 'checklists'],
+  ['review', '#/review', 'appeals'],
+  ['analytics', '#/analytics/DEV', 'analytics'],
 ];
 
 /** Монтирует приложение в `root`. Встраиваемо (например, веб-ресурс Dynamics 365). Возвращает функцию размонтирования. */
@@ -54,15 +62,21 @@ export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
   const nav = h(
     'nav',
     { class: 'cqa-nav', 'aria-label': t.appTitle },
-    NAV_ITEMS.map(([key, href]) => {
-      const a = h('a', { href, class: 'cqa-nav-link' }, t.nav[key]);
+    NAV_ITEMS.map(([key, href, icon]) => {
+      const a = h('a', { href, class: 'cqa-nav-link' }, navIcon(icon), h('span', null, t.nav[key]));
       navLinks.set(key, a);
       return a;
     }),
   );
   const main = h('main', { class: 'cqa-main', id: 'cqa-main' });
   root.replaceChildren(
-    h('header', { class: 'cqa-header' }, h('div', { class: 'cqa-brand' }, t.appTitle), nav, badgeSlot),
+    h(
+      'aside',
+      { class: 'cqa-sidebar' },
+      h('div', { class: 'cqa-brand', title: t.appTitle }, 'CQA'),
+      nav,
+      badgeSlot,
+    ),
     main,
   );
 

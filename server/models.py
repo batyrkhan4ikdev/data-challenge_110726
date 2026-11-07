@@ -234,9 +234,44 @@ class DecisionResult(BaseModel):
     final: FinalResult
 
 
+class BreakdownRow(BaseModel):
+    key: str
+    count: int
+    mean_total: float | None
+
+
+class CriterionStat(BaseModel):
+    criterion_id: str
+    title: str
+    applicable: int
+    yes: int
+    no: int
+    na: int
+    mean_pct: float | None
+
+
+class HistogramBin(BaseModel):
+    label: str
+    count: int
+
+
+class GroupAnalytics(BaseModel):
+    group_id: str
+    dialogs: int
+    evaluated: int
+    mean_total: float | None
+    gross_error_count: int
+    gross_error_ids: list[str]
+    by_channel: list[BreakdownRow]
+    by_language: list[BreakdownRow]
+    criteria: list[CriterionStat]
+    histogram: list[HistogramBin]
+
+
 ALL_MODELS: list[type[BaseModel]] = [
     Turn, Record, Usage, EvaluationSummary, ConversationSummary, ScaleStep, Section, Criterion,
     Checklist, ChecklistSummary, Item, ScoreItem, SectionScore, Score, Evaluation, RawCall,
     Decision, Appeal, FinalItem, FinalResult, EvaluationView, Job, ApiError, BatchRequest,
     AppealCreate, DecisionCreate, AppealQueueItem, DecisionResult,
+    BreakdownRow, CriterionStat, HistogramBin, GroupAnalytics,
 ]

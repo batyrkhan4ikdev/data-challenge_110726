@@ -1,7 +1,8 @@
 from litestar import Controller, get
 from litestar.params import FromPath, FromQuery
 
-from server.models import ConversationSummary, Record
+from server.analytics import group_analytics
+from server.models import ConversationSummary, GroupAnalytics, Record
 from server.routes import Svc
 from server.store import NotFound
 
@@ -26,6 +27,10 @@ class DatasetsController(Controller):
                 )
             )
         return out
+
+    @get('/{group_id:str}/analytics')
+    async def analytics(self, svc: Svc, group_id: FromPath[str]) -> GroupAnalytics:
+        return await group_analytics(svc, group_id)
 
     @get('/{group_id:str}/conversations/{cid:str}')
     async def conversation(self, svc: Svc, group_id: FromPath[str], cid: FromPath[str]) -> Record:

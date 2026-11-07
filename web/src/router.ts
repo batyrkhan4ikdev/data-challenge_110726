@@ -11,7 +11,7 @@ export interface Ctx {
 
 export type View = (root: HTMLElement, ctx: Ctx) => Promise<void>;
 
-export type RouteName = 'dialogs' | 'transcript' | 'evaluation' | 'review' | 'checklists' | 'checklist' | 'notfound';
+export type RouteName = 'dialogs' | 'transcript' | 'evaluation' | 'review' | 'checklists' | 'checklist' | 'analytics' | 'notfound';
 
 export interface Route {
   name: RouteName;
@@ -35,6 +35,8 @@ export function parseHash(hash: string): Route {
       return { name: 'review', params: {} };
     case 'checklists':
       return a ? { name: 'checklist', params: { id: a } } : { name: 'checklists', params: {} };
+    case 'analytics':
+      return { name: 'analytics', params: { group: a || DEFAULT_GROUP } };
     default:
       return { name: 'notfound', params: {} };
   }
@@ -43,6 +45,7 @@ export function parseHash(hash: string): Route {
 export const hrefDialogs = (group: string) => `#/dialogs/${encodeURIComponent(group)}`;
 export const hrefTranscript = (group: string, cid: string) =>
   `#/dialogs/${encodeURIComponent(group)}/${encodeURIComponent(cid)}`;
+export const hrefAnalytics = (group: string) => `#/analytics/${encodeURIComponent(group)}`;
 export const hrefEvaluation = (id: string) => `#/evaluation/${encodeURIComponent(id)}`;
 export const hrefChecklist = (id: string) => `#/checklists/${encodeURIComponent(id)}`;
 

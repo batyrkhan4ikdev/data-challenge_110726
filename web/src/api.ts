@@ -12,6 +12,7 @@ import type {
   DecisionResult,
   EvaluationSummary,
   EvaluationView,
+  GroupAnalytics,
   Job,
   RawCall,
   Record as DialogRecord,
@@ -77,6 +78,9 @@ export class Api {
   conversations(group: string, refresh = false): Promise<ConversationSummary[]> {
     const q = refresh ? '?refresh=true' : '';
     return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations${q}`);
+  }
+  analytics(group: string): Promise<GroupAnalytics> {
+    return this.request('GET', `/datasets/${encodeURIComponent(group)}/analytics`);
   }
   record(group: string, cid: string): Promise<DialogRecord> {
     return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations/${encodeURIComponent(cid)}`);

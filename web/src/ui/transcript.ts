@@ -21,6 +21,13 @@ export interface TranscriptView {
   focusExpected(range: [number, number]): void;
 }
 
+/** Для звонков — время от начала записи (мм:сс), для чатов — исходная метка. */
+function clock(turn: Turn): string {
+  if (turn.offset_s === null || turn.offset_s === undefined) return turn.timestamp;
+  const sec = Math.floor(turn.offset_s);
+  return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+}
+
 function turnEl(turn: Turn, ids: boolean): HTMLElement {
   return h(
     'div',
@@ -28,9 +35,9 @@ function turnEl(turn: Turn, ids: boolean): HTMLElement {
     h(
       'div',
       { class: 'cqa-turn-meta' },
-      h('span', { class: 'cqa-turn-idx' }, `#${turn.idx}`),
+      h('time', { class: 'cqa-turn-time', title: turn.timestamp }, clock(turn)),
       h('span', { class: 'cqa-turn-speaker' }, t.speaker[turn.speaker] ?? turn.speaker),
-      h('time', { class: 'cqa-turn-time' }, turn.timestamp),
+      h('span', { class: 'cqa-turn-idx', title: `№ ${turn.idx + 1}` }, `#${turn.idx + 1}`),
     ),
     h('div', { class: 'cqa-turn-text' }, turn.text),
   );

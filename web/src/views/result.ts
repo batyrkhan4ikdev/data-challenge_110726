@@ -1,11 +1,13 @@
 import { t } from '../i18n.js';
 import { hrefDialogs, hrefEvaluation } from '../router.js';
 import type { Ctx } from '../router.js';
-import type { BatchRequest, EvaluationSummary, EvaluationView, RawCall, Record as DialogRecord } from '../types.gen.js';
+import type { BatchRequest, Criterion, EvaluationSummary, EvaluationView, RawCall, Record as DialogRecord } from '../types.gen.js';
 import { openAppealModal } from '../ui/appeal-modal.js';
 import { renderCriteriaTable } from '../ui/criteria-table.js';
-import { badge, banner, errorDetails, errorMessage, fmt, fmtDate, h, heading } from '../ui/dom.js';
+import { badge, banner, errorDetails, errorMessage, fmt, fmtDate, h, heading, rangeOf } from '../ui/dom.js';
+import { checkIcon, crossIcon, scoreRing } from '../ui/icons.js';
 import { renderTranscript } from '../ui/transcript.js';
+import type { TranscriptView } from '../ui/transcript.js';
 
 /** Красный бейдж «Грубая ошибка»: по клику прокручивает к критерию с грубой ошибкой (пояснение и подтверждения). */
 function grossBadge(view: EvaluationView): HTMLElement {
@@ -15,6 +17,8 @@ function grossBadge(view: EvaluationView): HTMLElement {
   const btn = h('button', { type: 'button', class: 'cqa-badge cqa-badge--bad cqa-badge-btn', title: t.result.grossJump }, t.result.grossBadge);
   btn.addEventListener('click', () => {
     const scope = btn.closest('.cqa-view');
+    const details = scope?.querySelector<HTMLDetailsElement>('.cqa-details');
+    if (details) details.open = true;
     const rowEls = ids.map((id) => scope?.querySelector<HTMLElement>(`tr[data-criterion="${CSS.escape(id)}"]`) ?? null);
     rowEls.find((r) => r !== null)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     for (const r of rowEls) {
@@ -89,58 +93,151 @@ async function runAndOpen(
   }
 }
 
-function header(view: EvaluationView, ctx: Ctx, record: DialogRecord | null, rawToggle: HTMLElement): HTMLElement {
-  const { evaluation: ev, final, checklist } = view;
-  const original = ev.score.total;
-  const finalTotal = final.score.total;
-  const totalText =
-    finalTotal === null && original === null
-      ? t.result.notCalculated
-      : original !== finalTotal
-        ? `${fmt(original)} → ${fmt(finalTotal)}`
-        : fmt(finalTotal);
+const band = (total: number | null): 'good' | 'warn' | 'bad' | 'none' =>
+  total === null ? 'none' : total >= 85 ? 'good' : total >= 70 ? 'warn' : 'bad';
 
-  const status = h('div', { class: 'cqa-status' });
-  const reBtn = h(
-    'button',
-    { type: 'button', class: 'cqa-btn cqa-btn--primary', id: 'cqa-reevaluate' },
-    t.result.reevaluate,
-  );
+function durationOf(record: DialogRecord | null): string | null {
+  if (!record || record.channel !== 'voice call') return null;
+  const last = [...record.transcript].reverse().find((x) => x.offset_s !== null && x.offset_s !== undefined);
+  if (!last || last.offset_s === null || last.offset_s === undefined) return null;
+  const sec = Math.round(last.offset_s);
+  return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+}
+
+function pageHeader(view: EvaluationView, ctx: Ctx, record: DialogRecord | null, status: HTMLElement): HTMLElement {
+  const ev = view.evaluation;
+  const reBtn = h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary', id: 'cqa-reevaluate' }, t.result.reevaluate);
   reBtn.addEventListener('click', () =>
     void runAndOpen(
       ctx,
-      {
-        group_id: ev.group_id,
-        conversation_ids: [ev.conversation_id],
-        checklist_id: ev.checklist_id,
-        profile: ev.profile,
-        mode: ev.mode,
-        k: ev.k,
-      },
+      { group_id: ev.group_id, conversation_ids: [ev.conversation_id], checklist_id: ev.checklist_id, profile: ev.profile, mode: ev.mode, k: ev.k },
       status,
       (busy) => (reBtn.disabled = busy),
     ),
   );
-
+  const subtitle = [ev.conversation_id, record ? (t.channel[record.channel] ?? record.channel) : null, record?.language, durationOf(record)]
+    .filter((x): x is string => !!x)
+    .join(' · ');
   return h(
     'div',
-    { class: 'cqa-card cqa-result-header' },
+    { class: 'cqa-page-head' },
     h(
       'div',
-      { class: 'cqa-result-title' },
-      h('a', { class: 'cqa-link', href: hrefDialogs(ev.group_id), 'aria-label': t.nav.dialogs }, `← ${ev.group_id}`),
-      h('h1', null, ev.conversation_id),
-      record ? badge(t.channel[record.channel] ?? record.channel, 'neutral') : null,
-      record ? badge(record.language, 'neutral') : null,
-      final.score.gross_error ? grossBadge(view) : null,
+      null,
+      h('a', { class: 'cqa-link cqa-back', href: hrefDialogs(ev.group_id), 'aria-label': t.nav.dialogs }, `← ${ev.group_id}`),
+      h('h1', { class: 'cqa-page-title' }, t.result.title),
+      h('p', { class: 'cqa-page-subtitle' }, subtitle),
     ),
+    h('div', { class: 'cqa-page-actions' }, reBtn, status),
+  );
+}
+
+interface ScoreCardOptions {
+  view: EvaluationView;
+  onJump: (c: Criterion) => void;
+  onAppeal: (c: Criterion) => void;
+}
+
+function scoreCard(opts: ScoreCardOptions): HTMLElement {
+  const { view } = opts;
+  const { evaluation: ev, final, checklist, appeals } = view;
+  const original = ev.score.total;
+  const total = final.score.total;
+  const tone = band(total);
+  const items = new Map(ev.items.map((i) => [i.criterion_id, i]));
+  const finals = new Map(final.items.map((f) => [f.criterion_id, f]));
+  const scores = new Map(final.score.items.map((s) => [s.criterion_id, s]));
+
+  const rows: HTMLElement[] = [];
+  const lost: { c: Criterion; text: string }[] = [];
+  for (const c of checklist.criteria) {
+    const sc = scores.get(c.id);
+    const it = items.get(c.id);
+    const fin = finals.get(c.id);
+    let icon: HTMLElement;
+    let pts: HTMLElement | string;
+    let state: 'ok' | 'part' | 'fail' | 'na';
+    if (c.kind === 'gross_error') {
+      const found = (fin?.final_verdict ?? it?.verdict) === 'yes';
+      state = found ? 'fail' : 'ok';
+      pts = found ? t.result.grossBadge : t.common.none;
+      if (found) lost.push({ c, text: it?.explanation ?? '' });
+    } else if (!sc || !sc.applicable || sc.points === null) {
+      state = 'na';
+      pts = t.common.na;
+    } else {
+      const full = sc.points >= sc.max_points;
+      state = full ? 'ok' : sc.points > 0 ? 'part' : 'fail';
+      pts = h('span', null, h('strong', { class: `cqa-pts cqa-pts--${state}` }, fmt(sc.points)), ` / ${fmt(sc.max_points)}`);
+      if (!full) lost.push({ c, text: it?.explanation ?? '' });
+    }
+    icon = h('span', { class: `cqa-mark cqa-mark--${state}` }, state === 'ok' ? checkIcon() : state === 'na' ? 'N/A' : crossIcon());
+    rows.push(h('li', { class: 'cqa-score-row', 'data-criterion': c.id }, icon, h('span', { class: 'cqa-score-title', title: c.title }, c.title), h('span', { class: 'cqa-score-pts' }, pts)));
+  }
+
+  const why = lost.length
+    ? lost.map(({ c, text }) => {
+        const it = items.get(c.id);
+        const hasFragment = !!it && (it.evidence_idx.length > 0 || (it.verdict === 'no' && rangeOf(it.expected_range) !== null));
+        const hasOpen = appeals.some((a) => a.criterion_id === c.id && a.status === 'open');
+        return h(
+          'li',
+          { class: 'cqa-why-row', 'data-criterion': c.id },
+          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl', title: text }, text)),
+          h(
+            'div',
+            { class: 'cqa-why-actions' },
+            h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary cqa-btn--small', disabled: !hasFragment, title: hasFragment ? undefined : t.result.noFragment, onclick: () => opts.onJump(c) }, t.result.jumpToFragment),
+            hasOpen
+              ? badge(t.result.appealOpen, 'warn')
+              : h('button', { type: 'button', class: 'cqa-btn cqa-btn--outline cqa-btn--small', onclick: () => opts.onAppeal(c) }, t.result.appealButton),
+          ),
+        );
+      })
+    : [h('li', { class: 'cqa-muted' }, t.result.whyNone)];
+
+  return h(
+    'section',
+    { class: 'cqa-card cqa-score-card', 'aria-label': t.result.scoreTitle },
+    h('h2', { class: 'cqa-card-title' }, t.result.scoreTitle),
     h(
       'div',
-      { class: 'cqa-result-total' },
-      h('span', { class: 'cqa-muted' }, `${t.result.total}: `),
-      h('strong', { class: finalTotal === null ? 'cqa-total cqa-total--none' : 'cqa-total', title: original !== finalTotal ? `${t.review.totalChange(fmt(original), fmt(finalTotal))}` : undefined }, totalText),
-      finalTotal === null && original === null ? null : h('span', { class: 'cqa-muted' }, ' / 100'),
+      { class: 'cqa-score-top' },
+      h(
+        'div',
+        { class: `cqa-ring cqa-ring--${tone}` },
+        total === null ? h('span', { class: 'cqa-total cqa-total--none' }, t.result.notCalculated) : scoreRing(total, fmt(total), '/ 100'),
+        original !== total ? h('div', { class: 'cqa-muted cqa-ring-was', title: t.review.totalChange(fmt(original), fmt(total)) }, `${t.result.originalTotal}: ${fmt(original)}`) : null,
+        final.score.gross_error ? grossBadge(view) : null,
+      ),
+      h('ul', { class: 'cqa-score-rows' }, rows),
     ),
+    h('h3', { class: 'cqa-why-title' }, t.result.whyTitle),
+    h('ul', { class: 'cqa-why' }, why),
+  );
+}
+
+function detailsBlock(view: EvaluationView, record: DialogRecord | null, history: EvaluationSummary[], rawToggle: HTMLElement, rawBody: HTMLElement, table: HTMLElement): HTMLElement {
+  const { evaluation: ev, final, checklist } = view;
+  const historyEl = h(
+    'div',
+    { class: 'cqa-history' },
+    h('span', { class: 'cqa-muted' }, `${t.result.history}: `),
+    history.map((s) =>
+      h(
+        'a',
+        { class: `cqa-chip cqa-history-item${s.id === ev.id ? ' is-current' : ''}`, href: hrefEvaluation(s.id), 'aria-current': s.id === ev.id ? 'true' : null },
+        `${s.checklist_id} v${s.checklist_version} · `,
+        summaryTotal(s),
+        s.gross_error ? ' ⚠' : '',
+        h('span', { class: 'cqa-muted' }, ` · ${fmtDate(s.created_at)}`),
+      ),
+    ),
+  );
+  return h(
+    'details',
+    { class: 'cqa-card cqa-details', open: false },
+    h('summary', null, t.result.details),
     h(
       'div',
       { class: 'cqa-sections-totals' },
@@ -161,8 +258,13 @@ function header(view: EvaluationView, ctx: Ctx, record: DialogRecord | null, raw
         h('dd', null, `${ev.usage.prompt_tokens + ev.usage.completion_tokens} ${t.result.tokens} · ${ev.usage.calls} ${t.result.calls} · ${fmt(ev.usage.seconds)} ${t.result.seconds}`),
       ),
       h('div', null, h('dt', null, t.result.created), h('dd', null, fmtDate(ev.created_at))),
+      record ? h('div', null, h('dt', null, t.dialogs.channel), h('dd', null, `${t.channel[record.channel] ?? record.channel} · ${record.language}`)) : null,
     ),
-    h('div', { class: 'cqa-result-actions' }, reBtn, rawToggle, status),
+    historyEl,
+    h('div', { class: 'cqa-result-actions' }, rawToggle),
+    rawBody,
+    h('h3', null, t.result.detailsTable),
+    h('div', { class: 'cqa-table-wrap' }, table),
   );
 }
 
@@ -181,26 +283,36 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   if (ctx.signal.aborted) return;
   const record = recordResult.ok ? recordResult.record : null;
 
-  const transcript = record ? renderTranscript(record, { ids: true }) : null;
+  const transcript: TranscriptView | null = record ? renderTranscript(record, { ids: true }) : null;
   const left = h(
-    'aside',
-    { class: 'cqa-pane cqa-pane--transcript', 'aria-label': t.result.transcript },
+    'section',
+    { class: 'cqa-card cqa-pane--transcript', 'aria-label': t.result.transcript },
+    h('h2', { class: 'cqa-card-title' }, t.result.transcript),
     transcript
       ? transcript.el
       : banner(t.result.transcriptMissing, recordResult.ok ? null : [errorMessage(recordResult.error)]),
   );
 
+  const appeal = (criterion: Criterion) =>
+    openAppealModal(root, {
+      api: ctx.api,
+      evaluationId: ev.id,
+      criterion,
+      onSent: () => void render(root, ctx),
+    });
+  const jump = (c: Criterion) => {
+    const it = ev.items.find((i) => i.criterion_id === c.id);
+    if (!it) return;
+    const first = it.evidence_idx[0];
+    const range = it.verdict === 'no' ? rangeOf(it.expected_range) : null;
+    if (first !== undefined) transcript?.focusEvidence(first);
+    else if (range) transcript?.focusExpected(range);
+  };
   const table = renderCriteriaTable({
     view,
     onEvidence: (idx) => transcript?.focusEvidence(idx),
     onExpected: (range) => transcript?.focusExpected(range),
-    onAppeal: (criterion) =>
-      openAppealModal(root, {
-        api: ctx.api,
-        evaluationId: ev.id,
-        criterion,
-        onSent: () => void render(root, ctx),
-      }),
+    onAppeal: appeal,
   });
 
   // Панель «Вызовы модели»: загружается при первом открытии.
@@ -223,35 +335,28 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     }
   });
 
-  const historyEl = h(
-    'div',
-    { class: 'cqa-history' },
-    h('span', { class: 'cqa-muted' }, `${t.result.history}: `),
-    history.map((s) =>
-      h(
-        'a',
-        { class: `cqa-chip cqa-history-item${s.id === ev.id ? ' is-current' : ''}`, href: hrefEvaluation(s.id), 'aria-current': s.id === ev.id ? 'true' : null },
-        `${s.checklist_id} v${s.checklist_version} · `,
-        summaryTotal(s),
-        s.gross_error ? ' ⚠' : '',
-        h('span', { class: 'cqa-muted' }, ` · ${fmtDate(s.created_at)}`),
-      ),
-    ),
-  );
-
+  const status = h('div', { class: 'cqa-status' });
   root.replaceChildren(
-    header(view, ctx, record, rawToggle),
-    rawBody,
-    historyEl,
-    h('div', { class: 'cqa-split' }, left, h('div', { class: 'cqa-pane cqa-pane--criteria' }, table)),
+    pageHeader(view, ctx, record, status),
+    h('div', { class: 'cqa-split' }, left, scoreCard({ view, onJump: jump, onAppeal: appeal })),
+    detailsBlock(view, record, history, rawToggle, rawBody, table),
   );
 }
 
-/** Диалог без оценок: только транскрипт и кнопка «Оценить». */
+/** Диалог без оценок: только транскрипт и кнопка «Оценить». Оценённый диалог открывает последнюю оценку. */
 export async function renderTranscriptOnly(root: HTMLElement, ctx: Ctx): Promise<void> {
   const { group, cid } = ctx.params;
-  const record = await ctx.api.record(group, cid);
+  const [record, evaluations] = await Promise.all([ctx.api.record(group, cid), ctx.api.evaluationsFor(cid)]);
   if (ctx.signal.aborted) return;
+  const latest = evaluations.reduce<EvaluationSummary | null>(
+    (best, e) => (best === null || e.created_at > best.created_at ? e : best),
+    null,
+  );
+  if (latest) {
+    // replace, not push: «Назад» must not bounce back into this redirect.
+    location.replace(hrefEvaluation(latest.id));
+    return;
+  }
   const transcript = renderTranscript(record, { ids: true });
   const status = h('div', { class: 'cqa-status' });
   const btn = h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary' }, t.dialogs.evaluateOne);

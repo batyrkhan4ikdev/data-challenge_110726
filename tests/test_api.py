@@ -306,3 +306,44 @@ async def test_dataset_failure_502(tmp_path: Path) -> None:
         r = await c.get('/api/datasets/CTRL/conversations')
     assert r.status_code == 502
     assert 'HTTP 502' in r.json()['error']
+
+
+async def test_group_analytics(tmp_path: Path):
+    from datetime import UTC, datetime
+
+    from server.models import Checklist, Evaluation, Item, Usage
+    from server.scoring import compute_score
+    from server.store import Store
+
+    chat = Checklist.model_validate_json((DEFAULTS / 'chat.default.json').read_text(encoding='utf-8'))
+    a = {'c01': 'yes', 'c02': 'yes', 'c03': 'yes', 'c04': '20', 'c05': 'yes', 'c06': '10', 'c07': 'yes', 'c08': 'no'}
+    b = {'c01': 'yes', 'c02': 'no', 'c03': 'na', 'c04': '15', 'c05': 'yes', 'c06': '7', 'c07': 'yes', 'c08': 'no'}
+    c = {**b, 'c08': 'yes'}
+    store = Store(tmp_path)
+    for n, (cid, verdicts) in enumerate(zip(CHATS[:3], [a, b, c])):
+        await store.save_evaluation(
+            Evaluation(
+                id=f'e{n}', conversation_id=cid, group_id='DEV', checklist_id=chat.id,
+                checklist_version=chat.version, profile='t', model='m', mode='single', k=1,
+                created_at=datetime(2026, 11, 7, tzinfo=UTC),
+                items=[Item(criterion_id=k, verdict=v, explanation='', evidence_idx=[]) for k, v in verdicts.items()],
+                score=compute_score(chat, verdicts),
+                usage=Usage(prompt_tokens=0, completion_tokens=0, calls=1, seconds=0.0),
+            ),
+            [],
+        )
+    async with AsyncTestClient(create_app(tmp_path, fixture_loader, DEFAULTS)) as client:
+        r = await client.get('/api/datasets/DEV/analytics')
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d['dialogs'] == len(RECORDS) and d['evaluated'] == 3
+    assert d['mean_total'] == 79.59  # (100 + 69.38 + 69.38) / 3
+    assert d['gross_error_count'] == 1 and d['gross_error_ids'] == [CHATS[2]]
+    assert sum(x['count'] for x in d['histogram']) == 3
+    assert {x['label']: x['count'] for x in d['histogram']}['85–100'] == 1
+    assert sum(x['count'] for x in d['by_channel']) == 3
+    c02 = next(x for x in d['criteria'] if x['criterion_id'] == 'c02')
+    assert (c02['yes'], c02['no'], c02['na'], c02['applicable'], c02['mean_pct']) == (1, 2, 0, 3, 33.33)
+    c03 = next(x for x in d['criteria'] if x['criterion_id'] == 'c03')
+    assert (c03['na'], c03['applicable']) == (2, 1)
+    assert all(x['criterion_id'] != 'c08' for x in d['criteria'])
