@@ -79,4 +79,6 @@ The gold labels are `bench/gold/labels.consensus.csv` (e79aaab, Batyrkhantzy111)
   - lenient: gemma single, kz;
   - strict: Sonnet, Luna, gptoss, and glimmer per_criterion.
 - **Gross errors.** All 6 single-mode profiles flag the gross error in p1-en-013 (turn [11], «I charge for private advice»).
+- **Caveat: this gold is LLM-derived.** Opus 5.5 and GPT-6 Astra produced it; only p1-ru-007 has a manual label, and it matched the consensus on all 8 criteria. LLM-made gold can favour LLM judges, especially Sonnet and Luna from the same families. Since 17:25, human rows in `labels.<login>.csv` override `labels.consensus.csv`, and the final choice (B6) is made on human labels.
+- **Control-run failover:** `scripts/run_batch.py` re-runs any dialog that failed on the primary profile with `FALLBACK_PROFILE=aigw-sonnet`, and records the profile per dialog in `out/<group>.results.*`.
 - **Interim default for the control run:** `LLM_PROFILE=h200-gemma`, `EVAL_MODE=per_criterion`, `EVAL_K=1`. It runs at about 1 min per dialog, so 10 control dialogs take about 3 min at concurrency 4. With n=5 this is provisional; re-run on the full gold set (B6) when the 24 labeled dialogs are filled.
