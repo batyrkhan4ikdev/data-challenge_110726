@@ -183,3 +183,17 @@ All models ran with thinking off. GLM-5.3 ignores `enable_thinking=false` (4.9k 
 | DeepSeek-V4-Pro (reasoning off) | 50 | 360/400 (0.900) | **371/400 (0.927)** |
 
 None of the frontier models beats the self-hosted gemma on our task; the gap is 1–2 pp in gemma's favour. These models are from families independent of the gold labelers, which removes the worry that the gold simply favours gemma's family.
+
+## Round 4: human arbitration (Batyrkhantzy111, cfefd8e, 21:27)
+
+There are now **20 human rows** in `bench/gold/labels.Batyrkhantzy111.arbitration.csv`: the 12 disputed chat verdicts plus a manual labelling of p1-ru-007. They override the consensus. Two of the human decisions change general rules:
+- **C7:** a recap counts only if the client has no open question left. p1-ru-007 «Путь к обновлению я указал» and p1-ru-009 «Передам вопрос на проверку» are «Нет», because the client's last question stayed unanswered. Both phrases were examples in our earlier C7 note, which taught the model the wrong thing.
+- **C4:** an account restriction confirmed without a reason or a deadline, then forwarded for checking, scores 5. The same scenario appears in RU, EN and KZ.
+
+| notes | weighted agreement (60 chats) | human rows | c04 | c07 | MAE |
+|---|---|---|---|---|---|
+| C3 + C7 (old examples) + C8, 4 runs | 0.927–0.930 | 11–12 / 20 | 52 | 55 | 4.9–5.0 |
+| + human C7 rule («open question → Нет») + C4 = 5 rule | 0.936 | 16 / 20 | 55 | 56 | 4.84 |
+| + courtesy is not a recap («Рада, что получилось» → Нет) | **0.931** | **16 / 20** | 54 | **57** | **4.53** |
+
+The last row is the control setting. Its examples are paraphrases that occur nowhere in DEV. The 0.936 → 0.931 difference is c06 noise: it moves ±2 verdicts on every notes edit.
