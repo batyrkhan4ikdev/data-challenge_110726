@@ -102,8 +102,10 @@ extra = { response_format = "verbose_json" }
 extra_form = { diarize = true, num_speakers = 2 }
 
 # The same WhisperX model with Kazakh forced instead of auto-detect, for Kazakh or code-switched audio.
-# Probed 2026-11-08 on the hub: `language=kk` is accepted (HTTP 200, `language: "kk"` in the response), while
-# omitting it answers `language: "auto"`. Untested on real Kazakh audio: we hold none (all DEV calls are Russian).
+# Measured 2026-11-08 on a 180 s Kazakh call (record `1234`, which the dataset labels `language: RU`):
+# forced kk -> 337 words, 71% of them carrying Kazakh-only letters (әғқңөұүһі), 35 s;
+# auto-detect -> 236 words, 32% Kazakh-only, 81 s. Auto-detect drops about a third of the words,
+# so pick this provider whenever the audio may be Kazakh, regardless of the record's language label.
 [providers.h200-whisperx-kk]
 kind = "openai_audio"
 base_url_env = "H200_ASR_BASE_URL"
