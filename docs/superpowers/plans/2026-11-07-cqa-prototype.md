@@ -195,22 +195,29 @@ provider = "fake"
 provider = "openai"
 base_url_env = "H200_GEMMA_BASE_URL"   # https://hk-gemma.sek.su/v1
 api_key_env = "H200_API_KEY"
-model = "gemma-4:31b"                  # dense 31B, ctx 65536
+model = "gemma-4:31b"                  # dense 31B, ctx 65536; KV pool 190k tokens → ≤16 concurrent on long transcripts
 supports_n = true                      # send n=k in one request; else k parallel requests
 structured = "json_schema"             # response_format type
-max_concurrency = 48
-extra_body = {}                        # merged into every request, e.g. { chat_template_kwargs = { enable_thinking = true } }
-cost = { kind = "gpu", usd_per_hour = 0.0, concurrency = 48 }   # or { kind = "tokens", usd_per_mtok_in = 0.0, usd_per_mtok_out = 0.0 }
+max_concurrency = 16
+max_tokens = 4096
+extra_body = {}                        # merged into every request
+cost = { kind = "gpu", usd_per_hour = 0.0, concurrency = 16 }   # or { kind = "tokens", usd_per_mtok_in = 0.0, usd_per_mtok_out = 0.0 }
 
-[profiles.h200-gptoss]                 # H200_GPTOSS_BASE_URL, model "gpt-oss-120b", MoE 120B, ctx 131072
-[profiles.h200-kz]                     # H200_KZ_BASE_URL, model "issai/Qwen3.5-35B-A3B-Kazakh", ctx 65536
+[profiles.h200-gptoss]                 # base H200_GPTOSS_BASE_URL, model "gpt-oss:120b", 120B MoE, ctx 131072, max_concurrency 48
+extra_body = { reasoning_effort = "low" }   # reasoning model: its reasoning tokens count toward max_tokens
+
+[profiles.h200-kz]                     # base H200_KZ_BASE_URL, model "qwen3.5-35b-a3b-kazakh", 35B MoE (3B active), ctx 65536, max_concurrency 48
+extra_body = {}                        # do NOT send reasoning_effort: it turns thinking on and can spend all of max_tokens with content=null
 ```
 
-H200 endpoints are served by the GPU agent's own Cloudflare named tunnel `hackathon-h200`. One key for all three lives in `.env`. Only `/v1/*` and `/health` are routed.
+H200 endpoints are served by the GPU agent's own Cloudflare named tunnel `hackathon-h200`. One key for all three lives in `.env`. Only `/v1/*` and `/health` are routed. The namespace is deleted after 12:00 Nov 8.
 
 Client requirements:
-- The client sends `User-Agent: Mozilla/5.0 (cqa)`, because Cloudflare blocks default library user agents.
-- Strict `json_schema` was seen getting stuck in a whitespace loop on gemma until the server disabled any-whitespace in xgrammar. The client therefore treats `finish_reason=="length"` as an invalid reply, which is retried like any other invalid output.
+- **User-Agent:** the client sends `User-Agent: Mozilla/5.0 (cqa)`, because Cloudflare blocks default library user agents.
+- **Invalid replies:** the client treats `finish_reason=="length"` or `content is None` as an invalid reply, and retries it like any other invalid output. Server-side, any-whitespace is now disabled on all three endpoints; before that, strict `json_schema` got stuck in a whitespace loop.
+- **Thinking:** gemma and kz have thinking off by default. A thinking variant is a separate profile that sets `extra_body = { chat_template_kwargs = { enable_thinking = true } }`, and the benchmark compares it.
+- **Warmup:** the first request to hk-kz takes about 30 s, so the bench runner sends one warmup request per profile before timing.
+- **Probe** (13:59, KZ greeting case, strict schema, temperature 0): gemma and gpt-oss (low) gave the valid `yes` with evidence `[1]`; kz without `reasoning_effort` gave a valid `yes`.
 
 Env `LLM_PROFILE` selects the default profile, and `EVAL_MODE` / `EVAL_K` select the default mode and k.
 
