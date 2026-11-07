@@ -184,3 +184,16 @@ Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we alrea
 → Shortlisted teams run a couple of transcripts live in front of the jury. The control path has to work on demand: `run_batch.py` and «Оценить» in the UI on gemma, which stays up until 17:00. `docs/demo.md` already covers live evaluation (about 6 s per chat).
 
 **#3352** 00:30, unanswered: whether `contact: null` is allowed for calls whose recording starts after the greeting. The question is the same as #3060. Our DEV calls all have `contact = true`; the control set is chats only.
+
+### Update 01:25 Nov 8 (through #3399)
+
+**#3354 → #3356/#3358** 00:32–00:34: «какое колво команд отберут на питчинг?» — «топ-50 команд» / «50».
+
+**#3359** 00:34, Aaron Sain, in reply to Aryn's #3355 (private repo until morning?): «Репозиторий должен быть открытым после финального коммита, к моменту стоп-кода… До этого держать его открытым или закрытым — на ваше усмотрение.»
+→ Our repo is public, and a history scan of all branches finds no team keys (H200, aigw, OpenRouter, FreedomSpeech). No new repo is needed.
+
+**#3352 → #3394/#3397** 00:49–00:53, Nikolay Borovinskiy: «DEV-звонки даны больше для UI, а не для сравнения результатов. В контрольном наборе звонков не будет. Поэтому здесь на ваше усмотрение: можете использовать транскрипт, запись или придумать собственный подход. На презентации покажите, почему ваше решение в этом вопросе важно для бизнеса… Продуманный подход с хорошим обоснованием может дать небольшой плюс, а нерациональное решение — небольшой минус.»
+→ The call transcript sources, the ASR benchmark and FreedomSpeech by default are exactly that kind of «продуманный подход». The pitch has to give its business reason: the organizer call transcripts are unusable for QA, so better ASR means correct scores on calls.
+
+**#3370 → #3396/#3398** 00:53–00:54, Nikolay Borovinskiy: «Презентацию необязательно загружать в Git — её можно корректировать и после стоп-кода. Это касается только презентации, код решения после стоп-кода не меняем. Как уже говорил, достаточно пары слайдов. Лучшая презентация — живой продукт: покажите весь цикл работы вашего решения, от настройки чек-листа и получения диалогов до оценки, просмотра результатов, апелляции и ручной переоценки. … (макс 8-10 мин с вопросами)»
+→ The deck shrinks to a few slides, and the demo follows their cycle in that order (`docs/demo.md`, `docs/pitch.md`). The slides can still change after stop-code; the code can't.
