@@ -3,7 +3,14 @@ from litestar.exceptions import HTTPException
 from litestar.params import FromPath, JSONBody
 
 from server.jobs import resolve_settings
-from server.models import BatchRequest, CustomTranscriptRequest, Record, TranscribeRequest, TranscriptSourceInfo
+from server.models import (
+    AsrProviderInfo,
+    BatchRequest,
+    CustomTranscriptRequest,
+    Record,
+    TranscribeRequest,
+    TranscriptSourceInfo,
+)
 from server.routes import Svc
 from server.transcripts import CUSTOM, parse_custom_text
 
@@ -18,6 +25,26 @@ def _unconfigured(message: str) -> bool:
 
 class TranscriptsController(Controller):
     path = '/'
+
+    @get('/asr/providers')
+    async def asr_providers(self, svc: Svc) -> list[AsrProviderInfo]:
+        """Providers offered in the call card, in `config/asr.toml` order; an unconfigured one says what env it needs."""
+        try:
+            from server.asr.providers import load_asr_providers
+        except ImportError:
+            return []
+        quality = svc.transcripts.quality()
+        out = []
+        for p in load_asr_providers().values():
+            if not p.enabled:
+                continue
+            missing = p.missing_env()
+            out.append(AsrProviderInfo(
+                id=p.name, label=p.label, hosting=p.hosting, available=not missing,
+                note=f'не настроен: задайте {", ".join(missing)}' if missing else None,
+                quality=quality.get(p.name),
+            ))
+        return out
 
     @get('/conversations/{cid:str}/transcripts')
     async def sources(self, svc: Svc, cid: FromPath[str]) -> list[TranscriptSourceInfo]:

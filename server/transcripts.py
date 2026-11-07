@@ -131,6 +131,10 @@ class TranscriptStore:
         self._seeds = seeds
         return seeds
 
+    def quality(self) -> dict[str, AsrQuality]:
+        """Benchmark rows by provider name (empty if `data/asr/quality.json` is missing or unreadable)."""
+        return self._quality()
+
     def _quality(self) -> dict[str, AsrQuality]:
         text = _read_json(self.quality_path)
         if not text:

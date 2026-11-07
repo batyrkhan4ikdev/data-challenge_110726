@@ -184,6 +184,28 @@ async def test_unknown_source_fails_per_dialog(client: AsyncTestClient) -> None:
     assert job['evaluation_ids'] == [] and 'nope' in job['failed'][CALL]
 
 
+async def test_asr_providers_list_marks_unconfigured(client: AsyncTestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('CQA_TEST_ASR_URL', 'https://asr.example')
+    monkeypatch.delenv('CQA_TEST_ASR_MISSING', raising=False)
+    real = {
+        'ok': providers.AsrProvider(name='ok', kind='openai_audio', base_url_env='CQA_TEST_ASR_URL', model='m',
+                                    label='Готовый', hosting='local'),
+        'freedomspeech': providers.AsrProvider(name='freedomspeech', kind='freedomspeech', base_url_env='CQA_TEST_ASR_MISSING',
+                                               model='fs', label='FreedomSpeech', hosting='external_api'),
+        'off': providers.AsrProvider(name='off', kind='openai_audio', base_url_env='CQA_TEST_ASR_URL', model='m',
+                                     label='Выключен', hosting='external_api', enabled=False),
+    }
+    monkeypatch.setattr(providers, 'load_asr_providers', lambda *a, **k: real)
+    r = await client.get('/api/asr/providers')
+    assert r.status_code == 200
+    rows = {p['id']: p for p in r.json()}
+    assert list(rows) == ['ok', 'freedomspeech']  # config order; a disabled provider is not offered
+    assert rows['ok']['available'] is True and rows['ok']['note'] is None
+    fs = rows['freedomspeech']
+    assert fs['available'] is False and 'CQA_TEST_ASR_MISSING' in fs['note']
+    assert fs['quality']['manual_score'] == 4.5  # benchmark row from quality.json
+
+
 async def test_transcribe_unconfigured_provider_is_400(client: AsyncTestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     async def fetch(record):
         return b'mp3'

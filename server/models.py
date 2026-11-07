@@ -253,6 +253,17 @@ class AsrQuality(BaseModel):
     notes: str | None = None
 
 
+class AsrProviderInfo(BaseModel):
+    """A speech-to-text provider from `config/asr.toml`, as offered in the call card (`GET /api/asr/providers`)."""
+
+    id: str
+    label: str
+    hosting: Literal['local', 'external_api']
+    available: bool  # its env vars are set; unavailable ones are listed with `note` saying what to configure
+    note: str | None = None
+    quality: AsrQuality | None = None
+
+
 class TranscriptSourceInfo(BaseModel):
     source: str
     label: str
@@ -336,7 +347,7 @@ ALL_MODELS: list[type[BaseModel]] = [
     Turn, Record, MaskedToken, DialogEvent, DialogFacts, Usage, EvaluationSummary, ConversationSummary, ScaleStep, Section, Criterion,
     Checklist, ChecklistSummary, Item, ScoreItem, SectionScore, Score, Evaluation, RawCall,
     Decision, Appeal, FinalItem, FinalResult, EvaluationView, Job, ApiError, BatchRequest,
-    AppealCreate, DecisionCreate, AppealQueueItem, DecisionResult, AsrQuality, TranscriptSourceInfo, TranscribeRequest,
-    CustomTranscriptRequest,
+    AppealCreate, DecisionCreate, AppealQueueItem, DecisionResult, AsrQuality, AsrProviderInfo, TranscriptSourceInfo,
+    TranscribeRequest, CustomTranscriptRequest,
     BreakdownRow, CriterionStat, HistogramBin, GroupAnalytics,
 ]

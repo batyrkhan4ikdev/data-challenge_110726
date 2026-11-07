@@ -135,6 +135,62 @@
       "title": "AppealQueueItem",
       "type": "object"
     },
+    "AsrProviderInfo": {
+      "description": "A speech-to-text provider from `config/asr.toml`, as offered in the call card (`GET /api/asr/providers`).",
+      "properties": {
+        "available": {
+          "title": "Available",
+          "type": "boolean"
+        },
+        "hosting": {
+          "enum": [
+            "local",
+            "external_api"
+          ],
+          "title": "Hosting",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AsrQuality"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "hosting",
+        "available"
+      ],
+      "title": "AsrProviderInfo",
+      "type": "object"
+    },
     "AsrQuality": {
       "description": "One provider's benchmark row from `data/asr/quality.json`; every field may be absent.",
       "properties": {
