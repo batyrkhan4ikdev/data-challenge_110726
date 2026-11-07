@@ -8,6 +8,7 @@ import type {
   Checklist,
   ChecklistSummary,
   ConversationSummary,
+  CustomTranscriptRequest,
   DecisionCreate,
   DecisionResult,
   EvaluationSummary,
@@ -17,6 +18,8 @@ import type {
   DialogFacts,
   RawCall,
   Record as DialogRecord,
+  TranscribeRequest,
+  TranscriptSourceInfo,
 } from './types.gen.js';
 
 /** Ответ GET /api/profiles (не входит в сгенерированные контракты). */
@@ -83,11 +86,24 @@ export class Api {
   analytics(group: string): Promise<GroupAnalytics> {
     return this.request('GET', `/datasets/${encodeURIComponent(group)}/analytics`);
   }
-  record(group: string, cid: string): Promise<DialogRecord> {
-    return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations/${encodeURIComponent(cid)}`);
+  /** `source` — источник транскрипта (api — организатора, по умолчанию). */
+  record(group: string, cid: string, source?: string): Promise<DialogRecord> {
+    const q = source ? `?source=${encodeURIComponent(source)}` : '';
+    return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations/${encodeURIComponent(cid)}${q}`);
   }
-  facts(group: string, cid: string): Promise<DialogFacts> {
-    return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations/${encodeURIComponent(cid)}/facts`);
+  facts(group: string, cid: string, source?: string): Promise<DialogFacts> {
+    const q = source ? `?source=${encodeURIComponent(source)}` : '';
+    return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations/${encodeURIComponent(cid)}/facts${q}`);
+  }
+  transcripts(cid: string): Promise<TranscriptSourceInfo[]> {
+    return this.request('GET', `/conversations/${encodeURIComponent(cid)}/transcripts`);
+  }
+  /** Распознаёт звонок провайдером (долго: аудио → ASR → роли и маскирование) и сохраняет транскрипт. */
+  transcribe(cid: string, body: TranscribeRequest): Promise<DialogRecord> {
+    return this.request('POST', `/conversations/${encodeURIComponent(cid)}/transcribe`, body);
+  }
+  putCustomTranscript(cid: string, body: CustomTranscriptRequest): Promise<DialogRecord> {
+    return this.request('PUT', `/conversations/${encodeURIComponent(cid)}/transcripts/custom`, body);
   }
   checklists(): Promise<ChecklistSummary[]> {
     return this.request('GET', '/checklists');

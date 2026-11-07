@@ -166,3 +166,14 @@ Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we alrea
 → Nothing beyond what the API returns. The fresh DEV payload (preflight, 21:55) still has only `conversation_id, channel, language, transcript, audio_url`, with no labels, which matches #2966. Our gold stays the LLM consensus plus Batyrkhantzy111's 20 human rows.
 
 **#3167** 20:35, Nikolay Borovinskiy: «Не читают, хотят тренить модельку на 65 транскриптах..» — supports our decision not to fine-tune.
+
+### Update 23:45 (through #3314)
+
+**#3275** 22:50 (admin, Announcements): «Submission forma https://forms.gle/Nz34xz4yK4XurwAt7 Все решение сабмитайте сюда!»
+→ The form requires a Google sign-in, so a person fills it in. Aryn's decision: fill it in once the work is finished (#29).
+
+**#3312 → #3313** 23:26 (admin): asked «если условно мы сдадим форму сейчас, можем ли делать коммиты до 12…» — «Да».
+**#3314** 23:27 (admin, Announcements): «Если что коммиты можно только до 12:00 воскресенья / Если коммиты после этого, то не засчитывается решение»
+→ The hard limit is the last commit before 12:00 on Nov 8, the same as our stop-code. `results/prod/results.json` must be pushed before then.
+
+**#3303 → #3304** 23:18 (admin): «Презентация что ваще до 12 да» — «Да». The presentation is also due by 12:00.

@@ -1439,3 +1439,77 @@
 .cqa .cqa-facts-events li {
   padding: 2px 0;
 }
+
+/* Транскрипты звонка: переключатель источников, распознавание, свой текст */
+.cqa .cqa-tsrc {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 12px;
+}
+.cqa .cqa-seg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.cqa .cqa-seg-label {
+  font-weight: 600;
+  margin-right: 2px;
+}
+.cqa .cqa-seg-btn {
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--cqa-border);
+  border-radius: 999px;
+  background: var(--cqa-surface);
+  color: var(--cqa-text);
+  cursor: pointer;
+}
+.cqa .cqa-seg-btn:hover {
+  background: var(--cqa-good-bg);
+}
+.cqa .cqa-seg-btn.is-active {
+  border-color: var(--cqa-accent);
+  background: var(--cqa-good-bg);
+  color: var(--cqa-accent-dark);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--cqa-accent);
+}
+.cqa .cqa-seg-btn .cqa-badge {
+  font-weight: 500;
+}
+.cqa .cqa-tsrc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.cqa .cqa-tsrc-asr {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cqa .cqa-tsrc-asr[hidden] {
+  display: none;
+}
+.cqa .cqa-tsrc-note {
+  font-size: 13px;
+}
+.cqa .cqa-tsrc-note:empty,
+.cqa .cqa-tsrc-status:empty {
+  display: none;
+}
+.cqa .cqa-tsrc-used {
+  font-weight: 600;
+  color: var(--cqa-accent-dark);
+}
+.cqa .cqa-modal--wide {
+  width: min(720px, 94vw);
+}
+.cqa .cqa-transcript-input {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}

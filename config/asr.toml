@@ -1,0 +1,140 @@
+# ASR providers for call transcripts. Adding a provider is config only: pick a `kind` and fill in the table.
+#   kind = "openai_audio"      OpenAI-compatible POST {base}/audio/transcriptions (multipart file + model);
+#                              extra.response_format (default verbose_json); extra_form = { field = value } adds more form fields
+#   kind = "freedomspeech"     FreedomSpeech API: X-API-Key header, diarized_json, speaker lines parsed from `text`
+#   kind = "openrouter_audio"  chat completion with an input_audio part; extra.prompt overrides the default prompt
+# base_url: a fixed URL; base_url_env: an env var that holds it (wins when both are set). The freedomspeech kind takes the host
+# (https://api.freedomspeech.kz) and appends /v1/audio/transcriptions itself.
+# A provider whose env vars are unset still loads; calling it raises AsrError("... не настроен").
+# enabled = false: kept in the config, but not offered or run by default.
+# hosting: "local" (our own GPU) or "external_api".
+# More self-hosted endpoints go here as kind = "openai_audio" with base_url_env = "H200_ASR_BASE_URL" (or its own), hosting = "local".
+# timeout_s / attempts: per-request timeout and tries (defaults 600 / 3).
+
+[providers.freedomspeech]
+kind = "freedomspeech"
+base_url = "https://api.freedomspeech.kz"
+base_url_env = "FREEDOMSPEECH_BASE_URL"
+api_key_env = "FREEDOMSPEECH_API_KEY"
+model = "freedomspeech-stt"
+label = "FreedomSpeech"
+hosting = "external_api"
+# prettify=false: raw output (better for WER); segment times are 0, the real times are in the `[speaker-N | s-e]` lines of `text`
+extra = { response_format = "diarized_json" }
+extra_form = { prettify = false }
+
+[providers.aigw-whisper]
+kind = "openai_audio"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "whisper-large-v3"
+label = "Whisper large-v3 (aigw)"
+hosting = "external_api"
+max_audio_s = 590  # the endpoint answers 400 above 600 s; a longer call is cut into equal pieces
+extra = { response_format = "verbose_json" }
+
+[providers.alem-whisper-turbo]
+kind = "openai_audio"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "alemai/openai/whisper-large-v3-turbo"
+label = "Whisper large-v3 turbo (Alem.Cloud)"
+hosting = "external_api"
+extra = { response_format = "verbose_json" }
+
+# Same engine as kuspeech (byte-identical output, one whole-file segment). Kept for the record, not run by default.
+[providers.alem-gigaam]
+kind = "openai_audio"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "alemai/ai-sage/GigaAM-Multilingual"
+label = "GigaAM Multilingual (Alem.Cloud)"
+hosting = "external_api"
+enabled = false
+extra = { response_format = "verbose_json" }
+
+# Word timestamps only (empty segments): segments are built from pauses of 0.8 s and sentence punctuation.
+[providers.kuspeech]
+kind = "openai_audio"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "kuspeech:multilingual"
+label = "KuSpeech multilingual"
+hosting = "external_api"
+extra = { response_format = "verbose_json" }
+
+# Probe: dropped ~5.7 s of leading speech on a test clip. Compare with aigw-whisper before trusting it.
+[providers.alem-whisper]
+kind = "openai_audio"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "alemai/openai/whisper-large-v3"
+label = "Whisper large-v3 (Alem.Cloud)"
+hosting = "external_api"
+extra = { response_format = "verbose_json" }
+
+# Multimodal LLM as ASR (chat completion with an input_audio part). Disabled by default: it spends the OpenRouter test budget.
+# Alternative: google/gemini-3.8-flash (output less stable). No real segment times: the model writes `[Роль | мм:сс]` itself.
+[providers.openrouter-audio]
+kind = "openrouter_audio"
+base_url_env = "OPENROUTER_BASE_URL"
+api_key_env = "OPENROUTER_API_KEY"
+model = "openai/gpt-audio-mini"
+label = "GPT Audio mini (OpenRouter)"
+hosting = "external_api"
+enabled = false
+
+# Self-hosted ASR hub on the H200 (H200_ASR_BASE_URL, https://hk-asr.sek.su/v1): one endpoint, three models. Every one runs
+# pyannote diarization (num_speakers fixed at 2: the threshold is untested on real telephony) and returns segments[] with
+# start/end/text/speaker. Cloudflare cuts a request at ~100 s and the hub serialises GPU jobs: send one request at a time
+# (the benchmark does), 110 s timeout, one retry on a timeout or 524. `language` is not sent: auto-detect.
+[providers.h200-whisperx]
+kind = "openai_audio"
+base_url_env = "H200_ASR_BASE_URL"
+api_key_env = "H200_API_KEY"
+model = "whisperx-large-v3"  # the only one that handles Kazakh
+label = "WhisperX large-v3 + pyannote (H200)"
+hosting = "local"
+max_audio_s = 300  # ~60 s per 10 minutes: longer calls are cut into pieces (speaker labels get a `pN:` prefix) to stay under 100 s
+timeout_s = 110
+attempts = 2
+extra = { response_format = "verbose_json" }
+extra_form = { diarize = true, num_speakers = 2 }
+
+[providers.h200-gigaam-v3]
+kind = "openai_audio"
+base_url_env = "H200_ASR_BASE_URL"
+api_key_env = "H200_API_KEY"
+model = "gigaam-v3"  # Russian only, punctuated; segments are per diarization turn (<= 22 s)
+label = "GigaAM-v3 + pyannote (H200)"
+hosting = "local"
+timeout_s = 110
+attempts = 2
+extra = { response_format = "verbose_json" }
+extra_form = { diarize = true, num_speakers = 2 }
+
+[providers.h200-t-one]
+kind = "openai_audio"
+base_url_env = "H200_ASR_BASE_URL"
+api_key_env = "H200_API_KEY"
+model = "t-one"  # Russian telephony, lowercase, no punctuation
+label = "T-one + pyannote (H200)"
+hosting = "local"
+timeout_s = 110
+attempts = 2
+extra = { response_format = "verbose_json" }
+extra_form = { diarize = true, num_speakers = 2 }
+
+# Gemini 3.5 Transcribe through OpenRouter's STT endpoint (~$0.005 per audio minute). Diarization is a provider option, so the
+# request is a JSON body (extra_json); words come back with `speaker` and timestamps, segments are one whole-file segment.
+# Upstream timeout is 60 s per request, hence pieces of at most 5 minutes.
+[providers.or-gemini-transcribe]
+kind = "openai_audio"
+base_url_env = "OPENROUTER_BASE_URL"
+api_key_env = "OPENROUTER_API_KEY"
+model = "google/gemini-3.5-transcribe"
+label = "Gemini 3.5 Transcribe (OpenRouter)"
+hosting = "external_api"
+max_audio_s = 300
+extra = { response_format = "verbose_json" }
+extra_json = { timestamp_granularities = ["word"], provider = { options = { google-ai-studio = { diarization_mode = "speaker" } } } }

@@ -1,0 +1,989 @@
+{
+ "providers": {
+  "aigw-whisper": {
+   "label": "Whisper large-v3 (aigw)",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 2.16,
+     "audio_s": 312.3,
+     "seconds_per_min": 0.41,
+     "diarized": false,
+     "turns": 17,
+     "operator_turns": 8,
+     "client_turns": 8,
+     "segments": 55,
+     "cer_vs_api": 0.1957,
+     "wer_vs_api": 0.3058,
+     "cer_vs_freedomspeech": 0.1619,
+     "wer_vs_freedomspeech": 0.2496
+    },
+    "p4-ru-002": {
+     "seconds": 6.34,
+     "audio_s": 620.4,
+     "seconds_per_min": 0.61,
+     "diarized": false,
+     "turns": 7,
+     "operator_turns": 3,
+     "client_turns": 3,
+     "segments": 46,
+     "cer_vs_api": 0.4735,
+     "wer_vs_api": 0.5638,
+     "cer_vs_freedomspeech": 0.4977,
+     "wer_vs_freedomspeech": 0.5859
+    },
+    "p4-ru-003": {
+     "seconds": 2.23,
+     "audio_s": 393.2,
+     "seconds_per_min": 0.34,
+     "diarized": false,
+     "turns": 26,
+     "operator_turns": 13,
+     "client_turns": 12,
+     "segments": 83,
+     "cer_vs_api": 0.3588,
+     "wer_vs_api": 0.6217,
+     "cer_vs_freedomspeech": 0.2907,
+     "wer_vs_freedomspeech": 0.5139
+    },
+    "p4-ru-004": {
+     "seconds": 2.57,
+     "audio_s": 424.0,
+     "seconds_per_min": 0.36,
+     "diarized": false,
+     "turns": 38,
+     "operator_turns": 19,
+     "client_turns": 18,
+     "segments": 81,
+     "cer_vs_api": 0.3698,
+     "wer_vs_api": 0.583,
+     "cer_vs_freedomspeech": 0.285,
+     "wer_vs_freedomspeech": 0.5008
+    },
+    "p4-ru-005": {
+     "seconds": 2.27,
+     "audio_s": 345.3,
+     "seconds_per_min": 0.39,
+     "diarized": false,
+     "turns": 24,
+     "operator_turns": 11,
+     "client_turns": 11,
+     "segments": 66,
+     "cer_vs_api": 0.3141,
+     "wer_vs_api": 0.4891,
+     "cer_vs_freedomspeech": 0.2487,
+     "wer_vs_freedomspeech": 0.4299
+    }
+   },
+   "errors": {}
+  },
+  "kuspeech": {
+   "label": "KuSpeech multilingual",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 2.32,
+     "audio_s": 312.3,
+     "seconds_per_min": 0.45,
+     "diarized": false,
+     "turns": 19,
+     "operator_turns": 9,
+     "client_turns": 9,
+     "segments": 42,
+     "cer_vs_api": 0.1441,
+     "wer_vs_api": 0.3023,
+     "cer_vs_freedomspeech": 0.1202,
+     "wer_vs_freedomspeech": 0.2407
+    },
+    "p4-ru-002": {
+     "seconds": 4.26,
+     "audio_s": 620.4,
+     "seconds_per_min": 0.41,
+     "diarized": false,
+     "turns": 7,
+     "operator_turns": 3,
+     "client_turns": 4,
+     "segments": 48,
+     "cer_vs_api": 0.2344,
+     "wer_vs_api": 0.3475,
+     "cer_vs_freedomspeech": 0.1413,
+     "wer_vs_freedomspeech": 0.2374
+    },
+    "p4-ru-003": {
+     "seconds": 2.77,
+     "audio_s": 393.2,
+     "seconds_per_min": 0.42,
+     "diarized": false,
+     "turns": 36,
+     "operator_turns": 18,
+     "client_turns": 17,
+     "segments": 73,
+     "cer_vs_api": 0.2738,
+     "wer_vs_api": 0.5151,
+     "cer_vs_freedomspeech": 0.1742,
+     "wer_vs_freedomspeech": 0.3492
+    },
+    "p4-ru-004": {
+     "seconds": 3.15,
+     "audio_s": 424.0,
+     "seconds_per_min": 0.45,
+     "diarized": false,
+     "turns": 52,
+     "operator_turns": 25,
+     "client_turns": 25,
+     "segments": 77,
+     "cer_vs_api": 0.2938,
+     "wer_vs_api": 0.4589,
+     "cer_vs_freedomspeech": 0.182,
+     "wer_vs_freedomspeech": 0.3419
+    },
+    "p4-ru-005": {
+     "seconds": 2.67,
+     "audio_s": 345.3,
+     "seconds_per_min": 0.46,
+     "diarized": false,
+     "turns": 18,
+     "operator_turns": 8,
+     "client_turns": 9,
+     "segments": 35,
+     "cer_vs_api": 0.3394,
+     "wer_vs_api": 0.466,
+     "cer_vs_freedomspeech": 0.2743,
+     "wer_vs_freedomspeech": 0.3754
+    }
+   },
+   "errors": {}
+  },
+  "alem-whisper-turbo": {
+   "label": "Whisper large-v3 turbo (Alem.Cloud)",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 14.54,
+     "audio_s": 312.3,
+     "seconds_per_min": 2.79,
+     "diarized": false,
+     "turns": 13,
+     "operator_turns": 6,
+     "client_turns": 6,
+     "segments": 38,
+     "cer_vs_api": 0.2027,
+     "wer_vs_api": 0.2847,
+     "cer_vs_freedomspeech": 0.1855,
+     "wer_vs_freedomspeech": 0.2283
+    },
+    "p4-ru-002": {
+     "seconds": 21.11,
+     "audio_s": 620.5,
+     "seconds_per_min": 2.04,
+     "diarized": false,
+     "turns": 12,
+     "operator_turns": 6,
+     "client_turns": 6,
+     "segments": 72,
+     "cer_vs_api": 0.9051,
+     "wer_vs_api": 1.1117,
+     "cer_vs_freedomspeech": 0.7797,
+     "wer_vs_freedomspeech": 1.0286
+    },
+    "p4-ru-003": {
+     "seconds": 14.6,
+     "audio_s": 393.3,
+     "seconds_per_min": 2.23,
+     "diarized": false,
+     "turns": 15,
+     "operator_turns": 7,
+     "client_turns": 7,
+     "segments": 30,
+     "cer_vs_api": 0.3625,
+     "wer_vs_api": 0.499,
+     "cer_vs_freedomspeech": 0.2813,
+     "wer_vs_freedomspeech": 0.3968
+    },
+    "p4-ru-004": {
+     "seconds": 25.55,
+     "audio_s": 424.1,
+     "seconds_per_min": 3.62,
+     "diarized": false,
+     "turns": 24,
+     "operator_turns": 12,
+     "client_turns": 11,
+     "segments": 56,
+     "cer_vs_api": 0.4165,
+     "wer_vs_api": 0.5382,
+     "cer_vs_freedomspeech": 0.3224,
+     "wer_vs_freedomspeech": 0.4478
+    },
+    "p4-ru-005": {
+     "seconds": 15.53,
+     "audio_s": 345.4,
+     "seconds_per_min": 2.7,
+     "diarized": false,
+     "turns": 18,
+     "operator_turns": 8,
+     "client_turns": 8,
+     "segments": 32,
+     "cer_vs_api": 0.2634,
+     "wer_vs_api": 0.3821,
+     "cer_vs_freedomspeech": 0.2069,
+     "wer_vs_freedomspeech": 0.3069
+    }
+   },
+   "errors": {}
+  },
+  "alem-whisper": {
+   "label": "Whisper large-v3 (Alem.Cloud)",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 3.48,
+     "audio_s": 312.3,
+     "seconds_per_min": 0.67,
+     "diarized": false,
+     "turns": 17,
+     "operator_turns": 8,
+     "client_turns": 8,
+     "segments": 54,
+     "cer_vs_api": 0.1499,
+     "wer_vs_api": 0.2337,
+     "cer_vs_freedomspeech": 0.1081,
+     "wer_vs_freedomspeech": 0.1504
+    },
+    "p4-ru-002": {
+     "seconds": 7.04,
+     "audio_s": 620.4,
+     "seconds_per_min": 0.68,
+     "diarized": false,
+     "turns": 20,
+     "operator_turns": 10,
+     "client_turns": 10,
+     "segments": 71,
+     "cer_vs_api": 0.2822,
+     "wer_vs_api": 0.3511,
+     "cer_vs_freedomspeech": 0.3159,
+     "wer_vs_freedomspeech": 0.3737
+    },
+    "p4-ru-003": {
+     "seconds": 4.02,
+     "audio_s": 393.2,
+     "seconds_per_min": 0.61,
+     "diarized": false,
+     "turns": 26,
+     "operator_turns": 13,
+     "client_turns": 12,
+     "segments": 65,
+     "cer_vs_api": 0.231,
+     "wer_vs_api": 0.3521,
+     "cer_vs_freedomspeech": 0.1531,
+     "wer_vs_freedomspeech": 0.2341
+    },
+    "p4-ru-004": {
+     "seconds": 4.79,
+     "audio_s": 424.0,
+     "seconds_per_min": 0.68,
+     "diarized": false,
+     "turns": 53,
+     "operator_turns": 26,
+     "client_turns": 26,
+     "segments": 110,
+     "cer_vs_api": 0.2941,
+     "wer_vs_api": 0.4012,
+     "cer_vs_freedomspeech": 0.2031,
+     "wer_vs_freedomspeech": 0.2859
+    },
+    "p4-ru-005": {
+     "seconds": 4.35,
+     "audio_s": 345.3,
+     "seconds_per_min": 0.76,
+     "diarized": false,
+     "turns": 42,
+     "operator_turns": 21,
+     "client_turns": 20,
+     "segments": 89,
+     "cer_vs_api": 0.193,
+     "wer_vs_api": 0.2721,
+     "cer_vs_freedomspeech": 0.1063,
+     "wer_vs_freedomspeech": 0.1542
+    }
+   },
+   "errors": {}
+  },
+  "freedomspeech": {
+   "label": "FreedomSpeech",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 8.78,
+     "audio_s": 312.3,
+     "seconds_per_min": 1.69,
+     "diarized": true,
+     "turns": 19,
+     "operator_turns": 9,
+     "client_turns": 9,
+     "segments": 22,
+     "cer_vs_api": 0.0703,
+     "wer_vs_api": 0.1599,
+     "cer_vs_freedomspeech": 0.0357,
+     "wer_vs_freedomspeech": 0.0442
+    },
+    "p4-ru-002": {
+     "seconds": 44.35,
+     "audio_s": 620.5,
+     "seconds_per_min": 4.29,
+     "diarized": true,
+     "turns": 18,
+     "operator_turns": 9,
+     "client_turns": 9,
+     "segments": 45,
+     "cer_vs_api": 0.2523,
+     "wer_vs_api": 0.3688,
+     "cer_vs_freedomspeech": 0.0371,
+     "wer_vs_freedomspeech": 0.0354
+    },
+    "p4-ru-003": {
+     "seconds": 7.87,
+     "audio_s": 393.3,
+     "seconds_per_min": 1.2,
+     "diarized": true,
+     "turns": 40,
+     "operator_turns": 20,
+     "client_turns": 19,
+     "segments": 43,
+     "cer_vs_api": 0.1678,
+     "wer_vs_api": 0.2938,
+     "cer_vs_freedomspeech": 0.044,
+     "wer_vs_freedomspeech": 0.0496
+    },
+    "p4-ru-004": {
+     "seconds": 9.08,
+     "audio_s": 424.1,
+     "seconds_per_min": 1.28,
+     "diarized": true,
+     "turns": 75,
+     "operator_turns": 36,
+     "client_turns": 37,
+     "segments": 78,
+     "cer_vs_api": 0.2258,
+     "wer_vs_api": 0.3189,
+     "cer_vs_freedomspeech": 0.0445,
+     "wer_vs_freedomspeech": 0.0545
+    },
+    "p4-ru-005": {
+     "seconds": 8.49,
+     "audio_s": 345.4,
+     "seconds_per_min": 1.47,
+     "diarized": true,
+     "turns": 42,
+     "operator_turns": 21,
+     "client_turns": 20,
+     "segments": 45,
+     "cer_vs_api": 0.1476,
+     "wer_vs_api": 0.233,
+     "cer_vs_freedomspeech": 0.0281,
+     "wer_vs_freedomspeech": 0.0327
+    }
+   },
+   "errors": {}
+  },
+  "or-gemini-transcribe": {
+   "label": "Gemini 3.5 Transcribe (OpenRouter)",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 109.74,
+     "audio_s": 312.3,
+     "seconds_per_min": 21.08,
+     "diarized": true,
+     "turns": 23,
+     "operator_turns": 11,
+     "client_turns": 11,
+     "segments": 79,
+     "cer_vs_api": 0.1018,
+     "wer_vs_api": 0.1898,
+     "cer_vs_freedomspeech": 0.0733,
+     "wer_vs_freedomspeech": 0.1274
+    },
+    "p4-ru-002": {
+     "seconds": 21.66,
+     "audio_s": 620.5,
+     "seconds_per_min": 2.09,
+     "diarized": true,
+     "turns": 26,
+     "operator_turns": 13,
+     "client_turns": 13,
+     "segments": 85,
+     "cer_vs_api": 0.26,
+     "wer_vs_api": 0.3457,
+     "cer_vs_freedomspeech": 0.2918,
+     "wer_vs_freedomspeech": 0.3788
+    },
+    "p4-ru-003": {
+     "seconds": 60.44,
+     "audio_s": 393.3,
+     "seconds_per_min": 9.22,
+     "diarized": true,
+     "turns": 36,
+     "operator_turns": 18,
+     "client_turns": 17,
+     "segments": 98,
+     "cer_vs_api": 0.1768,
+     "wer_vs_api": 0.3239,
+     "cer_vs_freedomspeech": 0.1172,
+     "wer_vs_freedomspeech": 0.2163
+    },
+    "p4-ru-004": {
+     "seconds": 78.46,
+     "audio_s": 424.1,
+     "seconds_per_min": 11.1,
+     "diarized": true,
+     "turns": 70,
+     "operator_turns": 34,
+     "client_turns": 34,
+     "segments": 133,
+     "cer_vs_api": 0.2417,
+     "wer_vs_api": 0.3175,
+     "cer_vs_freedomspeech": 0.1448,
+     "wer_vs_freedomspeech": 0.2012
+    },
+    "p4-ru-005": {
+     "seconds": 82.63,
+     "audio_s": 345.4,
+     "seconds_per_min": 14.35,
+     "diarized": true,
+     "turns": 40,
+     "operator_turns": 20,
+     "client_turns": 19,
+     "segments": 96,
+     "cer_vs_api": 0.1791,
+     "wer_vs_api": 0.2677,
+     "cer_vs_freedomspeech": 0.0838,
+     "wer_vs_freedomspeech": 0.1402
+    }
+   },
+   "errors": {}
+  },
+  "h200-whisperx": {
+   "label": "WhisperX large-v3 + pyannote (H200)",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 40.45,
+     "audio_s": 312.3,
+     "seconds_per_min": 7.77,
+     "diarized": true,
+     "turns": 8,
+     "operator_turns": 4,
+     "client_turns": 3,
+     "segments": 14,
+     "cer_vs_api": 0.2127,
+     "wer_vs_api": 0.3111,
+     "cer_vs_freedomspeech": 0.1867,
+     "wer_vs_freedomspeech": 0.2602
+    },
+    "p4-ru-002": {
+     "seconds": 162.76,
+     "audio_s": 620.4,
+     "seconds_per_min": 15.74,
+     "diarized": true,
+     "turns": 8,
+     "operator_turns": 4,
+     "client_turns": 3,
+     "segments": 62,
+     "cer_vs_api": 0.3709,
+     "wer_vs_api": 0.523,
+     "cer_vs_freedomspeech": 0.3066,
+     "wer_vs_freedomspeech": 0.4646
+    },
+    "p4-ru-003": {
+     "seconds": 30.63,
+     "audio_s": 393.2,
+     "seconds_per_min": 4.67,
+     "diarized": true,
+     "turns": 10,
+     "operator_turns": 5,
+     "client_turns": 4,
+     "segments": 27,
+     "cer_vs_api": 0.3191,
+     "wer_vs_api": 0.4829,
+     "cer_vs_freedomspeech": 0.2771,
+     "wer_vs_freedomspeech": 0.4067
+    },
+    "p4-ru-004": {
+     "seconds": 22.2,
+     "audio_s": 424.1,
+     "seconds_per_min": 3.14,
+     "diarized": true,
+     "turns": 20,
+     "operator_turns": 10,
+     "client_turns": 9,
+     "segments": 32,
+     "cer_vs_api": 0.3455,
+     "wer_vs_api": 0.4762,
+     "cer_vs_freedomspeech": 0.3029,
+     "wer_vs_freedomspeech": 0.41
+    },
+    "p4-ru-005": {
+     "seconds": 42.51,
+     "audio_s": 345.4,
+     "seconds_per_min": 7.39,
+     "diarized": true,
+     "turns": 11,
+     "operator_turns": 5,
+     "client_turns": 5,
+     "segments": 29,
+     "cer_vs_api": 0.2577,
+     "wer_vs_api": 0.3734,
+     "cer_vs_freedomspeech": 0.2024,
+     "wer_vs_freedomspeech": 0.3146
+    }
+   },
+   "errors": {}
+  },
+  "h200-t-one": {
+   "label": "T-one + pyannote (H200)",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 26.16,
+     "audio_s": 312.3,
+     "seconds_per_min": 5.03,
+     "diarized": true,
+     "turns": 13,
+     "operator_turns": 6,
+     "client_turns": 6,
+     "segments": 69,
+     "cer_vs_api": 0.0659,
+     "wer_vs_api": 0.1459,
+     "cer_vs_freedomspeech": 0.0768,
+     "wer_vs_freedomspeech": 0.1416
+    },
+    "p4-ru-002": {
+     "seconds": 42.85,
+     "audio_s": 620.4,
+     "seconds_per_min": 4.14,
+     "diarized": true,
+     "turns": 14,
+     "operator_turns": 7,
+     "client_turns": 7,
+     "segments": 87,
+     "cer_vs_api": 0.2144,
+     "wer_vs_api": 0.3209,
+     "cer_vs_freedomspeech": 0.22,
+     "wer_vs_freedomspeech": 0.3316
+    },
+    "p4-ru-003": {
+     "seconds": 14.96,
+     "audio_s": 393.2,
+     "seconds_per_min": 2.28,
+     "diarized": true,
+     "turns": 26,
+     "operator_turns": 13,
+     "client_turns": 12,
+     "segments": 94,
+     "cer_vs_api": 0.1741,
+     "wer_vs_api": 0.3038,
+     "cer_vs_freedomspeech": 0.1295,
+     "wer_vs_freedomspeech": 0.2282
+    },
+    "p4-ru-004": {
+     "seconds": 15.14,
+     "audio_s": 424.0,
+     "seconds_per_min": 2.14,
+     "diarized": true,
+     "turns": 52,
+     "operator_turns": 25,
+     "client_turns": 25,
+     "segments": 103,
+     "cer_vs_api": 0.2509,
+     "wer_vs_api": 0.3391,
+     "cer_vs_freedomspeech": 0.1555,
+     "wer_vs_freedomspeech": 0.2617
+    },
+    "p4-ru-005": {
+     "seconds": 48.54,
+     "audio_s": 345.3,
+     "seconds_per_min": 8.43,
+     "diarized": true,
+     "turns": 20,
+     "operator_turns": 9,
+     "client_turns": 9,
+     "segments": 76,
+     "cer_vs_api": 0.157,
+     "wer_vs_api": 0.2547,
+     "cer_vs_freedomspeech": 0.1143,
+     "wer_vs_freedomspeech": 0.1931
+    }
+   },
+   "errors": {}
+  },
+  "h200-gigaam-v3": {
+   "label": "GigaAM-v3 + pyannote (H200)",
+   "calls": {
+    "p4-ru-001": {
+     "seconds": 11.24,
+     "audio_s": 312.3,
+     "seconds_per_min": 2.16,
+     "diarized": true,
+     "turns": 17,
+     "operator_turns": 8,
+     "client_turns": 8,
+     "segments": 49,
+     "cer_vs_api": 0.0761,
+     "wer_vs_api": 0.1722,
+     "cer_vs_freedomspeech": 0.0674,
+     "wer_vs_freedomspeech": 0.1239
+    },
+    "p4-ru-002": {
+     "seconds": 12.78,
+     "audio_s": 620.4,
+     "seconds_per_min": 1.24,
+     "diarized": true,
+     "turns": 10,
+     "operator_turns": 5,
+     "client_turns": 5,
+     "segments": 63,
+     "cer_vs_api": 0.2043,
+     "wer_vs_api": 0.2996,
+     "cer_vs_freedomspeech": 0.216,
+     "wer_vs_freedomspeech": 0.2963
+    },
+    "p4-ru-003": {
+     "seconds": 57.33,
+     "audio_s": 393.2,
+     "seconds_per_min": 8.75,
+     "diarized": true,
+     "turns": 28,
+     "operator_turns": 14,
+     "client_turns": 13,
+     "segments": 76,
+     "cer_vs_api": 0.1953,
+     "wer_vs_api": 0.3461,
+     "cer_vs_freedomspeech": 0.1152,
+     "wer_vs_freedomspeech": 0.2143
+    },
+    "p4-ru-004": {
+     "seconds": 7.99,
+     "audio_s": 424.0,
+     "seconds_per_min": 1.13,
+     "diarized": true,
+     "turns": 66,
+     "operator_turns": 32,
+     "client_turns": 32,
+     "segments": 120,
+     "cer_vs_api": 0.2536,
+     "wer_vs_api": 0.342,
+     "cer_vs_freedomspeech": 0.136,
+     "wer_vs_freedomspeech": 0.2133
+    },
+    "p4-ru-005": {
+     "seconds": 7.16,
+     "audio_s": 345.3,
+     "seconds_per_min": 1.24,
+     "diarized": true,
+     "turns": 31,
+     "operator_turns": 14,
+     "client_turns": 15,
+     "segments": 66,
+     "cer_vs_api": 0.1731,
+     "wer_vs_api": 0.2721,
+     "cer_vs_freedomspeech": 0.095,
+     "wer_vs_freedomspeech": 0.1542
+    }
+   },
+   "errors": {}
+  }
+ },
+ "downstream": {
+  "api": {
+   "p4-ru-001": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 4,
+    "total": 8,
+    "error": null
+   }
+  },
+  "freedomspeech": {
+   "p4-ru-001": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   }
+  },
+  "aigw-whisper": {
+   "p4-ru-001": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 4,
+    "total": 8,
+    "error": null
+   }
+  },
+  "kuspeech": {
+   "p4-ru-001": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 7,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 7,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 4,
+    "total": 8,
+    "error": null
+   }
+  },
+  "alem-whisper-turbo": {
+   "p4-ru-001": {
+    "hits": 7,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 4,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   }
+  },
+  "alem-whisper": {
+   "p4-ru-001": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   }
+  },
+  "freedomspeech-live": {
+   "p4-ru-001": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 7,
+    "total": 8,
+    "error": null
+   }
+  },
+  "or-gemini-transcribe": {
+   "p4-ru-001": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   }
+  },
+  "h200-whisperx": {
+   "p4-ru-001": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 4,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 4,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   }
+  },
+  "h200-t-one": {
+   "p4-ru-001": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   }
+  },
+  "h200-gigaam-v3": {
+   "p4-ru-001": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-002": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-003": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-004": {
+    "hits": 6,
+    "total": 8,
+    "error": null
+   },
+   "p4-ru-005": {
+    "hits": 5,
+    "total": 8,
+    "error": null
+   }
+  }
+ },
+ "audit_failed": {},
+ "generated": "2026-11-07"
+}

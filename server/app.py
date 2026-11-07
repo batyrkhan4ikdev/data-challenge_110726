@@ -19,7 +19,9 @@ from server.routes.appeals import AppealsController
 from server.routes.checklists import ChecklistsController
 from server.routes.datasets import DatasetsController
 from server.routes.evaluations import EvaluationsController
+from server.routes.transcripts import TranscriptsController
 from server.store import NotFound, Store
+from server.transcripts import TranscriptStore
 
 WEB = Path(__file__).resolve().parent.parent / 'web'
 INVALID_CHECKLIST = 'Чек-лист невалиден'
@@ -75,6 +77,8 @@ def create_app(
     dataset_loader: DatasetLoader | None = None,
     seed_dir: Path = Path('data/checklists'),
     fallbacks: list[str] | None = None,
+    calls_dir: Path = Path('data/calls'),
+    quality_path: Path = Path('data/asr/quality.json'),
 ) -> Litestar:
     """The API under `/api`, `web/dist` at `/static` and `web/` (html mode) at `/`.
 
@@ -82,15 +86,17 @@ def create_app(
     """
     store = Store(store_root)
     checklists = ChecklistStore(Path(store_root) / 'checklists')
+    transcripts = TranscriptStore(Path(store_root) / 'transcripts', calls_dir, quality_path)
     profiles = load_profiles()
     if fallbacks is None:
         fallbacks = fallback_names(os.environ.get('FALLBACK_PROFILE'), profiles)
     services = Services(
         store=store,
         checklists=checklists,
-        jobs=JobRunner(store, checklists, profiles, fallbacks),
+        jobs=JobRunner(store, checklists, profiles, fallbacks, transcripts),
         profiles=profiles,
         dataset_loader=dataset_loader or load_dataset,
+        transcripts=transcripts,
     )
 
     async def seed() -> None:
@@ -98,7 +104,13 @@ def create_app(
 
     api = Router(
         path='/api',
-        route_handlers=[DatasetsController, ChecklistsController, EvaluationsController, AppealsController],
+        route_handlers=[
+            DatasetsController,
+            ChecklistsController,
+            EvaluationsController,
+            AppealsController,
+            TranscriptsController,
+        ],
     )
     return Litestar(
         route_handlers=[

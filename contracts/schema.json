@@ -135,6 +135,133 @@
       "title": "AppealQueueItem",
       "type": "object"
     },
+    "AsrQuality": {
+      "description": "One provider's benchmark row from `data/asr/quality.json`; every field may be absent.",
+      "properties": {
+        "cer_vs_api": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cer Vs Api"
+        },
+        "cer_vs_freedomspeech": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cer Vs Freedomspeech"
+        },
+        "diarized": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Diarized"
+        },
+        "gold_hits": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gold Hits"
+        },
+        "gold_total": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gold Total"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "manual_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Manual Score"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "seconds_per_min": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seconds Per Min"
+        },
+        "speaker_turns": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Speaker Turns"
+        }
+      },
+      "title": "AsrQuality",
+      "type": "object"
+    },
     "BatchRequest": {
       "properties": {
         "checklist_id": {
@@ -199,6 +326,18 @@
           ],
           "default": null,
           "title": "Profile"
+        },
+        "transcript_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Transcript Source"
         }
       },
       "required": [
@@ -530,6 +669,24 @@
       "title": "CriterionStat",
       "type": "object"
     },
+    "CustomTranscriptRequest": {
+      "properties": {
+        "group_id": {
+          "title": "Group Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "group_id",
+        "text"
+      ],
+      "title": "CustomTranscriptRequest",
+      "type": "object"
+    },
     "Decision": {
       "properties": {
         "action": {
@@ -839,6 +996,11 @@
         },
         "score": {
           "$ref": "#/$defs/Score"
+        },
+        "transcript_source": {
+          "default": "api",
+          "title": "Transcript Source",
+          "type": "string"
         },
         "usage": {
           "$ref": "#/$defs/Usage"
@@ -1517,6 +1679,93 @@
         "total"
       ],
       "title": "SectionScore",
+      "type": "object"
+    },
+    "TranscribeRequest": {
+      "properties": {
+        "group_id": {
+          "title": "Group Id",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        }
+      },
+      "required": [
+        "group_id",
+        "provider"
+      ],
+      "title": "TranscribeRequest",
+      "type": "object"
+    },
+    "TranscriptSourceInfo": {
+      "properties": {
+        "available": {
+          "title": "Available",
+          "type": "boolean"
+        },
+        "created_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Created At"
+        },
+        "kind": {
+          "enum": [
+            "api",
+            "asr",
+            "custom"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "provider_hosting": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider Hosting"
+        },
+        "quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AsrQuality"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "label",
+        "kind",
+        "available"
+      ],
+      "title": "TranscriptSourceInfo",
       "type": "object"
     },
     "Turn": {

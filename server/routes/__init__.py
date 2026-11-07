@@ -11,7 +11,8 @@ from server.config import Profile
 from server.jobs import JobRunner
 from server.models import Appeal, Checklist, Evaluation, EvaluationSummary, FinalResult, Record
 from server.scoring import final_result
-from server.store import Store
+from server.store import NotFound, Store
+from server.transcripts import API, TranscriptStore
 
 DatasetLoader = Callable[[str, bool], Awaitable[list[Record]]]
 
@@ -25,8 +26,27 @@ class Services:
     jobs: JobRunner
     profiles: dict[str, Profile]
     dataset_loader: DatasetLoader
+    transcripts: TranscriptStore
     _datasets: dict[str, list[Record]] = field(default_factory=dict)
     _dataset_locks: defaultdict[str, asyncio.Lock] = field(default_factory=lambda: defaultdict(asyncio.Lock))
+
+    async def group_record(self, group_id: str, cid: str) -> Record:
+        """The organizer record of a conversation in a group; `NotFound` if absent."""
+        for r in await self.records(group_id):
+            if r.conversation_id == cid:
+                return r
+        raise NotFound(f'диалог {cid} не найден в группе {group_id}')
+
+    async def record_for(self, group_id: str, cid: str, source: str = API) -> Record:
+        """The conversation's record for a transcript source (`api` = organizer's)."""
+        base = await self.group_record(group_id, cid)
+        if source == API:
+            return base
+        record = await self.transcripts.load(cid, source)
+        if record is None:
+            raise NotFound(f'транскрипт «{source}» для диалога {cid} не найден')
+        # Seeded files carry a redacted audio URL (its `sig=` is secret); playback uses the live one.
+        return record.model_copy(update={'audio_url': base.audio_url})
 
     async def records(self, group_id: str, refresh: bool = False) -> list[Record]:
         """Dataset records, cached in memory per group; `refresh` reloads. A failed load keeps the cache."""

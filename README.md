@@ -164,6 +164,54 @@ A run writes JSONL rows and a `summary.md` under `bench/results/<timestamp>/`. T
 - validity and failure rates, latency and cost;
 - on `--set gold`: weighted per-criterion agreement, total MAE and bias, kappa, the N/A confusion matrix, gross-error precision and recall, and agreement by language and channel.
 
+## Call transcripts and ASR
+
+The organizers' call transcripts are poor ASR (e.g. «идентификацию успешно проеданная»). In the call card, the **«Транскрипт»** switch picks the source the evaluation runs on:
+- **Организатор (API):** the original transcript. The control run (chats only) always uses this one.
+- **FreedomSpeech** ([freedomspeech.kz](https://freedomspeech.kz), Kazakh/Russian STT with speaker diarization): the default view for calls.
+- **Our ASR models** (`config/asr.toml`). Each shows a quality badge from the benchmark: CER against FreedomSpeech and «оценщик N/40», the evaluator's gold hits on that transcript.
+- **«Вставить свой транскрипт»:** a pasted text, one line per turn, with `оператор:` / `клиент:` prefixes.
+
+«Распознать заново» runs a provider live: it fetches the call audio, transcribes it, assigns operator/client roles and masks personal data with the judge LLM. «Оценить по этому транскрипту» scores that source, and the result card records which transcript it used.
+
+**Benchmark on the 5 DEV calls** (`bench/asr/summary.md`; mean over calls):
+
+| provider | where | diarization | s per audio min | CER vs FreedomSpeech | evaluator gold hits |
+|---|---|---|---|---|---|
+| FreedomSpeech | freedomspeech.kz | yes | 2.0 | (reference) | 27/40 |
+| GigaAM-v3 + pyannote | self-hosted H200 | yes | 2.9 | **0.126** | 27/40 |
+| T-one + pyannote | self-hosted H200 | yes | 4.4 | 0.139 | **29/40** |
+| Gemini 3.5 Transcribe | OpenRouter | yes | 11.6 | 0.142 | 28/40 |
+| Whisper large-v3 (Alem.Cloud) | aigw | no | 0.7 | 0.177 | 28/40 |
+| KuSpeech multilingual (= GigaAM-Multilingual) | aigw | no | 0.4 | 0.178 | **29/40** |
+| WhisperX large-v3 + pyannote | self-hosted H200 | yes | 7.7 | 0.255 | 25/40 |
+| Whisper large-v3 | aigw | no | 0.4 | 0.297 | 25/40 |
+| Whisper large-v3 turbo (Alem.Cloud) | aigw | no | 2.7 | 0.355 | 27/40 |
+| organizer API transcript | — | — | — | — | 26–28/40 (3 runs) |
+
+Gold hits move by ±2 between runs of the same transcript, so they rank no provider above another; they only show that no transcript hurt scoring. CER is agreement with another ASR, not accuracy. The manual quality comparison is Batyrkhantzy111's (`bench/asr/transcripts/<provider>/<cid>.md`); his scores go into `manual_score` in `data/asr/quality.json` and replace the automatic badge. Model research: `docs/research/asr-models.md` and `docs/research/asr-hosted.md`. Calls are evaluated with the same checklist; organizers said calls are mainly for the interface (#3075).
+
+### Running the ASR benchmark
+
+Providers are listed in `config/asr.toml`. Adding one is config only: `kind`, URL/key env vars, `label`, `hosting`, optional `extra_form`. A provider whose env vars are unset reports «не настроен».
+
+```bash
+python -m bench.asr [--providers aigw-whisper,kuspeech,...] [--calls p4-ru-001,...] [--reuse-raw] [--no-score]
+```
+
+For each provider × DEV call it transcribes `data/audio/<cid>.mp3` (fetched from the call's `audio_url` if missing), masks personal data and assigns roles with the judge LLM (`LLM_PROFILE`), then audits the result. If an audit fails (a run of 4+ digits, or a name, ID, phone or address found by a second LLM pass), no tracked file is written for that provider.
+
+| Output | Tracked | Content |
+|---|---|---|
+| `data/asr/raw/<provider>/<cid>.json` | no | raw ASR result, **unmasked** |
+| `data/calls/<provider>.dev.json` | yes | masked records, organizer API shape, shown in the UI as transcript sources (`freedomspeech.dev.json` is the hand-checked version and is never overwritten; the live FreedomSpeech run goes to `bench/asr/freedomspeech-live.dev.json`) |
+| `bench/asr/transcripts/<provider>/<cid>.md` | yes | masked `[N] (mm:ss) role: text` for the manual side-by-side comparison |
+| `bench/asr/summary.md`, `data/asr/metrics.json`, `data/asr/quality.json` | yes | tables per call and averages; quality for the UI (`manual_score` is kept between runs) |
+
+A partial run merges into the stored results instead of replacing the other providers' rows.
+
+**CER/WER are agreement, not accuracy.** There is no ground truth: both references are ASR too (the organizer `api` transcript and the hand-checked FreedomSpeech one). The one objective metric is the downstream score: verdict hits of the evaluator (`per_criterion`) on each transcript source against the gold labels of the same calls.
+
 ## Development
 
 ```bash
