@@ -620,6 +620,169 @@
       "title": "DecisionResult",
       "type": "object"
     },
+    "DialogEvent": {
+      "properties": {
+        "idx": {
+          "title": "Idx",
+          "type": "integer"
+        },
+        "offset_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Offset S"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "idx",
+        "text"
+      ],
+      "title": "DialogEvent",
+      "type": "object"
+    },
+    "DialogFacts": {
+      "properties": {
+        "duration_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration S"
+        },
+        "escalation_idx": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Escalation Idx"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/$defs/DialogEvent"
+          },
+          "title": "Events",
+          "type": "array"
+        },
+        "first_response_idx": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "First Response Idx"
+        },
+        "first_response_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "First Response S"
+        },
+        "identity_verified_idx": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Identity Verified Idx"
+        },
+        "masked": {
+          "items": {
+            "$ref": "#/$defs/MaskedToken"
+          },
+          "title": "Masked",
+          "type": "array"
+        },
+        "max_wait_idx": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Wait Idx"
+        },
+        "max_wait_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Wait S"
+        },
+        "sla_ok": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sla Ok"
+        },
+        "sla_s": {
+          "default": 180,
+          "title": "Sla S",
+          "type": "integer"
+        },
+        "turns": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Turns",
+          "type": "object"
+        }
+      },
+      "required": [
+        "turns",
+        "masked",
+        "events"
+      ],
+      "title": "DialogFacts",
+      "type": "object"
+    },
     "Evaluation": {
       "properties": {
         "checklist_id": {
@@ -1064,6 +1227,29 @@
         "evaluation_ids"
       ],
       "title": "Job",
+      "type": "object"
+    },
+    "MaskedToken": {
+      "properties": {
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "first_idx": {
+          "title": "First Idx",
+          "type": "integer"
+        },
+        "token": {
+          "title": "Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "token",
+        "count",
+        "first_idx"
+      ],
+      "title": "MaskedToken",
       "type": "object"
     },
     "RawCall": {

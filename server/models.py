@@ -24,6 +24,33 @@ class Record(BaseModel):
     audio_url: str | None
 
 
+class MaskedToken(BaseModel):
+    token: str
+    count: int
+    first_idx: int
+
+
+class DialogEvent(BaseModel):
+    idx: int
+    text: str
+    offset_s: float | None = None
+
+
+class DialogFacts(BaseModel):
+    duration_s: float | None = None
+    escalation_idx: int | None = None
+    first_response_s: float | None = None
+    first_response_idx: int | None = None
+    sla_s: int = 180
+    sla_ok: bool | None = None
+    max_wait_s: float | None = None
+    max_wait_idx: int | None = None
+    turns: dict[str, int]
+    masked: list[MaskedToken]
+    events: list[DialogEvent]
+    identity_verified_idx: int | None = None
+
+
 class Usage(BaseModel):
     prompt_tokens: int
     completion_tokens: int
@@ -269,7 +296,7 @@ class GroupAnalytics(BaseModel):
 
 
 ALL_MODELS: list[type[BaseModel]] = [
-    Turn, Record, Usage, EvaluationSummary, ConversationSummary, ScaleStep, Section, Criterion,
+    Turn, Record, MaskedToken, DialogEvent, DialogFacts, Usage, EvaluationSummary, ConversationSummary, ScaleStep, Section, Criterion,
     Checklist, ChecklistSummary, Item, ScoreItem, SectionScore, Score, Evaluation, RawCall,
     Decision, Appeal, FinalItem, FinalResult, EvaluationView, Job, ApiError, BatchRequest,
     AppealCreate, DecisionCreate, AppealQueueItem, DecisionResult,

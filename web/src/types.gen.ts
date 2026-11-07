@@ -103,6 +103,23 @@ export type Title3 = string;
 export type Total1 = number | null;
 export type Sections1 = SectionScore[];
 export type Total2 = number | null;
+export type Idx = number;
+export type OffsetS = number | null;
+export type Text = string;
+export type DurationS = number | null;
+export type EscalationIdx = number | null;
+export type Events = DialogEvent[];
+export type FirstResponseIdx = number | null;
+export type FirstResponseS = number | null;
+export type IdentityVerifiedIdx = number | null;
+export type Count1 = number;
+export type FirstIdx = number;
+export type Token = string;
+export type Masked = MaskedToken[];
+export type MaxWaitIdx = number | null;
+export type MaxWaitS = number | null;
+export type SlaOk = boolean | null;
+export type SlaS = number;
 export type ChecklistId2 = string;
 export type ChecklistVersion1 = number;
 export type ConversationId2 = string;
@@ -127,7 +144,7 @@ export type Evaluated = number;
 export type GrossErrorCount = number;
 export type GrossErrorIds = string[];
 export type GroupId2 = string;
-export type Count1 = number;
+export type Count2 = number;
 export type Label = string;
 export type Histogram = HistogramBin[];
 export type MeanTotal1 = number | null;
@@ -149,10 +166,10 @@ export type AudioUrl = string | null;
 export type Channel1 = "agent chat" | "voice call";
 export type ConversationId3 = string;
 export type Language1 = "RU" | "KZ" | "EN";
-export type Idx = number;
-export type OffsetS = number | null;
+export type Idx1 = number;
+export type OffsetS1 = number | null;
 export type Speaker = "client" | "operator" | "bot" | "system";
-export type Text = string;
+export type Text1 = string;
 export type Timestamp = string;
 export type Transcript = Turn[];
 
@@ -433,6 +450,48 @@ export interface SectionScore {
 }
 /**
  * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "DialogEvent".
+ */
+export interface DialogEvent {
+  idx: Idx;
+  offset_s?: OffsetS;
+  text: Text;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "DialogFacts".
+ */
+export interface DialogFacts {
+  duration_s?: DurationS;
+  escalation_idx?: EscalationIdx;
+  events: Events;
+  first_response_idx?: FirstResponseIdx;
+  first_response_s?: FirstResponseS;
+  identity_verified_idx?: IdentityVerifiedIdx;
+  masked: Masked;
+  max_wait_idx?: MaxWaitIdx;
+  max_wait_s?: MaxWaitS;
+  sla_ok?: SlaOk;
+  sla_s?: SlaS;
+  turns: Turns1;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "MaskedToken".
+ */
+export interface MaskedToken {
+  count: Count1;
+  first_idx: FirstIdx;
+  token: Token;
+  [k: string]: unknown;
+}
+export interface Turns1 {
+  [k: string]: number;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "Evaluation".
  */
 export interface Evaluation {
@@ -495,7 +554,7 @@ export interface GroupAnalytics {
  * via the `definition` "HistogramBin".
  */
 export interface HistogramBin {
-  count: Count1;
+  count: Count2;
   label: Label;
   [k: string]: unknown;
 }
@@ -546,10 +605,10 @@ export interface Record {
  * via the `definition` "Turn".
  */
 export interface Turn {
-  idx: Idx;
-  offset_s?: OffsetS;
+  idx: Idx1;
+  offset_s?: OffsetS1;
   speaker: Speaker;
-  text: Text;
+  text: Text1;
   timestamp: Timestamp;
   [k: string]: unknown;
 }

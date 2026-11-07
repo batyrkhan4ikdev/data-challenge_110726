@@ -5,6 +5,7 @@ import type { BatchRequest, Criterion, EvaluationSummary, EvaluationView, RawCal
 import { openAppealModal } from '../ui/appeal-modal.js';
 import { renderCriteriaTable } from '../ui/criteria-table.js';
 import { badge, banner, errorDetails, errorMessage, fmt, fmtDate, h, heading, rangeOf } from '../ui/dom.js';
+import { factsCard } from '../ui/facts.js';
 import { checkIcon, crossIcon, scoreRing } from '../ui/icons.js';
 import { renderTranscript } from '../ui/transcript.js';
 import type { TranscriptView } from '../ui/transcript.js';
@@ -292,6 +293,9 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
       ? transcript.el
       : banner(t.result.transcriptMissing, recordResult.ok ? null : [errorMessage(recordResult.error)]),
   );
+  if (record) {
+    left.appendChild(factsCard(ctx.api.facts(ev.group_id, ev.conversation_id), (idx) => transcript?.focusEvidence(idx)));
+  }
 
   const appeal = (criterion: Criterion) =>
     openAppealModal(root, {

@@ -2,7 +2,8 @@ from litestar import Controller, get
 from litestar.params import FromPath, FromQuery
 
 from server.analytics import group_analytics
-from server.models import ConversationSummary, GroupAnalytics, Record
+from server.facts import dialog_facts
+from server.models import ConversationSummary, DialogFacts, GroupAnalytics, Record
 from server.routes import Svc
 from server.store import NotFound
 
@@ -37,4 +38,11 @@ class DatasetsController(Controller):
         for r in await svc.records(group_id):
             if r.conversation_id == cid:
                 return r
+        raise NotFound(f'диалог {cid} не найден в группе {group_id}')
+
+    @get('/{group_id:str}/conversations/{cid:str}/facts')
+    async def facts(self, svc: Svc, group_id: FromPath[str], cid: FromPath[str]) -> DialogFacts:
+        for r in await svc.records(group_id):
+            if r.conversation_id == cid:
+                return dialog_facts(r)
         raise NotFound(f'диалог {cid} не найден в группе {group_id}')

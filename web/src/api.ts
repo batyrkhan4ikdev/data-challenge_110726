@@ -14,6 +14,7 @@ import type {
   EvaluationView,
   GroupAnalytics,
   Job,
+  DialogFacts,
   RawCall,
   Record as DialogRecord,
 } from './types.gen.js';
@@ -84,6 +85,9 @@ export class Api {
   }
   record(group: string, cid: string): Promise<DialogRecord> {
     return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations/${encodeURIComponent(cid)}`);
+  }
+  facts(group: string, cid: string): Promise<DialogFacts> {
+    return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations/${encodeURIComponent(cid)}/facts`);
   }
   checklists(): Promise<ChecklistSummary[]> {
     return this.request('GET', '/checklists');

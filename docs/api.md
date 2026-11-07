@@ -8,6 +8,7 @@ Run the server: `uvicorn server.app:app --port 8787`. It serves `web/` in HTML m
 |---|---|---|---|
 | GET | `/datasets/{group_id}/conversations` | `refresh:bool=false` | `ConversationSummary[]` — `ConversationSummary.list.json`; 502 `ApiError.dataset.json` (mock: `group_id=FAIL`) |
 | GET | `/datasets/{group_id}/conversations/{cid}` | | `Record` — `Record.chat.json`, `Record.call.json` |
+| GET | `/datasets/{group_id}/conversations/{cid}/facts` | | `DialogFacts` — детерминированные факты диалога без LLM (длительность, первая реакция оператора и SLA 180 с, макс. ожидание клиента, реплики, маски, события); только для показа, в промпт не попадает. 404 как у записи |
 | GET | `/datasets/{group_id}/analytics` | | `GroupAnalytics`: counts, mean total, gross-error ids, `by_channel` / `by_language`, per-criterion yes/no/N/A and mean % of points, and the total histogram. It uses the latest evaluation per dialog, with its total after appeals |
 | GET | `/checklists` | | `ChecklistSummary[]` — `ChecklistSummary.list.json` |
 | POST | `/checklists` | `Checklist` (version ignored) — `Checklist.json` | `Checklist` v1 · 400 `ApiError.details` |

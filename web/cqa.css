@@ -1411,3 +1411,31 @@
     max-height: 420px;
   }
 }
+
+/* Факты диалога */
+.cqa .cqa-facts {
+  margin-top: 16px;
+}
+.cqa .cqa-facts-row {
+  display: flex;
+  gap: 12px;
+  padding: 6px 0;
+  border-top: 1px solid var(--cqa-border);
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.cqa .cqa-facts-label {
+  flex: 0 0 210px;
+  font-size: 13px;
+}
+.cqa .cqa-facts-events {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  font-size: 13px;
+  max-height: 220px;
+  overflow: auto;
+}
+.cqa .cqa-facts-events li {
+  padding: 2px 0;
+}
