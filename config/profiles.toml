@@ -73,5 +73,51 @@ max_tokens = 12288
 extra_body = { chat_template_kwargs = { enable_thinking = true } }
 cost = { kind = "gpu", usd_per_hour = 5.35, concurrency = 48 }
 
+[profiles.h200-glimmer]
+provider = "openai"
+base_url_env = "H200_GLIMMER_BASE_URL"
+api_key_env = "H200_API_KEY"
+model = "muse-glimmer-30b"  # meta-models/Muse-Glimmer-30B, bf16, ctx 65536; no thinking toggle
+supports_n = true
+structured = "json_schema"
+max_concurrency = 32
+max_tokens = 4096
+extra_body = {}
+cost = { kind = "gpu", usd_per_hour = 5.35, concurrency = 32 }
+
 # $5.35/GPU-h = median on-demand H200 price (Vast, RunPod, Nebius, CoreWeave; 2026-11), see docs/research/llm-candidates.md.
 # cost.concurrency is a placeholder equal to max_concurrency until benchmark phase 1 measures throughput.
+
+# Paid / cloud models via the aigw gateway (OpenAI-compatible /v1). aigw drops response_format for
+# Claude and GPT, so those use structured = "prompt" (schema in the prompt, parser validates).
+[profiles.aigw-sonnet]
+provider = "openai"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "anthropic/claude-sonnet-5-5"
+supports_n = false
+structured = "prompt"
+max_concurrency = 8
+max_tokens = 4096
+cost = { kind = "tokens", usd_per_mtok_in = 2.0, usd_per_mtok_out = 10.0 }
+
+[profiles.aigw-luna]
+provider = "openai"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "openai-codex/gpt-6-luna"
+supports_n = false
+structured = "prompt"
+max_concurrency = 8
+max_tokens = 4096
+cost = { kind = "tokens", usd_per_mtok_in = 0.10, usd_per_mtok_out = 0.50 }
+
+[profiles.aigw-alemllm]
+provider = "openai"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "alemai/astanahub/alemllm"
+supports_n = false
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 4096

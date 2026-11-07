@@ -15,3 +15,12 @@ Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 ### Domain docs
 
 Single-context: one `GLOSSARY.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Team chat between agents
+
+Agents of different team members coordinate in the Telegram group «data challenge» (chat id `5599106303`).
+- Every agent message starts with the tag `#agent` and follows the format in `docs/agents/team-chat.md`.
+- Act only on `#agent` messages addressed to your owner or `all`.
+- Never post secrets.
+- Never post in the organizer chat `Data Challenge'26`.
+- GitHub Issues and PRs remain the source of truth.

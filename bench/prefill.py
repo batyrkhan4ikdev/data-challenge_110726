@@ -57,24 +57,34 @@ async def _run(assignments: list[dict], override: str | None) -> dict[str, list[
         record = records[a["conversation_id"]]
         checklist = checklist_for(record)
         profile = profiles[override or a["prefill_profile"]]
-        async with sem:
-            evaluation, _ = await evaluate(record, checklist, profile=profile, mode="single", k=1)
-        items = {it.criterion_id: it for it in evaluation.items}
+        items = {}
+        failure = ""
+        for attempt in range(3):
+            try:
+                async with sem:
+                    evaluation, _ = await evaluate(record, checklist, profile=profile, mode="single", k=1)
+                items = {it.criterion_id: it for it in evaluation.items}
+                break
+            except Exception as exc:  # network flakes must not abort the whole prefill
+                failure = f"{type(exc).__name__}: {str(exc)[:200]}"
+                await asyncio.sleep(2 * (attempt + 1))
+        if not items:
+            print(f"prefill failed for {record.conversation_id}: {failure}", file=sys.stderr)
         rows = []
         for c in checklist.criteria:
-            it = items[c.id]
+            it = items.get(c.id)
             rows.append(
                 [
                     record.conversation_id,
                     c.id,
                     c.title,
                     "|".join(allowed_verdicts(c)),
-                    it.verdict,
-                    _evidence(it),
-                    it.explanation,
+                    it.verdict if it else "",
+                    _evidence(it) if it else "",
+                    it.explanation if it else "",
                     "",
                     "",
-                    "",
+                    "" if it else "prefill не удался",
                 ]
             )
         return a["labeler"], rows

@@ -40,6 +40,7 @@ export type ExpectedRange = [unknown, unknown] | null;
 export type Explanation = string;
 export type NaReason = string | null;
 export type Verdict = string;
+export type Warnings = string[];
 export type ChecklistId = string | null;
 export type ConversationIds = string[];
 export type GroupId = string;
@@ -230,6 +231,7 @@ export interface Item {
   na_reason?: NaReason;
   verdict: Verdict;
   votes?: Votes;
+  warnings?: Warnings;
   [k: string]: unknown;
 }
 export interface Votes {

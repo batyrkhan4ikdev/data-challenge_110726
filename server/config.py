@@ -25,7 +25,7 @@ class Profile(BaseModel):
     api_key_env: str | None = None
     model: str = 'fake'
     supports_n: bool = False
-    structured: Literal['json_schema', 'json_object'] = 'json_schema'
+    structured: Literal['json_schema', 'json_object', 'prompt'] = 'json_schema'
     max_concurrency: int = 8
     max_tokens: int = 4096
     extra_body: dict[str, Any] = {}

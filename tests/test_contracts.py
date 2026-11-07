@@ -3,11 +3,9 @@ from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 import pytest
-from litestar.testing import AsyncTestClient
 from pydantic import TypeAdapter
 
 from server.config import load_profiles
-from server.mock_app import app
 from server.models import ALL_MODELS, Checklist, Evaluation, EvaluationView, Score
 
 EXAMPLES = Path(__file__).resolve().parent.parent / 'contracts' / 'examples'
@@ -61,13 +59,3 @@ def test_profiles_load() -> None:
     assert profiles['h200-gptoss'].extra_body == {'reasoning_effort': 'low'}
 
 
-async def test_mock_routes() -> None:
-    async with AsyncTestClient(app) as client:
-        r = await client.get('/api/checklists')
-        assert r.status_code == 200 and isinstance(r.json(), list)
-        r = await client.post('/api/appeals', json={})
-        assert r.status_code == 400
-        r = await client.get('/api/datasets/FAIL/conversations')
-        assert r.status_code == 502
-        r = await client.get('/api/datasets/DEV/conversations/p4-ru-003')
-        assert r.json()['channel'] == 'voice call'

@@ -821,6 +821,14 @@
           "default": {},
           "title": "Votes",
           "type": "object"
+        },
+        "warnings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
         }
       },
       "required": [
