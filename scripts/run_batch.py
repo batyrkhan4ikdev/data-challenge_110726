@@ -1,9 +1,11 @@
 """Evaluate a whole dataset group with the same store and JobRunner as the app.
 
     python scripts/run_batch.py <group_id> [--refresh] [--checklist auto|<id>] [--profile P] [--mode M] [--k K]
+                                [--fallback-profile P] [--submit dev|prod --team-name NAME]
 
 Prints one row per dialog plus token, time and cost totals, writes `out/<group_id>.results.json` and
-`out/<group_id>.results.csv`, and keeps every evaluation in `data/store` so the UI shows it.
+`out/<group_id>.results.csv`, and keeps every evaluation in `data/store` so the UI shows it. With
+`--submit`, also writes the organizer file `results/<dev|prod>/results.json` and validates it.
 """
 
 import argparse
@@ -26,10 +28,12 @@ from server.dataset import DatasetError, load_dataset  # noqa: E402
 from server.jobs import JobRunner, resolve_settings  # noqa: E402
 from server.models import BatchRequest, Evaluation, Mode, Record  # noqa: E402
 from server.store import NotFound, Store  # noqa: E402
+from server import submission  # noqa: E402
 
 STORE = Path('data/store')
 SEED = Path('data/checklists')
 OUT = Path('out')
+RESULTS = Path('results')
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -45,6 +49,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=os.environ.get('FALLBACK_PROFILE') or None,
         help='re-run dialogs that failed with the primary profile on this one (default: env FALLBACK_PROFILE)',
     )
+    p.add_argument('--submit', choices=['dev', 'prod'], help='also write results/<set>/results.json for the organizers')
+    p.add_argument('--team-name', default=os.environ.get('TEAM_NAME') or None,
+                   help='team_name in results.json (default: env TEAM_NAME)')
     return p.parse_args(argv)
 
 
@@ -134,6 +141,9 @@ def write_outputs(
 
 async def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    if args.submit and not (args.team_name or '').strip():
+        print('ошибка: --submit требует --team-name или env TEAM_NAME', file=sys.stderr)
+        return 2
     req = BatchRequest(
         group_id=args.group_id,
         conversation_ids=[],
@@ -214,7 +224,31 @@ async def main(argv: list[str] | None = None) -> int:
 
     json_path, csv_path = write_outputs(args.group_id, records, evs, failed)
     print(f'wrote {json_path.as_posix()} and {csv_path.as_posix()}')
+    if args.submit:
+        problems = write_submission(args.submit, args.team_name, records, evs, failed, profiles)
+        if problems:
+            return 1
     return 1 if failed else 0
+
+
+def write_submission(
+    which: str, team_name: str, records: list[Record], evs: dict[str, Evaluation], failed: dict[str, str],
+    profiles: dict[str, Profile],
+) -> list[str]:
+    """Write results/<which>/results.json; print and return validation problems (the file is written anyway)."""
+    ids = [r.conversation_id for r in records]
+    doc = submission.build(team_name.strip(), ids, evs, failed, profiles)
+    path = RESULTS / which / 'results.json'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    problems = submission.validate(json.loads(path.read_text(encoding='utf-8')), ids)
+    errors = sum(r['status'] == 'error' for r in doc['results'])
+    print(f'wrote {path.as_posix()}: {len(doc["results"])} entries, {errors} errors, model {doc["model"]}')
+    for p in problems:
+        print(f'  INVALID: {p}', file=sys.stderr)
+    if not problems:
+        print('  valid against the appendix format 1.0')
+    return problems
 
 
 if __name__ == '__main__':

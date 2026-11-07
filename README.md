@@ -63,13 +63,22 @@ The default checklists are in `data/checklists/`:
 
 Organizer clarifications and the team's rules for borderline cases are in each checklist's `notes`, which the model reads.
 
-### Batch run (control set)
+### Batch run and submission files
 
 ```bash
-python scripts/run_batch.py <GROUP_ID> --refresh     # fetches the group, evaluates every dialog with the defaults
+python scripts/run_batch.py DEV --refresh --submit dev                # → results/dev/results.json
+python scripts/run_batch.py <CONTROL_GROUP> --refresh --submit prod   # → results/prod/results.json (10 control chats)
 ```
 
 This prints a table and the token, time and cost totals. It writes `out/<GROUP_ID>.results.json` and `.csv` with the per-criterion verdicts and the profile used per dialog, and stores the evaluations so they appear in the UI. The control-set results are raw system output, with no manual edits.
+
+`--submit dev|prod` also writes the organizers' file in the appendix format 1.0 (`server/submission.py`) and validates it. The rules it follows:
+- criterion codes `contact … critical`, with `true`/`false`/`null` or raw scale points;
+- `evidence_turns` numbered from 1 over the raw transcript;
+- a failed dialog becomes a `status: "error"` entry;
+- `model.mode` is `local`, or `hybrid` if the cloud fallback scored any dialog.
+
+`team_name` comes from `--team-name` or env `TEAM_NAME`. Commit and push both files before stop-code.
 
 Dialogs that fail on the primary profile (for example, the self-hosted endpoint is unreachable) are re-run once on `--fallback-profile`, which defaults to env `FALLBACK_PROFILE`. Costs are reported per profile.
 

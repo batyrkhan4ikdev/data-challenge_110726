@@ -100,6 +100,7 @@ structured = "prompt"
 max_concurrency = 8
 max_tokens = 4096
 cost = { kind = "tokens", usd_per_mtok_in = 2.0, usd_per_mtok_out = 10.0 }
+hosting = "external_api"
 
 [profiles.aigw-luna]
 provider = "openai"
@@ -111,6 +112,7 @@ structured = "prompt"
 max_concurrency = 8
 max_tokens = 4096
 cost = { kind = "tokens", usd_per_mtok_in = 0.10, usd_per_mtok_out = 0.50 }
+hosting = "external_api"
 
 [profiles.aigw-alemllm]
 provider = "openai"
@@ -121,3 +123,4 @@ supports_n = false
 structured = "json_schema"
 max_concurrency = 8
 max_tokens = 4096
+hosting = "external_api"

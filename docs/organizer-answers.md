@@ -104,3 +104,28 @@ The Telegram tool does not expose which message a reply points to, so each answe
 > Покажите все диалоги, в которых система обнаружила грубые ошибки, и объяснения … как оператор может отправить результат оценки на апелляцию … как изменить чек-лист: добавить новый критерий, изменить существующий или поменять его вес … результаты оценки конкретного диалога, включая обоснование … можем попросить предоставить доступ к запущенному решению, например на вашем ноутбуке.
 
 → UI changes: a gross-error filter in the dialog list, and the gross-error badge jumps to the explanation. «Воспроизводимыми» argues for temperature 0 and k=1, or a fixed vote count, for the control run.
+
+### Update 17:45 (through #3041)
+
+**#3004** 16:44, Nikolay Borovinskiy. How the top 50 is picked:
+> • Близость результатов вашей системы к нашим экспертным оценкам (Ground Truth) на контрольном датасете. • Базовая техническая проверка репозитория по внутренним критериям. • Функциональность, удобство и интересные особенности продукта. • Разнообразие технических подходов. Мы планируем сохранить баланс между решениями на локальных LLM и облачных интеграциях. … Полная методика и веса факторов раскрываться не будут.
+
+→ GT closeness stays first. We are a local-LLM solution (h200-gemma) with a cloud fallback, and `model.mode` in results.json reports this honestly (`local`, or `hybrid` if the fallback scored any dialog).
+
+**#3011** 16:49, Nikolay Borovinskiy: build the UI for a large corporate customer (executives, QA specialists, employees); avoid cartoonish or playful styling.
+**#3015** 16:56, Alexey: an example mockup («не эталон»). It has a dark-green sidebar (Диалоги / Чек-листы / Апелляции / Аналитика), a score ring, per-criterion points, «Почему снижена оценка», «Перейти к фрагменту» and «Оспорить оценку».
+→ C6 (#25) restyles the UI in this direction and adds an «Аналитика» page.
+
+**#3041** 17:26, Nikolay Borovinskiy: «аппендикс к гайду, ту описывается как нужно результаты сложить в репозиторий» (`CQA_Student_Guide_Appendix_Results.pdf`). Key rules:
+- Files: `results/dev/results.json` (DEV: 60 chats + 5 calls) and `results/prod/results.json` (10 control chats). Access to prod and how to get it are announced one hour before stop-code.
+- Format 1.0: `schema_version`, `team_name`, `model {mode: local|external_api|hybrid, name}`, `results[]`. Each result has `conversation_id`, `status`, `criteria[]` (`criterion_id`, `value`, `rationale`, `evidence_turns`) and `score {final_score, critical_flag}`.
+- Codes: `contact, discovery, identification, consultation, empathy, dialogue, closure, critical`.
+- Values: true = «Да», false = «Нет», null = N/A; scale values are raw points before weighting (dialogue 7 = 7 of 10).
+- `evidence_turns` are numbered **from 1 over the raw transcript array**, including client, bot and events.
+- `final_score` is 0–100 with 2 decimals, N/A weight redistributed. `critical_flag` equals critical and does not zero the total.
+- A failed dialog is kept with `status: "error"`, `criteria: []`, `score: null` and `error`.
+- Prod has exactly 10 entries. The files must be pushed to the public repo before stop-code; a local commit is not enough.
+
+→ Implemented in `server/submission.py` (builder and validator) and `scripts/run_batch.py --submit dev|prod`, with `TEAM_NAME=fantastik 4`. Our `Turn.idx` is 0-based over the raw array, so the export adds 1.
+
+Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we already apply the literal rule, see above).

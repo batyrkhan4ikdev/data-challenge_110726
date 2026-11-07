@@ -30,6 +30,7 @@ class Profile(BaseModel):
     max_tokens: int = 4096
     extra_body: dict[str, Any] = {}
     cost: Cost | None = None
+    hosting: Literal['local', 'external_api'] = 'local'  # results.json `model.mode`: self-hosted vs paid API
 
     def base_url(self) -> str:
         value = os.environ.get(self.base_url_env) if self.base_url_env else None
