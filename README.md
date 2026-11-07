@@ -85,7 +85,7 @@ This prints a table and the token, time and cost totals. It writes `out/<GROUP_I
 
 `team_name` comes from `--team-name` or env `TEAM_NAME`. Commit and push both files before stop-code.
 
-Dialogs that fail on the primary profile (for example, the self-hosted endpoint is unreachable) are re-run on each profile in `--fallback-profile`, in order. That is a comma-separated list, defaulting to env `FALLBACK_PROFILE` (`aigw-sonnet,aigw-luna`). Costs are reported per profile.
+Dialogs that fail on the primary profile (for example, the self-hosted endpoint is unreachable) are re-run on each profile in `--fallback-profile`, in order. That is a comma-separated list, defaulting to env `FALLBACK_PROFILE` (`aigw-sonnet,aigw-luna,h200-glimmer`). The two cloud models come first; the last one is self-hosted, so neither a gateway outage nor a rate limit leaves dialogs unscored. Costs are reported per profile.
 
 `--submit` scores with the organizers' checklist. If the default `chat`/`call` checklist was edited in the UI (for example, during a demo), the run aborts before evaluating. Re-run it with `--reset-defaults`, which saves `data/checklists/*.default.json` back as a new version and keeps the history.
 
