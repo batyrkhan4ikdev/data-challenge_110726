@@ -177,3 +177,10 @@ Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we alrea
 → The hard limit is the last commit before 12:00 on Nov 8, the same as our stop-code. `results/prod/results.json` must be pushed before then.
 
 **#3303 → #3304** 23:18 (admin): «Презентация что ваще до 12 да» — «Да». The presentation is also due by 12:00.
+
+### Update 00:55 Nov 8 (through #3355)
+
+**#3318 → #3327** 00:01–00:02, Nikolay Borovinskiy. Asked how they will verify that the test set was processed by the project's agent and not by GPT or Claude. Answer: «Если пройдёте в топ 10+- то попросим прогнать пару транскриптов при нас.»
+→ Shortlisted teams run a couple of transcripts live in front of the jury. The control path has to work on demand: `run_batch.py` and «Оценить» in the UI on gemma, which stays up until 17:00. `docs/demo.md` already covers live evaluation (about 6 s per chat).
+
+**#3352** 00:30, unanswered: whether `contact: null` is allowed for calls whose recording starts after the greeting. The question is the same as #3060. Our DEV calls all have `contact = true`; the control set is chats only.
