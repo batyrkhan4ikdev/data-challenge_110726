@@ -4,9 +4,9 @@
 
 **Goal:** Conversation Quality Analytics prototype: configurable checklist, LLM scoring of operator dialogs with evidence, appeal and reviewer-decision flow with recomputed totals.
 
-**Architecture:** Python FastAPI backend (dataset fetch, checklist storage, LLM evaluation, appeals) and a TypeScript frontend compiled with plain `tsc` to ES modules (no framework, no bundler; one self-contained module per screen so it can be wrapped later as a Dynamics 365 HTML web resource). Scoring math is a pure Python module with no I/O, driven entirely by checklist config. Storage is JSON files under `data/store/`. The backend serves the compiled `web/dist/` statically.
+**Architecture:** Python Litestar backend, async end to end (dataset fetch, checklist storage, LLM evaluation, appeals) and a TypeScript frontend compiled with plain `tsc` to ES modules (no framework, no bundler; one self-contained module per screen so it can be wrapped later as a Dynamics 365 HTML web resource). Scoring math is a pure synchronous Python module with no I/O, driven entirely by checklist config. Storage is JSON files under `data/store/`. The backend serves the compiled `web/dist/` statically.
 
-**Tech Stack:** Python 3.14, FastAPI + uvicorn, pydantic v2, httpx, pytest (+ `pytest-asyncio` not needed: use sync `TestClient`); TypeScript 5 (`tsc` only, `strict: true`), vitest for pure frontend logic only; OpenAI-compatible chat-completions API configured by env (`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`).
+**Tech Stack:** Python 3.14, Litestar + uvicorn, pydantic v2, niquests (`niquests.AsyncSession`) for all outbound HTTP, pytest + `pytest-asyncio` (`asyncio_mode = "auto"`, tests are `async def`, API tests use `litestar.testing.AsyncTestClient`); TypeScript 5 (`tsc` only, `strict: true`), vitest for pure frontend logic only; OpenAI-compatible chat-completions API configured by env (`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`).
 
 **Spec:** `docs/CQA_Hackathon_Student_Guide.md` (task guide). The eight-criteria checklist PDF is a separate organizer file that is **not in the repo yet** (see Task 2 blocker).
 
@@ -42,7 +42,7 @@
 ```
 server/
   __init__.py
-  app.py            # FastAPI app, static mount, router wiring
+  app.py            # Litestar app, static files router, route handler wiring
   models.py         # pydantic: Record, Turn, Checklist, Criterion, Item, Evaluation, Appeal
   dataset.py        # fetch/cache/normalize
   checklist.py      # validate, load/save, versioning
@@ -61,7 +61,7 @@ web/
   dist/             # tsc output (gitignored)
 data/dev.json       # present
 data/checklist.default.json
-tests/              # pytest
+tests/              # pytest (async)
 web/tests/          # vitest
 pyproject.toml
 README.md
@@ -75,11 +75,11 @@ README.md
 - Create: `pyproject.toml`, `server/__init__.py`, `server/models.py`, `server/dataset.py`, `tests/test_dataset.py`, `.gitignore` (`.venv`, `web/dist`, `node_modules`, `data/store`)
 
 **Interfaces:**
-- Produces: `models.Turn(idx:int, timestamp:str, speaker:Literal['client','operator','bot','system'], text:str)`; `models.Record(conversation_id, channel, language, transcript:list[Turn], audio_url:str|None)`; `dataset.normalize_response(payload:dict) -> list[Record]` (raises `DatasetError` on `isSuccess:false` or bad shape; `idx` = array position); `dataset.load_dataset(group_id:str, refresh:bool=False) -> list[Record]` (cache `data/<group_id>.json`; base URL from env `DATASET_URL`, `group_id` appended as query param; on fetch failure with cache present raise `DatasetError` leaving cache intact).
+- Produces: `models.Turn(idx:int, timestamp:str, speaker:Literal['client','operator','bot','system'], text:str)`; `models.Record(conversation_id, channel, language, transcript:list[Turn], audio_url:str|None)`; `dataset.normalize_response(payload:dict) -> list[Record]` (sync; raises `DatasetError` on `isSuccess:false` or bad shape; `idx` = array position); `async dataset.load_dataset(group_id:str, refresh:bool=False) -> list[Record]` (cache `data/<group_id>.json`; base URL from env `DATASET_URL`, `group_id` appended as query param; fetched with `niquests.AsyncSession`; on fetch failure with cache present raise `DatasetError` leaving cache intact).
 
 - [ ] **Step 1: Failing tests** (`tests/test_dataset.py`, using `data/dev.json`): 65 records; each turn `idx` equals position; 5 records `channel=='voice call'` with non-null `audio_url`; timestamps equal raw; `normalize_response({"isSuccess":False,"error":"boom"})` raises `DatasetError` matching `boom`.
 - [ ] **Step 2:** `pytest tests/test_dataset.py -q` → FAIL (import error).
-- [ ] **Step 3:** Implement as above; `pyproject.toml` pins deps (fastapi, uvicorn, pydantic, httpx, pytest).
+- [ ] **Step 3:** Implement as above; `pyproject.toml` pins deps (litestar, uvicorn, pydantic, niquests, pytest, pytest-asyncio) and sets `[tool.pytest.ini_options] asyncio_mode = "auto"`. Add one async test: `load_dataset` with a stubbed session returning a bad payload raises `DatasetError` and leaves an existing cache file byte-identical.
 - [ ] **Step 4:** run → PASS.
 - [ ] **Step 5:** `git add -A && git commit -m "feat: scaffold and dataset loader"`
 
@@ -121,9 +121,9 @@ README.md
 
 **Interfaces:**
 - Consumes: `Record`, `Checklist`, `compute_score`.
-- Produces: `models.Item(criterion_id, applicable, na_reason:str|None, answer:str, points:float|None, explanation:str, evidence_idx:list[int], checked_range:tuple[int,int]|None, gross_error:bool=False)`; `models.Evaluation(conversation_id, checklist_version:int, items:list[Item], score:Score, model:str, usage:Usage(prompt_tokens:int, completion_tokens:int))`; `evaluator.build_prompt(record, checklist) -> tuple[str,str]` (system, user); `evaluator.parse_output(raw:str, record, checklist) -> list[Item]` (raises `EvaluationError`); `evaluator.evaluate(record, checklist, llm:LLM|None=None) -> Evaluation` where `LLM = Callable[[list[dict]], tuple[str, Usage]]` (default: httpx call to OpenAI-compatible endpoint; injectable for tests).
+- Produces: `models.Item(criterion_id, applicable, na_reason:str|None, answer:str, points:float|None, explanation:str, evidence_idx:list[int], checked_range:tuple[int,int]|None, gross_error:bool=False)`; `models.Evaluation(conversation_id, checklist_version:int, items:list[Item], score:Score, model:str, usage:Usage(prompt_tokens:int, completion_tokens:int))`; `evaluator.build_prompt(record, checklist) -> tuple[str,str]` (system, user; sync); `evaluator.parse_output(raw:str, record, checklist) -> list[Item]` (sync; raises `EvaluationError`); `async evaluator.evaluate(record, checklist, llm:LLM|None=None) -> Evaluation` where `LLM = Callable[[list[dict]], Awaitable[tuple[str, Usage]]]` (default: niquests `AsyncSession` call to OpenAI-compatible endpoint; injectable for tests).
 
-- [ ] **Step 1: Failing tests** with a fake `llm`: valid JSON → Evaluation with score; prompt contains every criterion id and every turn as `[idx] speaker: text`; `evidence_idx` ≥ len(transcript) → `parse_output` raises; applicable item with empty `evidence_idx` and no `checked_range` → raises; `applicable=False` without `na_reason` → raises; invalid then valid → `evaluate` retries once and succeeds; two invalid → raises `EvaluationError`; markdown-fenced JSON accepted; empty transcript → no LLM call, all items N/A with reason, `score.total is None`.
+- [ ] **Step 1: Failing async tests** with an async fake `llm`: valid JSON → Evaluation with score; prompt contains every criterion id and every turn as `[idx] speaker: text`; `evidence_idx` ≥ len(transcript) → `parse_output` raises; applicable item with empty `evidence_idx` and no `checked_range` → raises; `applicable=False` without `na_reason` → raises; invalid then valid → `evaluate` retries once and succeeds; two invalid → raises `EvaluationError`; markdown-fenced JSON accepted; empty transcript → no LLM call, all items N/A with reason, `score.total is None`.
 - [ ] **Step 2:** run → FAIL.
 - [ ] **Step 3:** Implement. Prompt: score only `operator` turns; `bot`/`system` context only; explanation in the dialog's language; cite by `idx`; return strict JSON. Record `usage`.
 - [ ] **Step 4:** run → PASS.
@@ -136,7 +136,7 @@ README.md
 
 **Interfaces:**
 - Consumes: Tasks 1-4.
-- Produces (`uvicorn server.app:app --port 8787`; serves `web/dist` and `web/index.html` at `/`):
+- Produces (`uvicorn server.app:app --port 8787`; `app` is a `litestar.Litestar`; serves `web/dist` and `web/index.html` at `/`):
   - `GET /api/conversations?group_id=DEV` → `[{conversation_id, channel, language, turns, has_evaluation, final_total}]`
   - `GET /api/conversations/{id}` → Record
   - `GET|PUT /api/checklist`
@@ -146,9 +146,9 @@ README.md
   - `POST /api/appeals/{id}/decision {action:'confirm'|'change', new_points?:float, new_applicable?:bool, reason:str}` → `{appeal, final}`; `final` = `compute_score` over the evaluation with accepted overrides; the stored evaluation is never mutated.
   - Dataset failure → 502 `{error}`.
 
-- [ ] **Step 1: Failing tests** (`TestClient`, dependency-overridden fake `llm`, dataset from `data/dev.json`): evaluate one dialog then GET returns score; PUT checklist bumps version and the next evaluation records the new `checklist_version` while the old keeps its version; appeal requires non-empty `comment` and known `criterion_id` (422/400 otherwise); decision `change` yields `final.score.total != evaluation.score.total`; decision without `reason` → 422/400; appeal on an N/A criterion accepted; dataset failure → 502.
+- [ ] **Step 1: Failing async tests** (`AsyncTestClient(app)`, fake async `llm` injected via Litestar dependency override, dataset from `data/dev.json`): evaluate one dialog then GET returns score; PUT checklist bumps version and the next evaluation records the new `checklist_version` while the old keeps its version; appeal requires non-empty `comment` and known `criterion_id` (400 otherwise); decision `change` yields `final.score.total != evaluation.score.total`; decision without `reason` → 400; appeal on an N/A criterion accepted; dataset failure → 502.
 - [ ] **Step 2:** run → FAIL.
-- [ ] **Step 3:** Implement. Persist under `data/store/` (`evaluations/<id>.json`, `appeals.json`). Evaluation runs in a thread pool (default 4 workers), per-dialog errors captured so one failure doesn't abort the batch.
+- [ ] **Step 3:** Implement. Persist under `data/store/` (`evaluations/<id>.json`, `appeals.json`). Batch evaluation runs as an `asyncio.gather` over dialogs bounded by an `asyncio.Semaphore` (default 4), per-dialog errors captured so one failure doesn't abort the batch; file I/O via `asyncio.to_thread`.
 - [ ] **Step 4:** run → PASS; then `uvicorn server.app:app --port 8787` and `curl "localhost:8787/api/conversations?group_id=DEV"` returns 65 rows.
 - [ ] **Step 5:** commit `feat: store and API`.
 
@@ -199,7 +199,7 @@ README.md
 **Interfaces:**
 - `python scripts/run_batch.py <group_id>`: loads group (refresh), evaluates all records, prints failures and token totals.
 
-- [ ] **Step 1:** Implement script and README (env vars, install, `npm run build`, `uvicorn` command, control-set procedure, checklist editing, model name and approx cost per evaluation computed from recorded `usage`).
+- [ ] **Step 1:** Implement script (`asyncio.run`) and README (env vars, install, `npm run build`, `uvicorn` command, control-set procedure, checklist editing, model name and approx cost per evaluation computed from recorded `usage`).
 - [ ] **Step 2: Smoke:** `python scripts/run_batch.py DEV`; all 65 evaluated or failures listed; fill cost numbers in README.
 - [ ] **Step 3:** commit `docs: README, batch runner`; push.
 
