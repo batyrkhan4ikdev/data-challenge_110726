@@ -27,7 +27,7 @@ from server.config import Profile, load_profiles  # noqa: E402
 from server.dataset import DatasetError, load_dataset  # noqa: E402
 from server.jobs import JobRunner, fallback_names, resolve_settings  # noqa: E402
 from server.models import BatchRequest, Evaluation, Mode, Record  # noqa: E402
-from server.store import NotFound, Store  # noqa: E402
+from server.store import NotFound, Store, atomic_write  # noqa: E402
 from server import submission  # noqa: E402
 
 STORE = Path('data/store')
