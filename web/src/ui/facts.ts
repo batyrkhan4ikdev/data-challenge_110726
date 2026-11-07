@@ -17,7 +17,7 @@ export function factsCard(slot: Promise<DialogFacts>, onJump: (idx: number) => v
   const f = t.result.facts;
   const card = h(
     'section',
-    { class: 'cqa-card cqa-facts', 'aria-label': f.title },
+    { class: 'cqa-facts', 'aria-label': f.title },
     h('h2', { class: 'cqa-card-title' }, f.title),
     h('span', { class: 'cqa-muted' }, t.common.loading),
   );

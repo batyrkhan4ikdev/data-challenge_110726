@@ -21,9 +21,10 @@ function grossBadge(view: EvaluationView): HTMLElement {
     const details = scope?.querySelector<HTMLDetailsElement>('.cqa-details');
     if (details) details.open = true;
     const rowEls = ids.map((id) => scope?.querySelector<HTMLElement>(`tr[data-criterion="${CSS.escape(id)}"]`) ?? null);
-    rowEls.find((r) => r !== null)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    rowEls.find((r) => r !== null)?.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
     for (const r of rowEls) {
-      if (!r) continue;
+      if (!r || reduced) continue;
       r.classList.remove('is-flash');
       void r.offsetWidth;
       r.classList.add('is-flash');
@@ -108,14 +109,14 @@ function durationOf(record: DialogRecord | null): string | null {
 function pageHeader(view: EvaluationView, ctx: Ctx, record: DialogRecord | null, status: HTMLElement): HTMLElement {
   const ev = view.evaluation;
   const reBtn = h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary', id: 'cqa-reevaluate' }, t.result.reevaluate);
-  reBtn.addEventListener('click', () =>
-    void runAndOpen(
-      ctx,
-      { group_id: ev.group_id, conversation_ids: [ev.conversation_id], checklist_id: ev.checklist_id, profile: ev.profile, mode: ev.mode, k: ev.k },
-      status,
-      (busy) => (reBtn.disabled = busy),
-    ),
-  );
+  reBtn.addEventListener('click', () => {
+    const req: BatchRequest = { group_id: ev.group_id, conversation_ids: [ev.conversation_id], checklist_id: ev.checklist_id, profile: ev.profile, mode: ev.mode, k: ev.k };
+    void runAndOpen(ctx, req, status, (busy) => {
+      reBtn.disabled = busy;
+      reBtn.textContent = busy ? t.result.reevaluating : t.result.reevaluate;
+      reBtn.setAttribute('aria-busy', String(busy));
+    });
+  });
   const subtitle = [ev.conversation_id, record ? (t.channel[record.channel] ?? record.channel) : null, record?.language, durationOf(record)]
     .filter((x): x is string => !!x)
     .join(' · ');
@@ -173,7 +174,7 @@ function scoreCard(opts: ScoreCardOptions): HTMLElement {
       if (!full) lost.push({ c, text: it?.explanation ?? '' });
     }
     icon = h('span', { class: `cqa-mark cqa-mark--${state}` }, state === 'ok' ? checkIcon() : state === 'na' ? 'N/A' : crossIcon());
-    rows.push(h('li', { class: 'cqa-score-row', 'data-criterion': c.id }, icon, h('span', { class: 'cqa-score-title', title: c.title }, c.title), h('span', { class: 'cqa-score-pts' }, pts)));
+    rows.push(h('li', { class: 'cqa-score-row', 'data-criterion': c.id }, icon, h('span', { class: 'cqa-score-title' }, c.title), h('span', { class: 'cqa-score-pts' }, pts)));
   }
 
   const why = lost.length
@@ -184,14 +185,15 @@ function scoreCard(opts: ScoreCardOptions): HTMLElement {
         return h(
           'li',
           { class: 'cqa-why-row', 'data-criterion': c.id },
-          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl', title: text }, text)),
+          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl' }, text)),
           h(
             'div',
             { class: 'cqa-why-actions' },
-            h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary cqa-btn--small', disabled: !hasFragment, title: hasFragment ? undefined : t.result.noFragment, onclick: () => opts.onJump(c) }, t.result.jumpToFragment),
+            h('button', { type: 'button', class: 'cqa-btn cqa-btn--tint cqa-btn--small cqa-jump', disabled: !hasFragment, 'data-has-fragment': String(hasFragment), onclick: () => opts.onJump(c) }, t.result.jumpToFragment),
+            !hasFragment ? h('span', { class: 'cqa-muted cqa-no-fragment' }, t.result.noFragment) : null,
             hasOpen
               ? badge(t.result.appealOpen, 'warn')
-              : h('button', { type: 'button', class: 'cqa-btn cqa-btn--outline cqa-btn--small', onclick: () => opts.onAppeal(c) }, t.result.appealButton),
+              : h('button', { type: 'button', class: 'cqa-btn cqa-btn--small', onclick: () => opts.onAppeal(c) }, t.result.appealButton),
           ),
         );
       })
@@ -265,7 +267,7 @@ function detailsBlock(view: EvaluationView, record: DialogRecord | null, history
     h('div', { class: 'cqa-result-actions' }, rawToggle),
     rawBody,
     h('h3', null, t.result.detailsTable),
-    h('div', { class: 'cqa-table-wrap' }, table),
+    h('div', { class: 'cqa-table-wrap', tabindex: '0', role: 'region', 'aria-label': t.result.detailsTable }, table),
   );
 }
 
@@ -339,12 +341,21 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     }
   });
 
-  const status = h('div', { class: 'cqa-status' });
-  root.replaceChildren(
-    pageHeader(view, ctx, record, status),
-    h('div', { class: 'cqa-split' }, left, scoreCard({ view, onJump: jump, onAppeal: appeal })),
-    detailsBlock(view, record, history, rawToggle, rawBody, table),
-  );
+  const status = h('div', { class: 'cqa-status', role: 'status' });
+  const score = scoreCard({ view, onJump: jump, onAppeal: appeal });
+  const header = pageHeader(view, ctx, record, status);
+  if (transcript?.audio) {
+    const link = h('a', { class: 'cqa-link cqa-audio-jump', href: '#cqa-call-audio' }, t.result.audioJump);
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      transcript.audio!.focus({ preventScroll: true });
+      transcript.audio!.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+    header.appendChild(link);
+  }
+  root.replaceChildren(header,
+    h('div', { class: 'cqa-split' }, score, left),
+    detailsBlock(view, record, history, rawToggle, rawBody, table));
 }
 
 /** Диалог без оценок: только транскрипт и кнопка «Оценить». Оценённый диалог открывает последнюю оценку. */
@@ -362,11 +373,16 @@ export async function renderTranscriptOnly(root: HTMLElement, ctx: Ctx): Promise
     return;
   }
   const transcript = renderTranscript(record, { ids: true });
-  const status = h('div', { class: 'cqa-status' });
+  const status = h('div', { class: 'cqa-status', role: 'status' });
   const btn = h('button', { type: 'button', class: 'cqa-btn cqa-btn--primary' }, t.dialogs.evaluateOne);
-  btn.addEventListener('click', () =>
-    void runAndOpen(ctx, { group_id: group, conversation_ids: [cid], checklist_id: null }, status, (busy) => (btn.disabled = busy)),
-  );
+  btn.addEventListener('click', () => {
+    const req: BatchRequest = { group_id: group, conversation_ids: [cid], checklist_id: null };
+    void runAndOpen(ctx, req, status, (busy) => {
+      btn.disabled = busy;
+      btn.textContent = busy ? t.result.reevaluating : t.dialogs.evaluateOne;
+      btn.setAttribute('aria-busy', String(busy));
+    });
+  });
   root.replaceChildren(
     heading(cid, badge(t.channel[record.channel] ?? record.channel), badge(record.language), btn, h('a', { class: 'cqa-link', href: hrefDialogs(group) }, `← ${group}`)),
     banner(t.dialogs.transcriptOnly, null, 'info'),

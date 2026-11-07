@@ -620,12 +620,15 @@
 /* ---- 7. Result ---- */
 .cqa .cqa-split {
   display: grid;
-  grid-template-columns: minmax(320px, 5fr) minmax(0, 6fr);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  grid-template-areas: 'transcript score';
   gap: 16px;
   margin-bottom: 16px;
   align-items: start;
 }
 .cqa .cqa-score-card {
+  grid-area: score;
+  min-width: 0;
   margin-bottom: 0;
 }
 .cqa .cqa-score-top {
@@ -641,6 +644,10 @@
   align-items: center;
   gap: 8px;
   color: var(--cqa-muted);
+}
+.cqa .cqa-ring > svg {
+  width: 112px;
+  height: 112px;
 }
 .cqa .cqa-ring--good {
   color: var(--cqa-good);
@@ -661,7 +668,7 @@
   stroke-linecap: round;
 }
 .cqa .cqa-ring-num {
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 700;
   fill: var(--cqa-heading);
   stroke: none;
@@ -676,11 +683,8 @@
   font-size: 12px;
 }
 .cqa .cqa-ring .cqa-badge {
-  font-size: 13px;
-  padding: 4px 12px;
-  background: var(--cqa-bad);
-  border-color: var(--cqa-bad);
-  color: #fff;
+  max-width: 100%;
+  white-space: normal;
 }
 .cqa .cqa-total--none {
   font-size: 16px;
@@ -704,6 +708,12 @@
 }
 .cqa .cqa-score-row:last-child {
   border-bottom: none;
+}
+.cqa .cqa-score-title,
+.cqa .cqa-why-expl,
+.cqa .cqa-why-text strong {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .cqa .cqa-score-pts {
   font-variant-numeric: tabular-nums;
@@ -755,10 +765,9 @@
 }
 .cqa .cqa-why-row {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   padding: 12px 0;
   border-bottom: 1px solid var(--cqa-border);
 }
@@ -766,7 +775,7 @@
   border-bottom: none;
 }
 .cqa .cqa-why-text {
-  flex: 1 1 240px;
+  width: 100%;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -774,12 +783,31 @@
 }
 .cqa .cqa-why-expl {
   color: var(--cqa-muted);
+  max-width: 70ch;
 }
 .cqa .cqa-why-actions {
   display: flex;
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
+}
+.cqa .cqa-no-fragment {
+  font-size: 12px;
+}
+.cqa .cqa-score-card .cqa-btn,
+.cqa .cqa-page-actions #cqa-reevaluate {
+  white-space: normal;
+  text-align: center;
+  max-width: 100%;
+}
+.cqa .cqa-audio-jump {
+  display: none;
+}
+.cqa .cqa-evidence-link:disabled,
+.cqa .cqa-expected-link:disabled {
+  color: var(--cqa-muted);
+  text-decoration: none;
+  cursor: not-allowed;
 }
 .cqa .cqa-sections-totals {
   display: flex;
@@ -818,6 +846,14 @@
   border-color: var(--cqa-accent);
   background: var(--cqa-good-bg);
   font-weight: 600;
+}
+.cqa .cqa-history-item {
+  border-color: var(--cqa-control-border);
+  overflow-wrap: anywhere;
+}
+.cqa .cqa-meta dd,
+.cqa .cqa-raw-call summary {
+  overflow-wrap: anywhere;
 }
 .cqa .cqa-raw-panel {
   max-height: 480px;
@@ -910,7 +946,9 @@
   font-weight: 600;
 }
 .cqa .cqa-facts {
-  margin-top: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--cqa-border);
 }
 .cqa .cqa-facts-row {
   display: flex;
@@ -935,9 +973,129 @@
 .cqa .cqa-facts-events li {
   padding: 2px 0;
 }
+@media (max-width: 1000px) {
+  .cqa .cqa-split {
+    grid-template-areas: 'score' 'transcript';
+  }
+  .cqa .cqa-ring > svg {
+    width: 96px;
+    height: 96px;
+  }
+  .cqa .cqa-audio-jump {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+  }
+}
+@media (max-width: 600px) {
+  .cqa .cqa-score-row {
+    gap: 8px;
+  }
+  .cqa .cqa-score-card .cqa-score-top {
+    gap: 12px;
+  }
+  .cqa .cqa-score-pts {
+    max-width: 112px;
+    white-space: normal;
+    text-align: right;
+  }
+  .cqa .cqa-why-actions {
+    width: 100%;
+  }
+  .cqa .cqa-why-actions .cqa-badge {
+    white-space: normal;
+  }
+  .cqa .cqa-history-item {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+}
+
+/* ---- 8b. Call panel ---- */
+.cqa .cqa-call-panel {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--cqa-border);
+  min-width: 0;
+}
+.cqa .cqa-call-panel h3 {
+  margin: 0 0 12px;
+}
+.cqa .cqa-call-drop {
+  border: 1px dashed var(--cqa-control-border);
+  border-radius: var(--cqa-radius);
+  padding: 12px;
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+.cqa .cqa-call-drop.is-dragging {
+  background: var(--cqa-good-bg);
+  border-color: var(--cqa-accent);
+}
+.cqa .cqa-call-drop .cqa-btn {
+  white-space: normal;
+  margin-top: 8px;
+}
+.cqa .cqa-call-drop progress {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  accent-color: var(--cqa-accent);
+}
+.cqa .cqa-call-providers {
+  border: 0;
+  padding: 0;
+  margin: 0 0 12px;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cqa .cqa-call-providers legend {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.cqa .cqa-call-provider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--cqa-control-border);
+  border-radius: var(--cqa-radius);
+}
+.cqa .cqa-call-provider:has(input:checked) {
+  border-color: var(--cqa-accent);
+  background: var(--cqa-good-bg);
+}
+.cqa .cqa-call-provider:has(input:disabled) {
+  background: var(--cqa-disabled-bg);
+}
+.cqa .cqa-call-provider span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.cqa .cqa-call-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+.cqa .cqa-call-status {
+  flex: 1 1 160px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.cqa .cqa-call-error {
+  color: var(--cqa-bad);
+}
 
 /* ---- 8. Transcript ---- */
 .cqa .cqa-pane--transcript {
+  grid-area: transcript;
+  min-width: 0;
   position: sticky;
   top: 16px;
   max-height: calc(100vh - 32px);
@@ -950,13 +1108,16 @@
 }
 .cqa .cqa-audio-bar {
   position: sticky;
-  top: -20px;
+  top: 0;
   z-index: 3;
   background: var(--cqa-surface);
   padding: 0 16px 12px 0;
 }
 .cqa .cqa-audio {
   width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  scroll-margin: 24px;
 }
 .cqa .cqa-turns {
   display: flex;
@@ -976,6 +1137,7 @@
   display: flex;
   gap: 12px;
   align-items: baseline;
+  flex-wrap: wrap;
   font-size: 13px;
   color: var(--cqa-muted);
   margin-bottom: 2px;
@@ -1000,6 +1162,7 @@
 }
 .cqa .cqa-turn--system .cqa-turn-text {
   color: var(--cqa-muted);
+  font-style: normal;
 }
 .cqa .cqa-turn.is-evidence {
   background: var(--cqa-evidence);
@@ -1012,6 +1175,20 @@
   border-radius: var(--cqa-radius);
   box-shadow: inset 0 0 0 1px var(--cqa-expected-border);
   border-top-color: transparent;
+}
+.cqa .cqa-turn-marker {
+  flex-basis: 100%;
+  font-weight: 600;
+  color: var(--cqa-warn);
+}
+.cqa .cqa-turn.is-expected .cqa-turn-marker {
+  color: var(--cqa-bad);
+}
+@media (max-width: 1000px) {
+  .cqa .cqa-split > .cqa-pane--transcript {
+    max-height: max(420px, 75vh);
+    scroll-padding-top: 96px;
+  }
 }
 
 /* ---- 9. Appeals and modal ---- */
