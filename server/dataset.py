@@ -14,7 +14,8 @@ from server.http import new_session
 from server.models import Record, Turn
 
 _FRACTION = re.compile(r'(\.\d{6})\d+')
-# Waits between dataset fetch attempts on a connection error or HTTP 5xx (4 attempts, ~35 s worst case).
+# Waits between dataset fetch attempts on a connection error or HTTP 5xx: 4 attempts, 35 s of sleeps; with the
+# 60 s per-request timeout the worst case is ~4×60+35 ≈ 275 s. The ~21 s connect drops seen here recover on try 2–3.
 RETRY_DELAYS_S: tuple[float, ...] = (5.0, 10.0, 20.0)
 
 
