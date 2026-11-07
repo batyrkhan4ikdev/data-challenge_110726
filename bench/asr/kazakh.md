@@ -4,25 +4,30 @@ One 180 s mono 16 kHz call, record `1234`, which **the dataset labels `language:
 
 The listening review is done, 2026-11-08. Batyrkhantzy111 chose **Whisper large-v3 (Alem.Cloud)** as the reference base and corrected it from his notes. `bench/asr/kazakh-1234.reference.json` has 32 turns and 218 words: 22 Alem rows, 11 word fixes, and 10 listener-quoted turns Alem dropped. Roles are bot/operator/client; names and the city are masked. The **kk** letter share remains a secondary column only, a script proxy, not accuracy. Audio and raw output stay in `data/audio/` and `data/asr/raw/` (gitignored).
 
-## CER against the reference
+## CER against the reference (diagnostic)
 
-| provider | CER covered | WER covered | CER full | words | loop |
-|---|---|---|---|---|---|
-| KuSpeech multilingual | 0.167 | 0.358 | 0.265 | 249 | 0 |
-| FreedomSpeech | 0.199 | 0.394 | 0.343 | 272 | 0 |
-| Whisper large-v3 (Alem.Cloud) | 0.312 | 0.390 | 0.312 | 146 | 0 |
-| WhisperX + pyannote (`language=kk`) | 0.313 | 0.569 | 0.454 | 236 | 108 |
-| WhisperX + pyannote (auto → kk re-run) | 0.313 | 0.569 | 0.454 | 236 | 108 |
-| Whisper large-v3 (aigw) | 0.432 | 0.564 | 0.401 | 153 | 0 |
-| Whisper large-v3 turbo (Alem.Cloud) | 0.509 | 0.674 | 0.509 | 136 | 0 |
-| T-one + pyannote | 0.638 | 0.904 | 0.642 | 129 | 0 |
-| GigaAM-v3 + pyannote | 0.804 | 0.922 | 0.790 | 59 | 0 |
-| Gemini 3.5 Transcribe | 0.871 | 0.927 | 0.861 | 33 | 0 |
+Full text of each provider against all reference turns, after `collapse_repeats` (the WhisperX loop of 108 words is removed). Sorted by provider, not by score: these numbers are **not a ranking**.
 
-- **covered** drops a provider's segments that lie mostly inside the reference's `gaps`: 10 spans where other providers hear speech the reference does not contain, including a second request for the operator, the rest of the client's credit question, the name exchange around 01:43–01:49, and short replies. **full** scores everything. Hypotheses pass through `collapse_repeats` first, like every server result, so the WhisperX loop of 108 words is removed.
-- The reference is biased toward Alem Whisper plus inserted turns. Two inserted turns were quoted from KuSpeech, the operator greeting and the client's first question; one came from FreedomSpeech, `Операторға қосыңыз`. That favours those three. Alem itself is penalised only for the speech it dropped, 146 words against 218, not for wording, because the listener rated 20 of its 22 rows green.
-- KuSpeech at 0.167 and FreedomSpeech at 0.199 are closest on the covered text; FreedomSpeech is the closest with speaker labels. WhisperX matches Alem's error rate on covered text, 0.313 vs 0.312, once the loop is collapsed. Whisper (aigw) and turbo are worse; T-one, GigaAM-v3 and Gemini are not usable on Kazakh, at 0.64–0.87.
-- One call, 180 s: treat as a direction, not a ranking with error bars.
+| provider | CER | WER | words | loop |
+|---|---|---|---|---|
+| FreedomSpeech | 0.343 | 0.537 | 272 | 0 |
+| GigaAM-v3 + pyannote | 0.790 | 0.922 | 59 | 0 |
+| Gemini 3.5 Transcribe | 0.861 | 0.927 | 33 | 0 |
+| KuSpeech multilingual | 0.265 | 0.468 | 249 | 0 |
+| T-one + pyannote | 0.642 | 0.908 | 129 | 0 |
+| Whisper large-v3 (Alem.Cloud) | 0.312 | 0.390 | 146 | 0 |
+| Whisper large-v3 (aigw) | 0.401 | 0.601 | 153 | 0 |
+| Whisper large-v3 turbo (Alem.Cloud) | 0.509 | 0.674 | 136 | 0 |
+| WhisperX + pyannote (`language=kk`) | 0.454 | 0.725 | 236 | 108 |
+| WhisperX + pyannote (auto → kk re-run) | 0.454 | 0.725 | 236 | 108 |
+
+Why this does not rank providers:
+
+- **The reference is incomplete.** Its `gaps` list 10 spans where other providers hear speech the reference does not contain (a second request for the operator, the rest of the client's credit question, the name exchange around 01:43–01:49, short replies). A provider that transcribes that speech is charged insertions for it; one that drops it is not. A fair comparison needs the same verified intervals with aligned text on both sides; that alignment has not been done. An earlier version of this section dropped hypothesis segments by gap overlap; that depends on each provider's segmentation (it removed reference-covered client speech from FreedomSpeech, and nothing from the untimed turbo output), so it was withdrawn.
+- **The reference is not independent.** It is Alem Whisper with the listener's 11 word fixes and 10 inserted turns. Two inserted turns were quoted from KuSpeech (the operator greeting and the client's first question), one from FreedomSpeech (`Операторға қосыңыз`). Alem's own CER therefore reflects only those fixes and insertions, and KuSpeech and FreedomSpeech share text with the reference by construction.
+- **One call, 180 s.** The only signal robust to both biases is the gross one: T-one, GigaAM-v3 and Gemini do not produce usable Kazakh here.
+
+**Listener's note on the review itself.** The «идеально» marks are not always reliable: a row was marked green when the words in it were right, even where Whisper (Alem.Cloud) had dropped the operator–client exchange around it. Whisper missed many of those dialogue turns; the 10 inserted turns and the 10 `gaps` are that missing speech, so 20 of 22 green rows do not mean Alem covered the call well.
 
 **Correction (03:55).** The first version of this table ranked WhisperX first with 340 words and 0.712. 108 of those words were one token, «өте», repeated in a single run: a Whisper decoding loop, not speech. The columns below count words after collapsing any run of 5+ identical words (`collapse_repeats` in `server/asr/providers.py`, now applied to every ASR result), and **loop** is how many words that removed.
 
@@ -41,7 +46,7 @@ The listening review is done, 2026-11-08. Batyrkhantzy111 chose **Whisper large-
 
 ## What it says
 
-- **No clear Kazakh winner by this proxy.** Once the loop is removed, the Kazakh-script providers sit within 0.53–0.59. The differences are smaller than what the proxy can tell apart. See [CER against the reference](#cer-against-the-reference) for the measured comparison.
+- **No clear Kazakh winner by this proxy.** Once the loop is removed, the Kazakh-script providers sit within 0.53–0.59. The differences are smaller than what the proxy can tell apart. The CER against the listener's reference ([diagnostic](#cer-against-the-reference-diagnostic)) does not settle it either.
 - **FreedomSpeech and WhisperX are the two candidates with speaker labels.** FreedomSpeech gives the most words (272) and has no loop. WhisperX runs on our GPU, but it looped on this call: without the new loop guard the judge would have read a turn of 109 «өте».
 - **Plain Whisper large-v3 (cloud) has the highest share, but about half the words** (138–146 against 232–272) and no speakers: it drops speech rather than mistranscribing it [INFERENCE from the word counts].
 - **The automatic kk re-run works on real audio.** With no hint, the hub first answers `language: auto` at kk 0.32. `transcribe()` sees Kazakh letters above the 0.15 threshold and re-runs with `kk`, landing on the same output as the forced provider. The cost is the wasted first pass: 80.2 s against 22.1 s.
