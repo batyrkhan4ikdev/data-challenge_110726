@@ -135,7 +135,8 @@ GLOSSARY.md
 
 `server/models.py`. Field types are pydantic v2. API JSON uses `float` for points and totals; scoring computes with `Decimal` internally.
 
-- `Turn(idx:int, timestamp:str, speaker:Literal['client','operator','bot','system'], text:str)`
+- `Turn(idx:int, timestamp:str, offset_s:float|None, speaker:Literal['client','operator','bot','system'], text:str)`
+  - `offset_s` is the seconds since the first turn, for ISO timestamps (calls), and `None` for `MM:SS` chats. Call timestamps carry 7 fractional digits, so they are parsed in Python, not in the browser.
 - `Record(conversation_id:str, channel:Literal['agent chat','voice call'], language:Literal['RU','KZ','EN'], transcript:list[Turn], audio_url:str|None)`
 - `ConversationSummary(conversation_id, channel, language, turns:int, latest:EvaluationSummary|None)`
 - `ScaleStep(value:int, description:str)`
@@ -281,6 +282,7 @@ Env `LLM_PROFILE` selects the default profile, and `EVAL_MODE` / `EVAL_K` select
   - Each `turn.idx` equals its position.
   - 5 `voice call` records, each with a non-null `audio_url`.
   - Timestamps equal the raw values.
+  - Chat turns have `offset_s is None`. For `p4-ru-003`, `offset_s` is `0.0` on turn 0 and `round(offset_s,3)==9.227` on turn 2 (timestamps `…15:49:13.1900670+00:00` → `…15:49:22.4171535+00:00`).
   - `normalize_response({"isSuccess":False,"error":"boom"}, "X")` raises a `DatasetError` matching `boom`.
   - A record missing `transcript` raises `DatasetError` naming its `conversation_id`.
   - Async test: with a stub session returning non-JSON and a cache present, the cache is unchanged and `DatasetError` is raised.
@@ -396,13 +398,13 @@ Env `LLM_PROFILE` selects the default profile, and `EVAL_MODE` / `EVAL_K` select
 - `class LLMClient(Protocol): async def complete(self, messages:list[dict], schema:dict, temperature:float, n:int) -> list[Completion]`
 - `make_client(profile:Profile) -> LLMClient`
   - **`openai` provider:** niquests `AsyncSession`, POST `{base}/chat/completions` with `response_format={"type":"json_schema","json_schema":{"name":"cqa","schema":schema,"strict":true}}`. If the profile has `supports_n`, it sends `n` in one request; otherwise it makes n concurrent requests. Timeout 180 s, one retry on 429/5xx.
-  - **`fake` provider:** returns deterministic schema-valid JSON. It picks the verdict by a seeded hash of the conversation and criterion, and cites the first operator turn.
+  - **`fake` provider:** reads the verdict enums from the `schema` it is given and returns deterministic schema-valid JSON. It picks each verdict by a seeded hash of the messages and the criterion id. Its evidence is the first `[idx] … operator:` line of the user message, or idx 0 if there is none.
 
 - [ ] **Step 1: Failing async tests:**
   - With a stub session returning `n=3` choices, `complete` gives 3 completions with summed usage.
   - With `supports_n=false`, it makes 3 requests.
   - A 500 followed by a 200 gives one retry.
-  - The fake output validates against the schema produced by B2's `build_schema` for `chat.default.json`. Use the `jsonschema` package as a dev dependency.
+  - The fake output validates (`jsonschema` dev dependency) against a hand-written two-criterion schema: a yes_no criterion with na, and a scale criterion with steps `[0,5]`.
 - [ ] **Step 2–4:** FAIL → implement → PASS. **Step 5:** PR `feat: LLM client and fake provider`.
 
 ### Task B2: Evaluator
@@ -447,6 +449,7 @@ Env `LLM_PROFILE` selects the default profile, and `EVAL_MODE` / `EVAL_K` select
   - c06 steps `[4,10,7]` give `7`.
   - An empty transcript makes no client calls.
   - The `RawCall` count equals the number of client calls.
+  - The `fake` provider's output for `p1-ru-001` validates against `build_schema(chat.default.json, all ids)` and passes `parse_items` with no errors.
 - [ ] **Step 2–4:** FAIL → implement → PASS. **Step 5:** PR `feat: evaluator with schema output, retry, voting`.
 
 ### Task B3: H200 endpoints (human + GPU agent)
@@ -484,10 +487,10 @@ Env `LLM_PROFILE` selects the default profile, and `EVAL_MODE` / `EVAL_K` select
 
 **Interfaces:**
 - `select_gold.py --seed 7` picks 24 DEV ids: 12 RU (including 3 calls), 6 KZ and 6 EN. It assigns 8 ids to each of `arynyklas`, `kakhotitee` and `Batyrkhantzy111`. It rotates the prefill profile across the 3 candidate classes and records `{id, labeler, prefill_profile}`.
-- `render_transcripts.py` writes `bench/gold/transcripts/<id>.md` for each assigned id:
+- `render_transcripts.py [--ids a,b,…]` (all fixture records when `--ids` is omitted) writes `bench/gold/transcripts/<id>.md` from `tests/fixtures/dev.json`:
   - The header is `# <id> · <channel> · <language>`.
-  - Each turn becomes one line `[idx] timestamp · speaker: text`.
-  - For calls, an `audio_url` line follows the header.
+  - For calls, a line `audio: <audio_url>` follows the header.
+  - After one blank line, each turn becomes one line `[idx] timestamp · speaker: text`.
   - There is no other content.
 - `prefill.py` evaluates each id with its assigned profile and writes `labels.<login>.csv`. The columns are `conversation_id,criterion_id,prefill_verdict,prefill_evidence,prefill_explanation,gold_verdict,gold_evidence,note`, with `gold_*` left empty. Prefill columns are never edited, which lets us measure prefill bias.
 - Humans fill `gold_verdict` and `gold_evidence` in their own CSV only.
@@ -553,7 +556,7 @@ Shared rules for all of Track C:
 
 ### Task C4: Result card
 
-- [ ] **Transcript pane.** Speaker-coloured turns with `id="turn-<idx>"` and the timestamp shown verbatim. Calls get an `<audio controls src=audio_url>`. Each evidence link seeks to `(Date.parse(turn.ts) - Date.parse(transcript[0].ts))/1000` seconds.
+- [ ] **Transcript pane.** Speaker-coloured turns with `id="turn-<idx>"` and the timestamp shown verbatim. Calls get an `<audio controls src=audio_url>`. Each evidence link on a call sets `audio.currentTime = turn.offset_s`.
 - [ ] **Criteria table.** One row per criterion of the *recorded* checklist version, showing:
   - title and section;
   - verdict (Да / Нет / N/A / step);
