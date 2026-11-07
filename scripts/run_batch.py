@@ -1,0 +1,200 @@
+"""Evaluate a whole dataset group with the same store and JobRunner as the app.
+
+    python scripts/run_batch.py <group_id> [--refresh] [--checklist auto|<id>] [--profile P] [--mode M] [--k K]
+
+Prints one row per dialog plus token, time and cost totals, writes `out/<group_id>.results.json` and
+`out/<group_id>.results.csv`, and keeps every evaluation in `data/store` so the UI shows it.
+"""
+
+import argparse
+import asyncio
+import csv
+import json
+import os
+import sys
+import time
+from pathlib import Path
+from typing import get_args
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+os.chdir(ROOT)
+
+from server.checklists import ChecklistStore  # noqa: E402
+from server.config import Profile, load_profiles  # noqa: E402
+from server.dataset import DatasetError, load_dataset  # noqa: E402
+from server.jobs import JobRunner, resolve_settings  # noqa: E402
+from server.models import BatchRequest, Evaluation, Mode, Record  # noqa: E402
+from server.store import NotFound, Store  # noqa: E402
+
+STORE = Path('data/store')
+SEED = Path('data/checklists')
+OUT = Path('out')
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    p = argparse.ArgumentParser(description='Batch-evaluate a dataset group.')
+    p.add_argument('group_id')
+    p.add_argument('--refresh', action='store_true', help='refetch the dataset instead of using data/cache')
+    p.add_argument('--checklist', default='auto', help='"auto" picks the default by channel, else a checklist id')
+    p.add_argument('--profile', help='model profile from config/profiles.toml (default: env LLM_PROFILE or fake)')
+    p.add_argument('--mode', choices=get_args(Mode), help='default: env EVAL_MODE or single')
+    p.add_argument('--k', type=int, help='samples per criterion (default: env EVAL_K or 1)')
+    return p.parse_args(argv)
+
+
+def cost_usd(profile: Profile, evs: list[Evaluation]) -> float | None:
+    """Cost via the profile cost model: GPU-hours shared across `concurrency`, or token prices."""
+    cost = profile.cost
+    if cost is None:
+        return None
+    if cost.kind == 'gpu':
+        seconds = sum(e.usage.seconds for e in evs)
+        return cost.usd_per_hour * seconds / max(cost.concurrency, 1) / 3600
+    return sum(
+        e.usage.prompt_tokens * cost.usd_per_mtok_in / 1e6 + e.usage.completion_tokens * cost.usd_per_mtok_out / 1e6
+        for e in evs
+    )
+
+
+def result_row(ev: Evaluation, record: Record) -> dict:
+    return {
+        'conversation_id': ev.conversation_id,
+        'channel': record.channel,
+        'language': record.language,
+        'checklist_id': ev.checklist_id,
+        'checklist_version': ev.checklist_version,
+        'total': ev.score.total,
+        'gross_error': ev.score.gross_error,
+        'items': [
+            {
+                'criterion_id': i.criterion_id,
+                'verdict': i.verdict,
+                'explanation': i.explanation,
+                'evidence_idx': i.evidence_idx,
+                'expected_range': list(i.expected_range) if i.expected_range else None,
+                'na_reason': i.na_reason,
+            }
+            for i in ev.items
+        ],
+    }
+
+
+def print_table(rows: list[list[str]]) -> None:
+    widths = [max(len(r[i]) for r in rows) for i in range(len(rows[0]))]
+    for n, r in enumerate(rows):
+        print('  '.join(cell.ljust(w) for cell, w in zip(r, widths)).rstrip())
+        if n == 0:
+            print('  '.join('-' * w for w in widths))
+
+
+def fmt_total(value: float | None) -> str:
+    return '—' if value is None else f'{value:.2f}'
+
+
+def write_outputs(
+    group_id: str, records: list[Record], evs: dict[str, Evaluation], failed: dict[str, str]
+) -> tuple[Path, Path]:
+    OUT.mkdir(exist_ok=True)
+    results = [result_row(evs[r.conversation_id], r) for r in records if r.conversation_id in evs]
+    json_path = OUT / f'{group_id}.results.json'
+    json_path.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding='utf-8')
+
+    criteria: list[str] = []
+    for ev in evs.values():
+        for i in ev.items:
+            if i.criterion_id not in criteria:
+                criteria.append(i.criterion_id)
+    criteria.sort()
+    csv_path = OUT / f'{group_id}.results.csv'
+    with csv_path.open('w', encoding='utf-8', newline='') as f:
+        w = csv.writer(f)
+        w.writerow(['conversation_id', 'channel', 'language', 'checklist_id', 'checklist_version', *criteria,
+                    'total', 'gross_error', 'error'])
+        for r in records:
+            ev = evs.get(r.conversation_id)
+            verdicts = {i.criterion_id: i.verdict for i in ev.items} if ev else {}
+            w.writerow([
+                r.conversation_id, r.channel, r.language,
+                ev.checklist_id if ev else '', ev.checklist_version if ev else '',
+                *(verdicts.get(c, '') for c in criteria),
+                '' if ev is None or ev.score.total is None else ev.score.total,
+                '' if ev is None else ev.score.gross_error,
+                failed.get(r.conversation_id, ''),
+            ])
+    return json_path, csv_path
+
+
+async def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    req = BatchRequest(
+        group_id=args.group_id,
+        conversation_ids=[],
+        checklist_id=None if args.checklist == 'auto' else args.checklist,
+        profile=args.profile,
+        mode=args.mode,
+        k=args.k,
+    )
+    profiles = load_profiles()
+    try:
+        profile, mode, k = resolve_settings(req, profiles)
+    except ValueError as e:
+        print(f'ошибка: {e}', file=sys.stderr)
+        return 2
+    try:
+        records = await load_dataset(args.group_id, args.refresh)
+    except DatasetError as e:
+        print(f'Датасет недоступен: {e}', file=sys.stderr)
+        return 2
+
+    store = Store(STORE)
+    checklists = ChecklistStore(STORE / 'checklists')
+    await checklists.seed_defaults(SEED)
+    runner = JobRunner(store, checklists, profiles)
+    req.conversation_ids = [r.conversation_id for r in records]
+    print(f'{args.group_id}: {len(records)} dialogs · profile {profile.name} ({profile.model}) · {mode} · k={k}')
+
+    t0 = time.perf_counter()
+    try:
+        job = await runner.start(req, {r.conversation_id: r for r in records})
+    except NotFound as e:
+        print(f'ошибка: {e}', file=sys.stderr)
+        return 2
+    job = await runner.wait(job.id)
+    wall = time.perf_counter() - t0
+
+    evs = {ev.conversation_id: ev for ev in [await store.get_evaluation(i) for i in job.evaluation_ids]}
+    rows = [['id', 'channel', 'lang', 'total', 'gross', 'error']]
+    for r in records:
+        ev = evs.get(r.conversation_id)
+        rows.append([
+            r.conversation_id,
+            r.channel,
+            r.language,
+            fmt_total(ev.score.total) if ev else '',
+            ('yes' if ev.score.gross_error else 'no') if ev else '',
+            job.failed.get(r.conversation_id, ''),
+        ])
+    print_table(rows)
+
+    done = list(evs.values())
+    prompt = sum(e.usage.prompt_tokens for e in done)
+    completion = sum(e.usage.completion_tokens for e in done)
+    model_seconds = sum(e.usage.seconds for e in done)
+    cost = cost_usd(profile, done)
+    print()
+    print(f'evaluated {len(done)}/{len(records)}, failed {len(job.failed)}')
+    print(f'tokens: prompt {prompt}, completion {completion}, total {prompt + completion}')
+    print(f'seconds: wall {wall:.1f}, summed per dialog {model_seconds:.1f}')
+    print(f'cost: {"n/a (no cost model)" if cost is None else f"${cost:.4f}"} ({profile.name})')
+
+    json_path, csv_path = write_outputs(args.group_id, records, evs, job.failed)
+    print(f'wrote {json_path.as_posix()} and {csv_path.as_posix()}')
+    return 1 if job.failed else 0
+
+
+if __name__ == '__main__':
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    sys.exit(asyncio.run(main()))

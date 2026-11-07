@@ -20,5 +20,5 @@ jobs:
           node-version: '24'
       - run: if [ -f web/package-lock.json ]; then npm ci --prefix web; else npm install --prefix web; fi
       - run: python scripts/gen_types.py
-      - run: git diff --exit-code contracts web/src/types.gen.ts
+      - run: test -z "$(git status --porcelain contracts web/src/types.gen.ts)" || (git status --porcelain contracts web/src/types.gen.ts; exit 1)
       - run: npm run typecheck --prefix web

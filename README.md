@@ -128,7 +128,7 @@ A run writes JSONL rows and a `summary.md` under `bench/results/<timestamp>/`. T
 pytest -q                                  # all tests (offline; the fake profile, no network)
 python scripts/gen_types.py                # pydantic models → contracts/schema.json → web/src/types.gen.ts
 npm run typecheck --prefix web
-uvicorn server.mock_app:app --port 8787    # API mock built from contracts/examples, for UI work
+LLM_PROFILE=fake uvicorn server.app:app --port 8787   # full app offline: deterministic fake model, no GPU or network
 ```
 
 CI (`.github/workflows/ci.yml`) runs pytest, regenerates the types and fails if they are stale, and type-checks the web code. The plan and the decisions behind it are in `docs/superpowers/plans/2026-11-07-cqa-prototype.md`, terms in `GLOSSARY.md`, and team and agent conventions in `AGENTS.md`.
