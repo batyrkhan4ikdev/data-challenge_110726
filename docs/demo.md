@@ -15,7 +15,7 @@ Freedom Broker CQA scores operator chats and calls (RU/KZ/EN) against a versione
 
 ## 2. Gross errors and why (60 s): «Покажите все диалоги с грубыми ошибками»
 
-1. **Диалоги** → filter «Грубые ошибки». 7 DEV dialogs are flagged.
+1. **Диалоги** → filter «Грубые ошибки». 8 DEV dialogs are flagged, including the KZ chat p1-kz-015, where an account restriction was revealed before identification (#3106).
 2. Open **p1-ru-022**. The operator offers to have the money sent to them personally, «в обход компании». The c08 row shows the explanation; click its evidence to jump to the highlighted turn.
 3. Open **p1-en-013**. The flagged quote is «I charge for private advice», a paid private consultation; the same pattern appears in RU in p1-ru-023 and in KZ in p1-kz-013.
 4. Point out that the flag does not zero the total. Totals are 31.25 and 69.23, as the organizers' rules require; the flag is reported separately.

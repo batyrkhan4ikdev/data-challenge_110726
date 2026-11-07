@@ -127,9 +127,9 @@ Models are named profiles in `config/profiles.toml`.
 | `h200-glimmer` | Muse-Glimmer-30B | self-hosted vLLM, 1× H200 |
 | `aigw-sonnet` / `aigw-luna` / `aigw-alemllm` | Claude Sonnet 5.5 / GPT-6 Luna / AlemLLM | cloud, via gateway |
 
-The model is chosen by benchmark against hand-labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). We prefer a self-hosted model unless a cloud model is more than 5 pp better.
+The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). The gold so far is an **LLM consensus**: 4 blind labelings per dialog by GPT-6 Astra and Claude Opus 5.5, with ties settled by the checklist text. It is not yet human-labelled. Human rows in `bench/gold/labels.<login>.csv` override it, and `--gold human` ranks models on those rows only. We prefer a self-hosted model unless a cloud model is more than 5 pp better.
 
-**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with `aigw-sonnet` as the fallback. It came out best on the preliminary gold (weighted agreement 0.911); the final check on the human labels is still pending.
+**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. It came out best on the 65-dialog consensus gold: 0.918 weighted agreement on the chats, against 0.884 for the best cloud model. That number is in-sample, because the same dialogs were used to tune the checklist notes.
 
 **Cost of one evaluation** (all calls included):
 - **Self-hosted:** an H200 costs $5.35/GPU-hour (median on-demand price of Vast, RunPod, Nebius and CoreWeave, 2026-11; see `docs/research/llm-candidates.md`). The cost per evaluation is `$/h × GPU-seconds ÷ concurrency ÷ 3600`.
