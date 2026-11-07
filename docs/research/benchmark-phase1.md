@@ -82,3 +82,22 @@ The gold labels are `bench/gold/labels.consensus.csv` (e79aaab, Batyrkhantzy111)
 - **Caveat: this gold is LLM-derived.** Opus 5.5 and GPT-6 Astra produced it; only p1-ru-007 has a manual label, and it matched the consensus on all 8 criteria. LLM-made gold can favour LLM judges, especially Sonnet and Luna from the same families. Since 17:25, human rows in `labels.<login>.csv` override `labels.consensus.csv`, and the final choice (B6) is made on human labels.
 - **Control-run failover:** `scripts/run_batch.py` re-runs any dialog that failed on the primary profile with `FALLBACK_PROFILE=aigw-sonnet`, and records the profile per dialog in `out/<group>.results.*`.
 - **Interim default for the control run:** `LLM_PROFILE=h200-gemma`, `EVAL_MODE=per_criterion`, `EVAL_K=1`. It runs at about 1 min per dialog, so 10 control dialogs take about 3 min at concurrency 4. With n=5 this is provisional; re-run on the full gold set (B6) when the 24 labeled dialogs are filled.
+
+## Reproducibility of the control settings (2026-11-07 18:40)
+
+There were two independent full DEV runs with `h200-gemma · per_criterion · k=1`, at temperature 0: the rehearsal at 17:30 and the `--submit dev` run at 18:10. I compared the latest two evaluations per dialog in `data/store`. 64 dialogs were compared; p1-ru-016 was left out because one of its runs was scored on the fallback model.
+
+| criterion | c01 | c02 | c03 | c04 | c05 | c06 | c07 | c08 | all |
+|---|---|---|---|---|---|---|---|---|---|
+| same verdict | 63/64 | 63/64 | 63/64 | 64/64 | 64/64 | 62/64 | 64/64 | 64/64 | **507/512 (99.0%)** |
+
+- 59/64 dialogs were identical. No gross-error flag changed. The total moved by 0.73 on average, and by at most 18.75, when p4-ru-005 c01 went «Да»→«Нет» on a call.
+- The 5 changes were borderline calls:
+  - p1-ru-026 c06 4→7;
+  - p4-ru-004 c06 7→10;
+  - p1-ru-003 c02 N/A→«Нет»;
+  - p1-kz-012 c03 «Нет»→N/A;
+  - p4-ru-005 c01.
+
+  vLLM at temperature 0 is not bit-exact under batching, so this residual is expected. It is small next to the disagreement with gold.
+- **Real run times:** 420 s and 507 s of wall time for 65 dialogs at `EVAL_CONCURRENCY=4`, i.e. about 6.5–8 s per dialog. The «1 min per dialog» above is the per-dialog latency measured without parallelism.

@@ -120,16 +120,25 @@ Models are named profiles in `config/profiles.toml`.
 
 The model is chosen by benchmark against hand-labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). We prefer a self-hosted model unless a cloud model is more than 5 pp better.
 
-**Cost of one evaluation** (all calls included, single mode):
-- **Self-hosted:** an H200 costs $5.35/GPU-hour (median on-demand price of Vast, RunPod, Nebius and CoreWeave, 2026-11; see `docs/research/llm-candidates.md`). The cost per evaluation is `$/h × GPU-seconds ÷ concurrency ÷ 3600`, which is **≈ $0.001**.
-- **Cloud:** Claude Sonnet 5.5 at $2 / $10 per 1M tokens is **≈ $0.024**. GPT-6 Luna at $0.10 / $0.50 is **≈ $0.001**.
+**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with `aigw-sonnet` as the fallback. It came out best on the preliminary gold (weighted agreement 0.911); the final check on the human labels is still pending.
 
-Measured on the 12-dialog smoke set, about 7k input and 0.5–1k output tokens per dialog.
+**Cost of one evaluation** (all calls included):
+- **Self-hosted:** an H200 costs $5.35/GPU-hour (median on-demand price of Vast, RunPod, Nebius and CoreWeave, 2026-11; see `docs/research/llm-candidates.md`). The cost per evaluation is `$/h × GPU-seconds ÷ concurrency ÷ 3600`.
+  - **Single mode:** ≈ $0.001.
+  - **Per-criterion mode:** ≈ $0.003. The full DEV run (65 dialogs) cost $0.18 and took 8.5 minutes of wall time at 4 dialogs in parallel.
+- **Cloud:** in single mode, Claude Sonnet 5.5 at $2 / $10 per 1M tokens is **≈ $0.024** and GPT-6 Luna at $0.10 / $0.50 is **≈ $0.001**. Sonnet in per-criterion mode is ≈ $0.07.
+
+Single-mode figures were measured on the 12-dialog smoke set (about 7k input and 0.5–1k output tokens per dialog). Per-criterion figures come from the full DEV run (about 21k input tokens per dialog).
+
+**Reproducibility.** Two independent DEV runs with the control settings agreed on 507 of 512 criterion verdicts (99.0%), across 64 dialogs.
+- 59 dialogs were identical, and no gross-error flag changed.
+- The mean change in total was 0.73 points.
+- The 5 changes were borderline calls: c06 7↔10 and 4↔7, and one N/A↔«Нет» each on c02 and c03.
 
 ## Benchmark and gold labels
 
 ```bash
-python -m bench.run --profiles h200-gemma,aigw-sonnet --mode single --k 1 --set smoke|gold
+python -m bench.run --profiles h200-gemma,aigw-sonnet --mode single --k 1 --set smoke|gold [--gold human]
 python -m bench.select_gold --seed 7      # 24 DEV dialogs → 8 per labeller
 python -m bench.prefill                   # pre-fill bench/gold/labels.<login>.csv with model verdicts
 ```
