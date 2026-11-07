@@ -129,3 +129,19 @@ The Telegram tool does not expose which message a reply points to, so each answe
 → Implemented in `server/submission.py` (builder and validator) and `scripts/run_batch.py --submit dev|prod`, with `TEAM_NAME=fantastik 4`. Our `Turn.idx` is 0-based over the raw array, so the export adds 1.
 
 Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we already apply the literal rule, see above).
+
+### Update 18:30 (through #3088)
+
+**#3075** 17:47, Nikolay Borovinskiy: «Для звонков, либо берите транскрипт, либо адаптируйте. Звонки тут больше для интерфейсной части нежели для проверки точности результатов.»
+→ This confirms that accuracy work goes into chats. Calls stay a UI feature (audio seek, adapted checklist).
+
+**#3082** 18:02, Nikolay Borovinskiy, answering #3079 («Клиент разве не верифицируется когда заходит в приложение?»): «Рассматривайте омниканальную систему»
+→ Logging in does not imply that the client was identified, because a chat can come from any channel. C3 stays as it is: identification is needed whenever the operator handles account or personal data.
+
+**#3086 → #3088** 18:17–18:26, Alexey, on «порог первой реакции в 3 минуты»: «это SLA»
+→ The 3-minute threshold is the first-response SLA. It is already in the chat checklist `notes` and is used for C6 (speed).
+
+**#3059** 17:36, Alexey: «Не заостряйте внимание на нагрузке. Сделайте решение, которое легко можно будет масштабировать.»
+
+**#3060** 17:36, Yerassyl (open, no answer yet). The appendix lists `contact` as true/false only, but #2978 said that a call whose greeting is not in the recording is N/A. Can such a call be exported as `null`?
+→ Our DEV export has `contact = true` for all 5 calls, so it is valid today. `server/submission.py` follows the appendix strictly (no null for contact). If a re-run produces a call with contact N/A, the validator flags it. Revisit once the organizers answer. The control set is chats only, and in the chat checklist c01 has no N/A.

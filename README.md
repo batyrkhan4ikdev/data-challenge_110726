@@ -52,10 +52,15 @@ All outbound HTTP uses `server/http.py`. It trusts both the OS certificate store
 
 | Screen | What you do |
 |---|---|
-| **Диалоги** (`#/dialogs/DEV`) | Load a dataset group, filter by channel / language / gross errors, select dialogs, pick a checklist (by default chosen by channel), and click **Оценить выбранные**. Progress and per-dialog errors are shown live. |
-| **Карточка оценки** | The transcript, with the audio player for calls, next to the criteria table. Click `[idx]` to jump to the turn, or the call position. Also shows the total, section totals, the gross-error badge, model/mode, the raw model calls («Вызовы модели») and the history by checklist version. **Переоценить по текущему чек-листу** re-applies an edited checklist. **Оспорить** files an appeal. |
-| **Проверка апелляций** (`#/review`) | The queue of open appeals, with the disputed verdict, the comment and the dialog fragment. **Подтвердить** or **Изменить** (the reason is required) recomputes the final total. |
+| **Диалоги** (`#/dialogs/DEV`) | Load a dataset group, filter by channel / language / gross errors, select dialogs, pick a checklist (by default chosen by channel), and click **Оценить выбранные**. Progress and per-dialog errors are shown live. A scored dialog opens its latest result. |
+| **Анализ разговора** (result card) | The transcript, with the audio player for calls and turns numbered from 1, next to the score ring and per-criterion points. «Почему снижена оценка» lists every criterion that lost points, with the reason, **Перейти к фрагменту** (scrolls to the turn; for calls, seeks the audio) and **Оспорить оценку** (files an appeal). «Подробности оценки» holds the full criteria table, votes, warnings, model/mode, the raw model calls and the history by checklist version. **Переоценить по текущему чек-листу** re-applies an edited checklist. |
+| **Апелляции** (`#/review`) | The queue of open appeals, with the disputed verdict, the comment and the dialog fragment. **Подтвердить** or **Изменить** (the reason is required) recomputes the final total; the card shows both the final and the original total. |
 | **Чек-листы** (`#/checklists`) | Create or edit checklists: criteria, wording, weight, answer type (yes/no or scale with steps), N/A on or off and its condition, sections, and gross-error criteria. Every save creates a new version, and old evaluations keep the version they were scored with. |
+| **Аналитика** (`#/analytics/DEV`) | Per group: dialogs evaluated, mean total, gross errors with links, N/A share, the pass rate per criterion, breakdowns by channel and language, and the score distribution. |
+
+![Result card](docs/screenshots/result-evidence.png)
+
+More screenshots are in `docs/screenshots/`: `dialogs`, `review`, `checklists`, `checklist-editor` and `analytics`. A 5-minute demo script is in `docs/demo.md`.
 
 The default checklists are in `data/checklists/`:
 - `chat.default.json`: the organizers' 8 criteria, verbatim from `docs/CQA_Chat_Quality_Checklist.pdf`.
