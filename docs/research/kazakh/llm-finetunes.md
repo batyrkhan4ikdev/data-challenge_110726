@@ -129,7 +129,7 @@ updated 2026-11) and [Allessyer/awesome-kaz-datasets](https://github.com/Allessy
 
 Baseline to beat: our own gold-set measurement of `gemma-4-31B` on Kazakh chats —
 **0.957 overall** vs `issai/Qwen3.5-35B-A3B-Kazakh` **0.858** (0.710 per criterion),
-`bench/results/20261108-005401/005403`. The Kazakh-specialised flagship therefore **loses** head-to-head
+`bench/results/20261108-005401` and `bench/results/20261108-005403`. The Kazakh-specialised flagship therefore **loses** head-to-head
 as a judge and is dropped from the candidate list; the fine-tunes below are worth a slot precisely
 because none of them has been tried and each attacks a different failure mode of Gemma on kk
 [INFERENCE].

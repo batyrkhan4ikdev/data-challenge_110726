@@ -1,4 +1,4 @@
-# Benchmark phase 1 (smoke set, 12 DEV dialogs, no gold yet)
+# Benchmark phase 1: smoke set (12 DEV dialogs) and follow-up rounds on the 65 DEV dialogs
 
 Run on 2026-11-07 between 16:10 and 16:30 (UTC+5) with `python -m bench.run --set smoke`. Raw summaries are in `bench/results/20261107-161143/`, `…-161450/` and `…-162940/`. The set is 5 RU chats, 3 KZ chats, 2 EN chats and 2 calls, all k=1.
 

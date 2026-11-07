@@ -138,7 +138,7 @@ The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/r
 
 **Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats and matches 16 of the 20 human rows. 99.6% of its verdicts are identical between runs. It was compared against about 15 other models and setups:
 - open-weight models: Qwen3.8-27B 0.92, Qwen3.8-Flash-Next 0.91, DeepSeek-V4.1-Flash 0.90, Kimi-K2.6 0.85;
-- frontier models via OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): each scored 1–2 pp below gemma on the same dialogs;
+- frontier models via OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): each scored 1–3 pp below gemma on the same dialogs;
 - a three-judge ensemble, which tied gemma.
 
 These numbers are in-sample: the same dialogs were used to tune the checklist notes, and the agreement is with other models' labels plus 20 human rows, not with the organizers' expert labels. Expect roughly **0.91–0.93 on unseen chats**. The details are in `docs/research/benchmark-phase1.md`.
@@ -146,12 +146,12 @@ These numbers are in-sample: the same dialogs were used to tune the checklist no
 **Cost of one evaluation** (all calls included):
 - **Self-hosted:** an H200 costs $5.35/GPU-hour (median on-demand price of Vast, RunPod, Nebius and CoreWeave, 2026-11; see `docs/research/llm-candidates.md`). The cost per evaluation is `$/h × GPU-seconds ÷ concurrency ÷ 3600`.
   - **Single mode:** ≈ $0.001.
-  - **Per-criterion mode:** ≈ $0.003. The full DEV run (65 dialogs) cost $0.18 and took 8.5 minutes of wall time at 4 dialogs in parallel.
+  - **Per-criterion mode:** ≈ $0.003. The full DEV run (65 dialogs) cost $0.18 and took 7–8.5 minutes of wall time (420 s and 507 s) at 4 dialogs in parallel. Per dialog, per-criterion latency averages 27.7–31.8 s (p90 66–80 s) at 8 in parallel (`bench/results/20261107-213204`, `-213616`).
 - **Cloud:** in single mode, Claude Sonnet 5.5 at $2 / $10 per 1M tokens is **≈ $0.024** and GPT-6 Luna at $0.10 / $0.50 is **≈ $0.001**. Sonnet in per-criterion mode is ≈ $0.07.
 
 Single-mode figures were measured on the 12-dialog smoke set (about 7k input and 0.5–1k output tokens per dialog). Per-criterion figures come from the full DEV run (about 21k input tokens per dialog).
 
-**Reproducibility.** Two independent DEV runs with the control settings agreed on 507 of 512 criterion verdicts (99.0%), across 64 dialogs.
+**Reproducibility.** Two independent DEV runs with the control settings agreed on 507 of 512 criterion verdicts (99.0%), across 64 dialogs. This is an earlier, pre-freeze run; the final control settings reach 99.6% (see above).
 - 59 dialogs were identical, and no gross-error flag changed.
 - The mean change in total was 0.73 points.
 - The 5 changes were borderline calls: c06 7↔10 and 4↔7, and one N/A↔«Нет» each on c02 and c03.
@@ -183,17 +183,19 @@ The organizers' call transcripts are poor ASR (e.g. «идентификацию
 | provider | where | diarization | s per audio min | CER vs FreedomSpeech | evaluator gold hits |
 |---|---|---|---|---|---|
 | FreedomSpeech | freedomspeech.kz | yes | 2.0 | (reference) | 27/40 |
-| GigaAM-v3 + pyannote | self-hosted H200 | yes | 2.9 | **0.126** | 27/40 |
-| T-one + pyannote | self-hosted H200 | yes | 4.4 | 0.139 | **29/40** |
-| Gemini 3.5 Transcribe | OpenRouter | yes | 11.6 | 0.142 | 28/40 |
-| Whisper large-v3 (Alem.Cloud) | aigw | no | 0.7 | 0.177 | 28/40 |
-| KuSpeech multilingual (= GigaAM-Multilingual) | aigw | no | 0.4 | 0.178 | **29/40** |
-| WhisperX large-v3 + pyannote | self-hosted H200 | yes | 7.7 | 0.255 | 25/40 |
-| Whisper large-v3 | aigw | no | 0.4 | 0.297 | 25/40 |
-| Whisper large-v3 turbo (Alem.Cloud) | aigw | no | 2.7 | 0.355 | 27/40 |
-| organizer API transcript | — | — | — | — | 26–28/40 (3 runs) |
+| T-one + pyannote | self-hosted H200 | yes | 4.4 | **0.118** | **29/40** |
+| GigaAM-v3 + pyannote | self-hosted H200 | yes | 2.9 | 0.126 | 27/40 |
+| Gemini 3.5 Transcribe | OpenRouter | yes | 11.6 | 0.145 | 28/40 |
+| KuSpeech multilingual (= GigaAM-Multilingual) | aigw | no | 0.4 | 0.158 | **29/40** |
+| Whisper large-v3 (Alem.Cloud) | aigw | no | 0.7 | 0.203 | 28/40 |
+| WhisperX large-v3 + pyannote | self-hosted H200 | yes | 7.7 | 0.271 | 25/40 |
+| Whisper large-v3 | aigw | no | 0.4 | 0.309 | 25/40 |
+| Whisper large-v3 turbo (Alem.Cloud) | aigw | no | 2.7 | 0.370 | 27/40 |
+| organizer API transcript | — | — | — | — | 26/40 |
 
 Gold hits move by ±2 between runs of the same transcript, so they rank no provider above another; they only show that no transcript hurt scoring. CER is agreement with another ASR, not accuracy. The manual quality comparison is Batyrkhantzy111's (`bench/asr/transcripts/<provider>/<cid>.md`); his scores go into `manual_score` in `data/asr/quality.json` and replace the automatic badge. Model research: `docs/research/asr-models.md` and `docs/research/asr-hosted.md`. Calls are evaluated with the same checklist; organizers said calls are mainly for the interface (#3075).
+
+For Kazakh audio see `bench/asr/kazakh.md`: WhisperX with `language=kk` is the only provider that produces Kazakh script with speaker labels; the share of Kazakh letters there is a proxy, not accuracy.
 
 ### Running the ASR benchmark
 
@@ -229,11 +231,11 @@ CI (`.github/workflows/ci.yml`) runs pytest, regenerates the types and fails if 
 
 The web UI is plain TypeScript ES modules with no framework and no bundler. Styles are scoped under `.cqa`, and the entry point is `mountCqa(root, {apiBase})`. The D365 loader, resource packager and opt-in CORS are included. Deployment conditions and local checks are documented in `docs/research/d365-web-resources.md`.
 
-## Встраивание в Dynamics 365
+## Embedding in Dynamics 365
 
-Сборка: `web/node_modules/.bin/tsc -p web`, затем `python scripts/package_d365.py`.
-Загрузите все файлы из `out/d365/cqa_/` как web resources с теми же именами: `cqa_/index.htm`, `cqa_/loader.js`, `cqa_/cqa.css`, `cqa_/dist/**/*.js`, `cqa_/assets/*.svg`.
-В параметре `data` контрола задайте JSON, например `{"apiBase":"https://cqa.example.com/api","route":"#/dialogs/DEV"}`.
-На API укажите `CQA_ALLOWED_ORIGINS=https://example.crm.dynamics.com`; несколько origin разделяются запятой, пустое значение выключает CORS.
-В настройках контрола «Restrict cross-frame scripting» должно быть OFF, «Pass record object-type code and unique identifier» должно быть ON.
-Пакет готов к загрузке как HTML web resource, проверено на локальном стенде, условия перечислены в [отчёте D365](docs/research/d365-web-resources.md). Проверка в организации D365 и HTTPS для API ещё нужны.
+Build: `web/node_modules/.bin/tsc -p web`, then `python scripts/package_d365.py`.
+Upload every file from `out/d365/cqa_/` as a web resource under the same name: `cqa_/index.htm`, `cqa_/loader.js`, `cqa_/cqa.css`, `cqa_/dist/**/*.js`, `cqa_/assets/*.svg`.
+In the control's `data` parameter set JSON, for example `{"apiBase":"https://cqa.example.com/api","route":"#/dialogs/DEV"}`.
+On the API set `CQA_ALLOWED_ORIGINS=https://example.crm.dynamics.com`; separate several origins with commas, an empty value turns CORS off.
+In the control settings «Restrict cross-frame scripting» must be OFF and «Pass record object-type code and unique identifier» must be ON.
+The package is ready to upload as an HTML web resource and was checked on a local stand; conditions are listed in the [D365 report](docs/research/d365-web-resources.md). Verification in a real D365 organization and HTTPS for the API are still needed.
