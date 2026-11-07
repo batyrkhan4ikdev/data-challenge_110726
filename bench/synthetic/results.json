@@ -1,0 +1,3983 @@
+{
+ "profile": "h200-gemma",
+ "mode": "per_criterion",
+ "k": 1,
+ "rows": [
+  {
+   "conversation_id": "p1-en-001",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-002",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-003",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-004",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-005",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-006",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-007",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 53.85,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-008",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-009",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-010",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-011",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-012",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-en-013",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "p1-en-014",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "no",
+    "c04": "5",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 30.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "p1-en-015",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 32.5,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-001",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-002",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-003",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-004",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-005",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-006",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-007",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-008",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 32.5,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-009",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-010",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-011",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-012",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-013",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "p1-kz-014",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-kz-015",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "no",
+    "c04": "5",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 17.65,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "p1-ru-001",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-002",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-003",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "0",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 24.62,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-004",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-005",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 78.46,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-006",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-007",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 40.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-008",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-009",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "no",
+    "c04": "5",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 40.5,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "p1-ru-010",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-011",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-012",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-013",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-014",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 43.75,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-015",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 69.23,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-016",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 45.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-017",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 93.75,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-018",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "0",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 12.5,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-019",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 93.75,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-020",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-021",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-022",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "0",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 31.25,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "p1-ru-023",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "p1-ru-024",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-025",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "na",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-026",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "5",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 26.25,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-027",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-028",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "p1-ru-029",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 55.38,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "p1-ru-030",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 93.75,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-001-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-001-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-001-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-002-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-002-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-002-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-003-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-003-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-003-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-004-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-004-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-004-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-005-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-005-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 55.38,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-005-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-006-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 90.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-006-c03_drop_identification",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-006-c07_drop_closing_turn",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 95.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-006-c07_strip_farewell",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 95.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-006-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 85.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-006-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 100.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-007-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 38.46,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-007-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 30.77,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-007-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 53.85,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-008-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-008-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-008-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-009-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 83.33,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-010-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-010-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 55.38,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-010-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-011-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-011-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 46.15,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-011-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-012-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-en-012-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-012-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-013-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 53.85,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-014-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "no",
+    "c04": "5",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 5.88,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-015-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 25.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-en-015-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 43.75,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-001-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-001-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-001-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-002-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-002-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-002-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-003-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 90.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-003-c03_drop_identification",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-003-c07_drop_closing_turn",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 95.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-003-c07_strip_farewell",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 95.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-003-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 80.5,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-003-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 100.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-004-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-004-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 46.15,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-004-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-005-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 53.85,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-005-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 46.15,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-005-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-006-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-006-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 53.85,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-006-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-007-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 53.85,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-007-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-007-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-008-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 25.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-008-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 43.75,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-009-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-009-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-009-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-010-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 53.85,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-010-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 46.15,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-010-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-011-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 83.33,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-011-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "na",
+    "c08": "yes"
+   },
+   "total": 50.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-011-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "yes"
+   },
+   "total": 100.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-012-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 87.5,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-012-c07_drop_closing_turn",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-012-c07_strip_farewell",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 93.75,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-012-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 62.5,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-012-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 75.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-013-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 53.85,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-014-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-kz-014-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-014-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-kz-015-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "no",
+    "c04": "5",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 18.24,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-001-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-001-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 46.15,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-001-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-002-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 87.5,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-002-c07_drop_closing_turn",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-002-c07_strip_farewell",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 93.75,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-002-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 75.63,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-002-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 100.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-003-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "0",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 9.23,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-003-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 30.77,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-003-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "0",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 15.38,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-004-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 81.25,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-004-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-004-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 75.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-005-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 63.08,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-005-c07_drop_closing_turn",
+   "ok": false,
+   "error": "EvaluationError: невалидный ответ модели после повтора: c07: expected_range [15, 15] некорректен: нужно 0 ≤ from ≤ to ≤ 14",
+   "verdicts": {},
+   "total": null,
+   "gross_error": null
+  },
+  {
+   "conversation_id": "syn-p1-ru-005-c07_strip_farewell",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 78.46,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-005-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 53.85,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-005-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 78.46,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-006-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 90.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-006-c03_drop_identification",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "no",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 80.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-006-c07_drop_closing_turn",
+   "ok": false,
+   "error": "EvaluationError: невалидный ответ модели после повтора: c07: expected_range [14, 14] некорректен: нужно 0 ≤ from ≤ to ≤ 13",
+   "verdicts": {},
+   "total": null,
+   "gross_error": null
+  },
+  {
+   "conversation_id": "syn-p1-ru-006-c07_strip_farewell",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 95.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-006-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 70.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-006-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 100.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-007-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 24.62,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-007-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 30.77,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-007-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "10",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 46.92,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-008-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-008-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-008-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-009-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "no",
+    "c04": "5",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 30.5,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-010-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 90.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-010-c03_drop_identification",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 100.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-010-c07_drop_closing_turn",
+   "ok": false,
+   "error": "EvaluationError: невалидный ответ модели после повтора: c07: expected_range [31, 30] некорректен: нужно 0 ≤ from ≤ to ≤ 30",
+   "verdicts": {},
+   "total": null,
+   "gross_error": null
+  },
+  {
+   "conversation_id": "syn-p1-ru-010-c07_strip_farewell",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 95.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-010-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 76.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-010-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "yes",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 100.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-011-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-011-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-011-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-012-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-013-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "yes",
+    "c08": "no"
+   },
+   "total": 84.62,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-013-c07_drop_closing_turn",
+   "ok": false,
+   "error": "EvaluationError: невалидный ответ модели после повтора: c07: expected_range [11, 11] некорректен: нужно 0 ≤ from ≤ to ≤ 10",
+   "verdicts": {},
+   "total": null,
+   "gross_error": null
+  },
+  {
+   "conversation_id": "syn-p1-ru-013-c07_strip_farewell",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 92.31,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-013-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "yes",
+    "c08": "yes"
+   },
+   "total": 53.85,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-013-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-014-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 30.77,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-014-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 43.75,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-015-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 53.85,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-015-c07_drop_closing_turn",
+   "ok": false,
+   "error": "EvaluationError: невалидный ответ модели после повтора: c07: expected_range [11, 11] некорректен: нужно 0 ≤ from ≤ to ≤ 10",
+   "verdicts": {},
+   "total": null,
+   "gross_error": null
+  },
+  {
+   "conversation_id": "syn-p1-ru-015-c07_strip_farewell",
+   "ok": false,
+   "error": "EvaluationError: невалидный ответ модели после повтора: c07: expected_range [12, 12] некорректен: нужно 0 ≤ from ≤ to ≤ 11",
+   "verdicts": {},
+   "total": null,
+   "gross_error": null
+  },
+  {
+   "conversation_id": "syn-p1-ru-015-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 55.38,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-015-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 69.23,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-016-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 32.5,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-016-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 37.5,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-016-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 45.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-017-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 81.25,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-017-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 56.25,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-017-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 93.75,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-018-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "no",
+    "c04": "0",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 0.0,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-018-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "0",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 12.5,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-018-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "no",
+    "c03": "na",
+    "c04": "0",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 12.5,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-019-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 81.25,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-019-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 56.25,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-019-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 93.75,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-020-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-020-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-020-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-021-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-021-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 55.38,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-021-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-022-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "no",
+    "c03": "na",
+    "c04": "0",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 18.75,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-023-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 53.85,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-024-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-024-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 55.38,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-024-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-025-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "na",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "na",
+    "c08": "no"
+   },
+   "total": 81.82,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-026-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "5",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 16.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-026-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "5",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 23.08,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-026-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "5",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 32.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-027-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-027-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "7",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 62.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-027-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-028-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 76.92,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-028-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 46.15,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-028-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 92.31,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-029-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "na",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "4",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 40.0,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-030-c01_drop_greeting",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "no",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "no"
+   },
+   "total": 81.25,
+   "gross_error": false
+  },
+  {
+   "conversation_id": "syn-p1-ru-030-c08_insult",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "no",
+    "c06": "0",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 56.25,
+   "gross_error": true
+  },
+  {
+   "conversation_id": "syn-p1-ru-030-c08_offer_offsite_transfer",
+   "ok": true,
+   "error": null,
+   "verdicts": {
+    "c01": "yes",
+    "c02": "yes",
+    "c03": "na",
+    "c04": "20",
+    "c05": "yes",
+    "c06": "10",
+    "c07": "no",
+    "c08": "yes"
+   },
+   "total": 93.75,
+   "gross_error": true
+  }
+ ],
+ "date": "2026-11-08"
+}
