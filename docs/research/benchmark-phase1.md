@@ -200,3 +200,14 @@ The last row is the control setting. Notes are frozen after it until the control
 - **11 → 16 human rows is in-sample by construction.** The C7 and C4 rules were written from these same arbitrated cases, and the 12 arbitrated verdicts cover only about 4 scenarios. The wording is generic, but its effect on other dialogs is untested.
 - Only the 60-chat agreement and the c07 count (55 → 57) say anything about dialogs the rules weren't built from.
 - The 0.936 → 0.931 difference is c06 noise: it moves ±2 verdicts on every notes edit.
+
+## Gemma single vs per_criterion on the 65 gold dialogs (2026-11-08 03:10)
+
+The one empty cell of the comparison. Same final notes, same gold, `h200-gemma`, k=1, temperature 0 (`bench/results/20261108-030915`).
+
+| mode | WA, 60 chats | RU | KZ | EN | gross errors | mean s / dialog |
+|---|---|---|---|---|---|---|
+| per_criterion (control default) | 0.931–0.939 (two runs) | 0.870–0.921 | 0.957 | 0.947–0.957 | 8/8 | 27.7–31.8 |
+| single | 0.925 | 0.853 | 0.970 | 0.934 | 8/8 | 16.1 |
+
+Single is 1–1.5 pp lower on chats, inside the run-to-run noise (~1 pp), and about 1.8× faster. The default stays `per_criterion`: the notes were tuned in that mode, and the control run is frozen.
