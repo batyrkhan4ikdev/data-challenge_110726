@@ -101,6 +101,10 @@ async def check_dataset(group: str, expect: int | None) -> None:
 
 
 async def model_answers(profile: Profile) -> bool:
+    if profile.provider == 'ensemble':
+        # An ensemble has no endpoint of its own: every member must answer for the vote to be complete.
+        answers = [await model_answers(member) for member, _ in profile.member_profiles()]
+        return all(answers)
     t = time.perf_counter()
     try:
         out = await make_client(profile).complete(

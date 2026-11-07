@@ -80,6 +80,7 @@ async def run_profile(
             ok=True,
             usage=evaluation.usage.model_dump(),
             verdicts={it.criterion_id: it.verdict for it in evaluation.items},
+            votes={it.criterion_id: it.votes for it in evaluation.items if it.votes},
             total=evaluation.score.total,
             gross_error=evaluation.score.gross_error,
             citation_ok_rate=citation_ok_rate(evaluation, record, checklist),

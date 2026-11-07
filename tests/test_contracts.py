@@ -8,7 +8,8 @@ from pydantic import TypeAdapter
 from server.config import load_profiles
 from server.models import ALL_MODELS, Checklist, Evaluation, EvaluationView, Score
 
-EXAMPLES = Path(__file__).resolve().parent.parent / 'contracts' / 'examples'
+ROOT = Path(__file__).resolve().parent.parent
+EXAMPLES = ROOT / 'contracts' / 'examples'
 MODELS = {m.__name__: m for m in ALL_MODELS}
 
 
@@ -53,9 +54,20 @@ def test_example_scores_consistent() -> None:
     assert view.final.score.total == 87.5
 
 
-def test_profiles_load() -> None:
-    profiles = load_profiles()
-    assert {'fake', 'h200-gemma', 'h200-gptoss', 'h200-kz'} <= profiles.keys()
-    assert profiles['h200-gptoss'].extra_body == {'reasoning_effort': 'low'}
+def test_every_profile_env_is_documented() -> None:
+    """A profile whose endpoint variable is missing from .env.example breaks a fresh setup at run time."""
+    documented = {
+        line.split('=', 1)[0]
+        for line in (ROOT / '.env.example').read_text(encoding='utf-8').splitlines()
+        if '=' in line and not line.lstrip().startswith('#')
+    }
+    profiles = load_profiles()  # also resolves every ensemble's members
+    missing = {
+        f'{p.name}: {env}'
+        for p in profiles.values()
+        for env in (p.base_url_env, p.api_key_env)
+        if env and env not in documented
+    }
+    assert missing == set()
 
 
