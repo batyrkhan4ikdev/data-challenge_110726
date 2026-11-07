@@ -29,7 +29,7 @@ Why this does not rank providers:
 
 **Listener's note on the review itself.** The «идеально» marks are not always reliable: a row was marked green when the words in it were right, even where Whisper (Alem.Cloud) had dropped the operator–client exchange around it. Whisper missed many of those dialogue turns; the 10 inserted turns and the 10 `gaps` are that missing speech, so 20 of 22 green rows do not mean Alem covered the call well.
 
-**Correction (03:55).** The first version of this table ranked WhisperX first with 340 words and 0.712. 108 of those words were one token, «өте», repeated in a single run: a Whisper decoding loop, not speech. The columns below count words after collapsing any run of 5+ identical words (`collapse_repeats` in `server/asr/providers.py`, now applied to every ASR result), and **loop** is how many words that removed.
+**Correction (03:55).** The first version of this table ranked WhisperX first with 340 words and 0.712. 108 of those words were one token, «өте», repeated in a single run: a Whisper decoding loop, not speech. The columns below count words after collapsing any run of 8+ identical words (`collapse_repeats` in `server/asr/providers.py`, now applied to every ASR result), and **loop** is how many words that removed.
 
 | provider | where | words | loop | **kk** (raw → collapsed) | speakers | s |
 |---|---|---|---|---|---|---|

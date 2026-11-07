@@ -328,15 +328,14 @@ def kazakh_share(text: str) -> float:
     return sum(1 for w in words if KAZAKH_LETTERS & set(w)) / len(words) if words else 0.0
 
 
-REPEAT_MIN = 5  # Whisper's decoding loop: on record 1234 it wrote «өте» 109 times in a row
+REPEAT_MIN = 8  # Whisper's decoding loop wrote «өте» 109 times in a row on record 1234; «да, да, да, да, да» is speech
 _REPEAT = re.compile(r'(?<!\w)(\w+)(?:[\s,.!?…-]+\1(?!\w)){' + str(REPEAT_MIN - 1) + r',}', re.IGNORECASE)
 REPEAT_MARK = '[…повтор распознавания убран]'
 
 
 def collapse_repeats(text: str) -> tuple[str, int]:
     """Replaces a run of the same word repeated `REPEAT_MIN`+ times by one copy and a mark; (text, words removed).
-    No speaker says a word five times in a row, a decoding loop does, and it would inflate both the word count and
-    the Kazakh-letter share."""
+    A decoding loop inflates both the word count and the Kazakh-letter share used for the `kk` re-run."""
     removed = 0
 
     def keep_one(m: re.Match[str]) -> str:

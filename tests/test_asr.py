@@ -582,7 +582,7 @@ def test_decoding_loop_is_collapsed_but_real_repeats_stay():
     """Whisper looped «өте» 109 times on record 1234; that inflated words and the Kazakh share used for the kk re-run."""
     from server.asr.providers import REPEAT_MARK, collapse_repeats
 
-    text, removed = collapse_repeats('Бұл өте, өте өте. Өте өте өте жақсы')
-    assert text == f'Бұл өте {REPEAT_MARK} жақсы' and removed == 5
-    # «да, да, да» is speech, not a loop
-    assert collapse_repeats('да, да, да, хорошо') == ('да, да, да, хорошо', 0)
+    text, removed = collapse_repeats('Бұл өте, өте өте. Өте өте өте өте өте өте жақсы')
+    assert text == f'Бұл өте {REPEAT_MARK} жақсы' and removed == 8
+    # a run of five «да» on a phone line is speech, not a loop
+    assert collapse_repeats('да, да, да, да, да, хорошо') == ('да, да, да, да, да, хорошо', 0)
