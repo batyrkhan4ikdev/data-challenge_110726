@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+data/cache/
+data/store/
+out/
+web/dist/
+node_modules/
+bench/results/**
+!bench/results/**/
+!bench/results/**/summary.md
