@@ -1,0 +1,6 @@
+/* Только для отдельной страницы index.html; при встраивании в Dynamics 365 не нужен. */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
