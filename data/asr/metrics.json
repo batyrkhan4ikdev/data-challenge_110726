@@ -14,8 +14,8 @@
      "segments": 55,
      "cer_vs_api": 0.1957,
      "wer_vs_api": 0.3058,
-     "cer_vs_freedomspeech": 0.1619,
-     "wer_vs_freedomspeech": 0.2496
+     "cer_vs_freedomspeech": 0.1775,
+     "wer_vs_freedomspeech": 0.2694
     },
     "p4-ru-002": {
      "seconds": 6.34,
@@ -28,8 +28,8 @@
      "segments": 46,
      "cer_vs_api": 0.4735,
      "wer_vs_api": 0.5638,
-     "cer_vs_freedomspeech": 0.4977,
-     "wer_vs_freedomspeech": 0.5859
+     "cer_vs_freedomspeech": 0.5052,
+     "wer_vs_freedomspeech": 0.5908
     },
     "p4-ru-003": {
      "seconds": 2.23,
@@ -42,8 +42,8 @@
      "segments": 83,
      "cer_vs_api": 0.3588,
      "wer_vs_api": 0.6217,
-     "cer_vs_freedomspeech": 0.2907,
-     "wer_vs_freedomspeech": 0.5139
+     "cer_vs_freedomspeech": 0.3213,
+     "wer_vs_freedomspeech": 0.546
     },
     "p4-ru-004": {
      "seconds": 2.57,
@@ -56,8 +56,8 @@
      "segments": 81,
      "cer_vs_api": 0.3698,
      "wer_vs_api": 0.583,
-     "cer_vs_freedomspeech": 0.285,
-     "wer_vs_freedomspeech": 0.5008
+     "cer_vs_freedomspeech": 0.2921,
+     "wer_vs_freedomspeech": 0.505
     },
     "p4-ru-005": {
      "seconds": 2.27,
@@ -70,8 +70,8 @@
      "segments": 66,
      "cer_vs_api": 0.3141,
      "wer_vs_api": 0.4891,
-     "cer_vs_freedomspeech": 0.2487,
-     "wer_vs_freedomspeech": 0.4299
+     "cer_vs_freedomspeech": 0.249,
+     "wer_vs_freedomspeech": 0.4431
     }
    },
    "errors": {}
@@ -90,8 +90,8 @@
      "segments": 42,
      "cer_vs_api": 0.1441,
      "wer_vs_api": 0.3023,
-     "cer_vs_freedomspeech": 0.1202,
-     "wer_vs_freedomspeech": 0.2407
+     "cer_vs_freedomspeech": 0.0974,
+     "wer_vs_freedomspeech": 0.2077
     },
     "p4-ru-002": {
      "seconds": 4.26,
@@ -104,8 +104,8 @@
      "segments": 48,
      "cer_vs_api": 0.2344,
      "wer_vs_api": 0.3475,
-     "cer_vs_freedomspeech": 0.1413,
-     "wer_vs_freedomspeech": 0.2374
+     "cer_vs_freedomspeech": 0.1194,
+     "wer_vs_freedomspeech": 0.2129
     },
     "p4-ru-003": {
      "seconds": 2.77,
@@ -118,8 +118,8 @@
      "segments": 73,
      "cer_vs_api": 0.2738,
      "wer_vs_api": 0.5151,
-     "cer_vs_freedomspeech": 0.1742,
-     "wer_vs_freedomspeech": 0.3492
+     "cer_vs_freedomspeech": 0.1493,
+     "wer_vs_freedomspeech": 0.3229
     },
     "p4-ru-004": {
      "seconds": 3.15,
@@ -132,8 +132,8 @@
      "segments": 77,
      "cer_vs_api": 0.2938,
      "wer_vs_api": 0.4589,
-     "cer_vs_freedomspeech": 0.182,
-     "wer_vs_freedomspeech": 0.3419
+     "cer_vs_freedomspeech": 0.1712,
+     "wer_vs_freedomspeech": 0.3165
     },
     "p4-ru-005": {
      "seconds": 2.67,
@@ -146,8 +146,8 @@
      "segments": 35,
      "cer_vs_api": 0.3394,
      "wer_vs_api": 0.466,
-     "cer_vs_freedomspeech": 0.2743,
-     "wer_vs_freedomspeech": 0.3754
+     "cer_vs_freedomspeech": 0.252,
+     "wer_vs_freedomspeech": 0.3417
     }
    },
    "errors": {}
@@ -166,8 +166,8 @@
      "segments": 38,
      "cer_vs_api": 0.2027,
      "wer_vs_api": 0.2847,
-     "cer_vs_freedomspeech": 0.1855,
-     "wer_vs_freedomspeech": 0.2283
+     "cer_vs_freedomspeech": 0.1928,
+     "wer_vs_freedomspeech": 0.2306
     },
     "p4-ru-002": {
      "seconds": 21.11,
@@ -180,8 +180,8 @@
      "segments": 72,
      "cer_vs_api": 0.9051,
      "wer_vs_api": 1.1117,
-     "cer_vs_freedomspeech": 0.7797,
-     "wer_vs_freedomspeech": 1.0286
+     "cer_vs_freedomspeech": 0.7743,
+     "wer_vs_freedomspeech": 1.0248
     },
     "p4-ru-003": {
      "seconds": 14.6,
@@ -194,8 +194,8 @@
      "segments": 30,
      "cer_vs_api": 0.3625,
      "wer_vs_api": 0.499,
-     "cer_vs_freedomspeech": 0.2813,
-     "wer_vs_freedomspeech": 0.3968
+     "cer_vs_freedomspeech": 0.3159,
+     "wer_vs_freedomspeech": 0.4286
     },
     "p4-ru-004": {
      "seconds": 25.55,
@@ -208,8 +208,8 @@
      "segments": 56,
      "cer_vs_api": 0.4165,
      "wer_vs_api": 0.5382,
-     "cer_vs_freedomspeech": 0.3224,
-     "wer_vs_freedomspeech": 0.4478
+     "cer_vs_freedomspeech": 0.3469,
+     "wer_vs_freedomspeech": 0.4647
     },
     "p4-ru-005": {
      "seconds": 15.53,
@@ -222,8 +222,8 @@
      "segments": 32,
      "cer_vs_api": 0.2634,
      "wer_vs_api": 0.3821,
-     "cer_vs_freedomspeech": 0.2069,
-     "wer_vs_freedomspeech": 0.3069
+     "cer_vs_freedomspeech": 0.2188,
+     "wer_vs_freedomspeech": 0.3214
     }
    },
    "errors": {}
@@ -242,8 +242,8 @@
      "segments": 54,
      "cer_vs_api": 0.1499,
      "wer_vs_api": 0.2337,
-     "cer_vs_freedomspeech": 0.1081,
-     "wer_vs_freedomspeech": 0.1504
+     "cer_vs_freedomspeech": 0.1353,
+     "wer_vs_freedomspeech": 0.1778
     },
     "p4-ru-002": {
      "seconds": 7.04,
@@ -256,8 +256,8 @@
      "segments": 71,
      "cer_vs_api": 0.2822,
      "wer_vs_api": 0.3511,
-     "cer_vs_freedomspeech": 0.3159,
-     "wer_vs_freedomspeech": 0.3737
+     "cer_vs_freedomspeech": 0.3272,
+     "wer_vs_freedomspeech": 0.3861
     },
     "p4-ru-003": {
      "seconds": 4.02,
@@ -270,8 +270,8 @@
      "segments": 65,
      "cer_vs_api": 0.231,
      "wer_vs_api": 0.3521,
-     "cer_vs_freedomspeech": 0.1531,
-     "wer_vs_freedomspeech": 0.2341
+     "cer_vs_freedomspeech": 0.195,
+     "wer_vs_freedomspeech": 0.2779
     },
     "p4-ru-004": {
      "seconds": 4.79,
@@ -284,8 +284,8 @@
      "segments": 110,
      "cer_vs_api": 0.2941,
      "wer_vs_api": 0.4012,
-     "cer_vs_freedomspeech": 0.2031,
-     "wer_vs_freedomspeech": 0.2859
+     "cer_vs_freedomspeech": 0.2319,
+     "wer_vs_freedomspeech": 0.3094
     },
     "p4-ru-005": {
      "seconds": 4.35,
@@ -298,8 +298,8 @@
      "segments": 89,
      "cer_vs_api": 0.193,
      "wer_vs_api": 0.2721,
-     "cer_vs_freedomspeech": 0.1063,
-     "wer_vs_freedomspeech": 0.1542
+     "cer_vs_freedomspeech": 0.1275,
+     "wer_vs_freedomspeech": 0.1794
     }
    },
    "errors": {}
@@ -318,8 +318,8 @@
      "segments": 22,
      "cer_vs_api": 0.0703,
      "wer_vs_api": 0.1599,
-     "cer_vs_freedomspeech": 0.0357,
-     "wer_vs_freedomspeech": 0.0442
+     "cer_vs_freedomspeech": 0.0109,
+     "wer_vs_freedomspeech": 0.0282
     },
     "p4-ru-002": {
      "seconds": 44.35,
@@ -332,8 +332,8 @@
      "segments": 45,
      "cer_vs_api": 0.2523,
      "wer_vs_api": 0.3688,
-     "cer_vs_freedomspeech": 0.0371,
-     "wer_vs_freedomspeech": 0.0354
+     "cer_vs_freedomspeech": 0.036,
+     "wer_vs_freedomspeech": 0.0479
     },
     "p4-ru-003": {
      "seconds": 7.87,
@@ -346,8 +346,8 @@
      "segments": 43,
      "cer_vs_api": 0.1678,
      "wer_vs_api": 0.2938,
-     "cer_vs_freedomspeech": 0.044,
-     "wer_vs_freedomspeech": 0.0496
+     "cer_vs_freedomspeech": 0.0112,
+     "wer_vs_freedomspeech": 0.0176
     },
     "p4-ru-004": {
      "seconds": 9.08,
@@ -360,8 +360,8 @@
      "segments": 78,
      "cer_vs_api": 0.2258,
      "wer_vs_api": 0.3189,
-     "cer_vs_freedomspeech": 0.0445,
-     "wer_vs_freedomspeech": 0.0545
+     "cer_vs_freedomspeech": 0.068,
+     "wer_vs_freedomspeech": 0.0878
     },
     "p4-ru-005": {
      "seconds": 8.49,
@@ -374,8 +374,8 @@
      "segments": 45,
      "cer_vs_api": 0.1476,
      "wer_vs_api": 0.233,
-     "cer_vs_freedomspeech": 0.0281,
-     "wer_vs_freedomspeech": 0.0327
+     "cer_vs_freedomspeech": 0.0045,
+     "wer_vs_freedomspeech": 0.0109
     }
    },
    "errors": {}
@@ -394,8 +394,8 @@
      "segments": 79,
      "cer_vs_api": 0.1018,
      "wer_vs_api": 0.1898,
-     "cer_vs_freedomspeech": 0.0733,
-     "wer_vs_freedomspeech": 0.1274
+     "cer_vs_freedomspeech": 0.0745,
+     "wer_vs_freedomspeech": 0.1162
     },
     "p4-ru-002": {
      "seconds": 21.66,
@@ -408,8 +408,8 @@
      "segments": 85,
      "cer_vs_api": 0.26,
      "wer_vs_api": 0.3457,
-     "cer_vs_freedomspeech": 0.2918,
-     "wer_vs_freedomspeech": 0.3788
+     "cer_vs_freedomspeech": 0.2963,
+     "wer_vs_freedomspeech": 0.3746
     },
     "p4-ru-003": {
      "seconds": 60.44,
@@ -422,8 +422,8 @@
      "segments": 98,
      "cer_vs_api": 0.1768,
      "wer_vs_api": 0.3239,
-     "cer_vs_freedomspeech": 0.1172,
-     "wer_vs_freedomspeech": 0.2163
+     "cer_vs_freedomspeech": 0.1088,
+     "wer_vs_freedomspeech": 0.2074
     },
     "p4-ru-004": {
      "seconds": 78.46,
@@ -436,8 +436,8 @@
      "segments": 133,
      "cer_vs_api": 0.2417,
      "wer_vs_api": 0.3175,
-     "cer_vs_freedomspeech": 0.1448,
-     "wer_vs_freedomspeech": 0.2012
+     "cer_vs_freedomspeech": 0.15,
+     "wer_vs_freedomspeech": 0.2029
     },
     "p4-ru-005": {
      "seconds": 82.63,
@@ -450,8 +450,8 @@
      "segments": 96,
      "cer_vs_api": 0.1791,
      "wer_vs_api": 0.2677,
-     "cer_vs_freedomspeech": 0.0838,
-     "wer_vs_freedomspeech": 0.1402
+     "cer_vs_freedomspeech": 0.095,
+     "wer_vs_freedomspeech": 0.1498
     }
    },
    "errors": {}
@@ -470,8 +470,8 @@
      "segments": 14,
      "cer_vs_api": 0.2127,
      "wer_vs_api": 0.3111,
-     "cer_vs_freedomspeech": 0.1867,
-     "wer_vs_freedomspeech": 0.2602
+     "cer_vs_freedomspeech": 0.2031,
+     "wer_vs_freedomspeech": 0.2764
     },
     "p4-ru-002": {
      "seconds": 162.76,
@@ -484,8 +484,8 @@
      "segments": 62,
      "cer_vs_api": 0.3709,
      "wer_vs_api": 0.523,
-     "cer_vs_freedomspeech": 0.3066,
-     "wer_vs_freedomspeech": 0.4646
+     "cer_vs_freedomspeech": 0.3147,
+     "wer_vs_freedomspeech": 0.467
     },
     "p4-ru-003": {
      "seconds": 30.63,
@@ -498,8 +498,8 @@
      "segments": 27,
      "cer_vs_api": 0.3191,
      "wer_vs_api": 0.4829,
-     "cer_vs_freedomspeech": 0.2771,
-     "wer_vs_freedomspeech": 0.4067
+     "cer_vs_freedomspeech": 0.2961,
+     "wer_vs_freedomspeech": 0.4227
     },
     "p4-ru-004": {
      "seconds": 22.2,
@@ -512,8 +512,8 @@
      "segments": 32,
      "cer_vs_api": 0.3455,
      "wer_vs_api": 0.4762,
-     "cer_vs_freedomspeech": 0.3029,
-     "wer_vs_freedomspeech": 0.41
+     "cer_vs_freedomspeech": 0.328,
+     "wer_vs_freedomspeech": 0.4144
     },
     "p4-ru-005": {
      "seconds": 42.51,
@@ -526,8 +526,8 @@
      "segments": 29,
      "cer_vs_api": 0.2577,
      "wer_vs_api": 0.3734,
-     "cer_vs_freedomspeech": 0.2024,
-     "wer_vs_freedomspeech": 0.3146
+     "cer_vs_freedomspeech": 0.215,
+     "wer_vs_freedomspeech": 0.3323
     }
    },
    "errors": {}
@@ -546,8 +546,8 @@
      "segments": 69,
      "cer_vs_api": 0.0659,
      "wer_vs_api": 0.1459,
-     "cer_vs_freedomspeech": 0.0768,
-     "wer_vs_freedomspeech": 0.1416
+     "cer_vs_freedomspeech": 0.0452,
+     "wer_vs_freedomspeech": 0.1039
     },
     "p4-ru-002": {
      "seconds": 42.85,
@@ -560,8 +560,8 @@
      "segments": 87,
      "cer_vs_api": 0.2144,
      "wer_vs_api": 0.3209,
-     "cer_vs_freedomspeech": 0.22,
-     "wer_vs_freedomspeech": 0.3316
+     "cer_vs_freedomspeech": 0.1988,
+     "wer_vs_freedomspeech": 0.3053
     },
     "p4-ru-003": {
      "seconds": 14.96,
@@ -574,8 +574,8 @@
      "segments": 94,
      "cer_vs_api": 0.1741,
      "wer_vs_api": 0.3038,
-     "cer_vs_freedomspeech": 0.1295,
-     "wer_vs_freedomspeech": 0.2282
+     "cer_vs_freedomspeech": 0.1037,
+     "wer_vs_freedomspeech": 0.2114
     },
     "p4-ru-004": {
      "seconds": 15.14,
@@ -588,8 +588,8 @@
      "segments": 103,
      "cer_vs_api": 0.2509,
      "wer_vs_api": 0.3391,
-     "cer_vs_freedomspeech": 0.1555,
-     "wer_vs_freedomspeech": 0.2617
+     "cer_vs_freedomspeech": 0.1571,
+     "wer_vs_freedomspeech": 0.2547
     },
     "p4-ru-005": {
      "seconds": 48.54,
@@ -602,8 +602,8 @@
      "segments": 76,
      "cer_vs_api": 0.157,
      "wer_vs_api": 0.2547,
-     "cer_vs_freedomspeech": 0.1143,
-     "wer_vs_freedomspeech": 0.1931
+     "cer_vs_freedomspeech": 0.0843,
+     "wer_vs_freedomspeech": 0.1591
     }
    },
    "errors": {}
@@ -622,8 +622,8 @@
      "segments": 49,
      "cer_vs_api": 0.0761,
      "wer_vs_api": 0.1722,
-     "cer_vs_freedomspeech": 0.0674,
-     "wer_vs_freedomspeech": 0.1239
+     "cer_vs_freedomspeech": 0.0587,
+     "wer_vs_freedomspeech": 0.1162
     },
     "p4-ru-002": {
      "seconds": 12.78,
@@ -636,8 +636,8 @@
      "segments": 63,
      "cer_vs_api": 0.2043,
      "wer_vs_api": 0.2996,
-     "cer_vs_freedomspeech": 0.216,
-     "wer_vs_freedomspeech": 0.2963
+     "cer_vs_freedomspeech": 0.2194,
+     "wer_vs_freedomspeech": 0.2904
     },
     "p4-ru-003": {
      "seconds": 57.33,
@@ -650,8 +650,8 @@
      "segments": 76,
      "cer_vs_api": 0.1953,
      "wer_vs_api": 0.3461,
-     "cer_vs_freedomspeech": 0.1152,
-     "wer_vs_freedomspeech": 0.2143
+     "cer_vs_freedomspeech": 0.1082,
+     "wer_vs_freedomspeech": 0.2172
     },
     "p4-ru-004": {
      "seconds": 7.99,
@@ -664,8 +664,8 @@
      "segments": 120,
      "cer_vs_api": 0.2536,
      "wer_vs_api": 0.342,
-     "cer_vs_freedomspeech": 0.136,
-     "wer_vs_freedomspeech": 0.2133
+     "cer_vs_freedomspeech": 0.1527,
+     "wer_vs_freedomspeech": 0.2245
     },
     "p4-ru-005": {
      "seconds": 7.16,
@@ -678,8 +678,8 @@
      "segments": 66,
      "cer_vs_api": 0.1731,
      "wer_vs_api": 0.2721,
-     "cer_vs_freedomspeech": 0.095,
-     "wer_vs_freedomspeech": 0.1542
+     "cer_vs_freedomspeech": 0.0895,
+     "wer_vs_freedomspeech": 0.1466
     }
    },
    "errors": {}
