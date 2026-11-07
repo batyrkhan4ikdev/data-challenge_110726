@@ -2231,12 +2231,12 @@
   .cqa .cqa-appeal-cols,
   .cqa .cqa-analytics-grid,
   .cqa .cqa-score-top {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 @media (max-width: 1000px) {
   .cqa .cqa-split {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .cqa .cqa-pane--transcript {
     position: static;
