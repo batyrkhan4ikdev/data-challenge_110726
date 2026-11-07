@@ -9,6 +9,8 @@
   </head>
   <body>
     <div id="app"></div>
-    <script type="module" src="./dist/main.js"></script>
+    <!-- web/dist is build output (gitignored): a fresh clone must say how to build instead of showing a blank page. -->
+    <script type="module" src="./dist/main.js"
+      onerror="document.getElementById('app').innerHTML='<p style=&quot;font:16px system-ui;padding:24px&quot;>Интерфейс не собран. Выполните <code>npm ci --prefix web &amp;&amp; npm run build --prefix web</code> и обновите страницу.</p>'"></script>
   </body>
 </html>
