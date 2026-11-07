@@ -1094,9 +1094,28 @@
 }
 
 /* ---- 10. Checklist editor ---- */
+.cqa .cqa-editor {
+  --cqa-savebar-space: 120px;
+  max-width: 1120px;
+  padding-bottom: var(--cqa-savebar-space);
+}
+.cqa .cqa-editor :is(input, select, textarea, button, summary) {
+  scroll-margin-bottom: var(--cqa-savebar-space);
+  scroll-margin-top: 24px;
+}
+.cqa .cqa-editor .cqa-input {
+  width: 100%;
+}
+.cqa .cqa-editor .cqa-input:hover:not(:disabled) {
+  background: var(--cqa-surface-2);
+  border-color: var(--cqa-accent);
+}
+.cqa .cqa-editor .cqa-input[aria-invalid='true'] {
+  border-color: var(--cqa-bad);
+}
 .cqa .cqa-fieldset {
   border: none;
-  padding: 0;
+  padding: 0 0 24px;
   margin: 0;
   min-width: 0;
 }
@@ -1115,33 +1134,73 @@
 .cqa .cqa-span-4 {
   grid-column: span 4;
 }
-.cqa .cqa-section-row,
-.cqa .cqa-step {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-  align-items: center;
+.cqa .cqa-editor .cqa-sections {
+  margin-bottom: 24px;
 }
-.cqa .cqa-section-row .cqa-input:last-of-type,
-.cqa .cqa-step .cqa-input:nth-child(2) {
-  flex: 1;
+.cqa .cqa-section-row {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 144px auto;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: end;
 }
 .cqa .cqa-criterion {
   background: var(--cqa-surface);
   border: 1px solid var(--cqa-border);
   border-radius: var(--cqa-radius-lg);
   padding: 16px 20px;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
 }
 .cqa .cqa-criterion-head {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.cqa .cqa-criterion-head h3 {
+  margin: 4px 0 0;
+  font-size: 16px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .cqa .cqa-criterion-tools {
   display: flex;
-  gap: 4px;
+  flex: none;
+  gap: 8px;
+}
+.cqa .cqa-criterion-tools .cqa-btn[aria-disabled='true'] {
+  color: var(--cqa-muted);
+  background: var(--cqa-disabled-bg);
+  border-color: var(--cqa-disabled-bg);
+  cursor: not-allowed;
+}
+.cqa .cqa-criterion-identity,
+.cqa .cqa-criterion-options {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+.cqa .cqa-criterion-identity {
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+.cqa .cqa-criterion-options {
+  grid-template-columns: 96px minmax(120px, 1fr) minmax(160px, 1fr) minmax(160px, 2fr);
+}
+.cqa .cqa-criterion-description summary {
+  width: fit-content;
+  padding: 8px 0;
+  color: var(--cqa-link);
+  cursor: pointer;
+  font-weight: 600;
+}
+.cqa .cqa-criterion-description summary:hover {
+  color: var(--cqa-accent-dark);
+  text-decoration: underline;
+}
+.cqa .cqa-criterion-description > .cqa-field {
+  margin-top: 12px;
 }
 .cqa .cqa-steps {
   margin-top: 12px;
@@ -1149,22 +1208,40 @@
   background: var(--cqa-surface-2);
   border-radius: var(--cqa-radius);
 }
+.cqa .cqa-step {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr) auto;
+  gap: 12px;
+  margin: 8px 0 12px;
+  align-items: end;
+}
 .cqa .cqa-savebar {
   position: sticky;
   bottom: 0;
+  z-index: 5;
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px 24px;
   align-items: center;
   padding: 12px 16px;
-  margin-top: 12px;
   background: var(--cqa-surface);
   border: 1px solid var(--cqa-border);
   border-radius: var(--cqa-radius-lg);
   box-shadow: 0 -2px 8px rgba(25, 25, 25, 0.06);
 }
-.cqa .cqa-sum {
+.cqa .cqa-savebar-state {
+  display: grid;
+  gap: 4px;
   flex: 1;
+  min-width: 0;
+}
+.cqa .cqa-savebar-state [role='status'] {
+  font-size: 13px;
+  color: var(--cqa-muted);
+}
+.cqa .cqa-sum {
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 .cqa .cqa-sum.is-ok .cqa-sum-value {
   color: var(--cqa-good);
@@ -1172,11 +1249,93 @@
 .cqa .cqa-sum.is-off .cqa-sum-value {
   color: var(--cqa-bad);
 }
+.cqa .cqa-editor-status,
+.cqa .cqa-editor-readonly {
+  max-width: 1120px;
+}
+.cqa .cqa-editor-readonly {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: var(--cqa-disabled-bg);
+  color: var(--cqa-text);
+  border-radius: var(--cqa-radius);
+}
+.cqa .cqa-editor-success-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 8px;
+}
 .cqa .cqa-version-picker {
   flex-direction: row;
   align-items: center;
   gap: 8px;
   margin-left: auto;
+}
+@media (max-width: 1100px) {
+  .cqa .cqa-criterion-options {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+}
+@media (max-width: 860px) {
+  .cqa .cqa-editor {
+    --cqa-savebar-space: 160px;
+  }
+  .cqa .cqa-editor .cqa-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cqa .cqa-editor .cqa-grid > * {
+    grid-column: 1;
+  }
+  .cqa .cqa-section-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .cqa .cqa-section-title {
+    grid-column: 1 / -1;
+  }
+  .cqa .cqa-criterion {
+    padding: 16px;
+  }
+  .cqa .cqa-criterion-head {
+    flex-direction: column;
+  }
+  .cqa .cqa-criterion-tools .cqa-btn,
+  .cqa .cqa-criterion-description summary,
+  .cqa .cqa-editor .cqa-check {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .cqa .cqa-criterion-identity,
+  .cqa .cqa-criterion-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cqa .cqa-criterion-identity > :first-child,
+  .cqa .cqa-criterion-options > :first-child {
+    max-width: 120px;
+  }
+  .cqa .cqa-step {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+  .cqa .cqa-step-description {
+    grid-column: 1 / -1;
+  }
+  .cqa .cqa-step .cqa-btn {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .cqa .cqa-savebar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+  .cqa .cqa-savebar .cqa-btn {
+    white-space: normal;
+  }
+  .cqa .cqa-version-picker {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 /* ---- 11. Analytics ---- */
