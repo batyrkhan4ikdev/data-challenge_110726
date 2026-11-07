@@ -40,6 +40,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument('--profile', help='model profile from config/profiles.toml (default: env LLM_PROFILE or fake)')
     p.add_argument('--mode', choices=get_args(Mode), help='default: env EVAL_MODE or single')
     p.add_argument('--k', type=int, help='samples per criterion (default: env EVAL_K or 1)')
+    p.add_argument(
+        '--fallback-profile',
+        default=os.environ.get('FALLBACK_PROFILE') or None,
+        help='re-run dialogs that failed with the primary profile on this one (default: env FALLBACK_PROFILE)',
+    )
     return p.parse_args(argv)
 
 
@@ -64,6 +69,8 @@ def result_row(ev: Evaluation, record: Record) -> dict:
         'language': record.language,
         'checklist_id': ev.checklist_id,
         'checklist_version': ev.checklist_version,
+        'profile': ev.profile,
+        'model': ev.model,
         'total': ev.score.total,
         'gross_error': ev.score.gross_error,
         'items': [
@@ -109,14 +116,14 @@ def write_outputs(
     csv_path = OUT / f'{group_id}.results.csv'
     with csv_path.open('w', encoding='utf-8', newline='') as f:
         w = csv.writer(f)
-        w.writerow(['conversation_id', 'channel', 'language', 'checklist_id', 'checklist_version', *criteria,
+        w.writerow(['conversation_id', 'channel', 'language', 'checklist_id', 'checklist_version', 'profile', *criteria,
                     'total', 'gross_error', 'error'])
         for r in records:
             ev = evs.get(r.conversation_id)
             verdicts = {i.criterion_id: i.verdict for i in ev.items} if ev else {}
             w.writerow([
                 r.conversation_id, r.channel, r.language,
-                ev.checklist_id if ev else '', ev.checklist_version if ev else '',
+                ev.checklist_id if ev else '', ev.checklist_version if ev else '', ev.profile if ev else '',
                 *(verdicts.get(c, '') for c in criteria),
                 '' if ev is None or ev.score.total is None else ev.score.total,
                 '' if ev is None else ev.score.gross_error,
@@ -161,10 +168,24 @@ async def main(argv: list[str] | None = None) -> int:
         print(f'ошибка: {e}', file=sys.stderr)
         return 2
     job = await runner.wait(job.id)
+    evs = {ev.conversation_id: ev for ev in [await store.get_evaluation(i) for i in job.evaluation_ids]}
+    failed = dict(job.failed)
+
+    if failed and args.fallback_profile:
+        if args.fallback_profile not in profiles:
+            print(f'ошибка: неизвестный fallback-профиль {args.fallback_profile!r}', file=sys.stderr)
+            return 2
+        print(f'{len(failed)} dialogs failed on {profile.name}; retrying on fallback {args.fallback_profile}')
+        retry_req = req.model_copy(update={'conversation_ids': list(failed), 'profile': args.fallback_profile})
+        retry = await runner.wait((await runner.start(retry_req, {r.conversation_id: r for r in records})).id)
+        for i in retry.evaluation_ids:
+            ev = await store.get_evaluation(i)
+            evs[ev.conversation_id] = ev
+            failed.pop(ev.conversation_id, None)
+        failed.update(retry.failed)
     wall = time.perf_counter() - t0
 
-    evs = {ev.conversation_id: ev for ev in [await store.get_evaluation(i) for i in job.evaluation_ids]}
-    rows = [['id', 'channel', 'lang', 'total', 'gross', 'error']]
+    rows = [['id', 'channel', 'lang', 'total', 'gross', 'profile', 'error']]
     for r in records:
         ev = evs.get(r.conversation_id)
         rows.append([
@@ -173,7 +194,8 @@ async def main(argv: list[str] | None = None) -> int:
             r.language,
             fmt_total(ev.score.total) if ev else '',
             ('yes' if ev.score.gross_error else 'no') if ev else '',
-            job.failed.get(r.conversation_id, ''),
+            ev.profile if ev else '',
+            failed.get(r.conversation_id, ''),
         ])
     print_table(rows)
 
@@ -181,16 +203,18 @@ async def main(argv: list[str] | None = None) -> int:
     prompt = sum(e.usage.prompt_tokens for e in done)
     completion = sum(e.usage.completion_tokens for e in done)
     model_seconds = sum(e.usage.seconds for e in done)
-    cost = cost_usd(profile, done)
     print()
-    print(f'evaluated {len(done)}/{len(records)}, failed {len(job.failed)}')
+    print(f'evaluated {len(done)}/{len(records)}, failed {len(failed)}')
     print(f'tokens: prompt {prompt}, completion {completion}, total {prompt + completion}')
     print(f'seconds: wall {wall:.1f}, summed per dialog {model_seconds:.1f}')
-    print(f'cost: {"n/a (no cost model)" if cost is None else f"${cost:.4f}"} ({profile.name})')
+    for name in sorted({e.profile for e in done}):
+        group = [e for e in done if e.profile == name]
+        cost = cost_usd(profiles[name], group)
+        print(f'cost: {"n/a (no cost model)" if cost is None else f"${cost:.4f}"} ({name}, {len(group)} dialogs)')
 
-    json_path, csv_path = write_outputs(args.group_id, records, evs, job.failed)
+    json_path, csv_path = write_outputs(args.group_id, records, evs, failed)
     print(f'wrote {json_path.as_posix()} and {csv_path.as_posix()}')
-    return 1 if job.failed else 0
+    return 1 if failed else 0
 
 
 if __name__ == '__main__':

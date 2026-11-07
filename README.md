@@ -69,7 +69,9 @@ Organizer clarifications and the team's rules for borderline cases are in each c
 python scripts/run_batch.py <GROUP_ID> --refresh     # fetches the group, evaluates every dialog with the defaults
 ```
 
-This prints a table and the token, time and cost totals. It writes `out/<GROUP_ID>.results.json` and `.csv` with the per-criterion verdicts, and stores the evaluations so they appear in the UI. The control-set results are raw system output, with no manual edits.
+This prints a table and the token, time and cost totals. It writes `out/<GROUP_ID>.results.json` and `.csv` with the per-criterion verdicts and the profile used per dialog, and stores the evaluations so they appear in the UI. The control-set results are raw system output, with no manual edits.
+
+Dialogs that fail on the primary profile (for example, the self-hosted endpoint is unreachable) are re-run once on `--fallback-profile`, which defaults to env `FALLBACK_PROFILE`. Costs are reported per profile.
 
 ## How the evaluation works
 

@@ -95,15 +95,25 @@ async def _run(assignments: list[dict], override: str | None) -> dict[str, list[
     return by_labeler
 
 
+CONSENSUS = "labels.consensus.csv"
+
+
+def _label_files(directory: Path) -> list[Path]:
+    """LLM-consensus labels first, human per-labeler files after, so a filled human row always wins."""
+    files = sorted(Path(directory).glob("labels.*.csv"))
+    return sorted(files, key=lambda p: p.name != CONSENSUS)
+
+
 def load_gold(directory: Path = GOLD_DIR) -> dict[str, dict[str, str]]:
     """Read every labels.*.csv; return {cid: {criterion: gold_verdict}} for filled rows.
 
-    Raises GoldError listing invalid rows as `file:line: reason`.
+    Human labels override `labels.consensus.csv` row by row. Raises GoldError listing invalid rows
+    as `file:line: reason`.
     """
     records = load_records()
     gold: dict[str, dict[str, str]] = {}
     problems: list[str] = []
-    for path in sorted(Path(directory).glob("labels.*.csv")):
+    for path in _label_files(directory):
         with path.open(encoding="utf-8-sig", newline="") as f:
             reader = csv.DictReader(f)
             for row in reader:

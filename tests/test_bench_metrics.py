@@ -96,3 +96,15 @@ def test_load_gold_reports_invalid(tmp_path):
     bad = path.read_text(encoding="utf-8-sig").replace("maybe", "")
     path.write_text(bad, encoding="utf-8-sig")
     assert load_gold(tmp_path) == {cid: {"c01": "yes"}}
+
+
+def test_human_labels_override_consensus(tmp_path):
+    cid = next(i for i, r in load_records().items() if r.channel == "agent chat")
+    for name, verdict in (("labels.consensus.csv", "no"), ("labels.Batyrkhantzy111.csv", "yes"), ("labels.zz.csv", "")):
+        with (tmp_path / name).open("w", encoding="utf-8-sig", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(COLUMNS)
+            w.writerow([cid, "c01", "t", "yes|no", "no", "1", "e", verdict, "", ""])
+            w.writerow([cid, "c05", "t", "yes|no", "no", "1", "e", "no" if name == "labels.consensus.csv" else "", "", ""])
+    # The human "yes" on c01 beats the LLM consensus "no"; c05 exists only in the consensus and stays.
+    assert load_gold(tmp_path) == {cid: {"c01": "yes", "c05": "no"}}
