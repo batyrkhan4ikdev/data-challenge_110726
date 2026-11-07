@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import re
@@ -13,6 +14,8 @@ from server.http import new_session
 from server.models import Record, Turn
 
 _FRACTION = re.compile(r'(\.\d{6})\d+')
+# Waits between dataset fetch attempts on a connection error or HTTP 5xx (4 attempts, ~35 s worst case).
+RETRY_DELAYS_S: tuple[float, ...] = (5.0, 10.0, 20.0)
 
 
 class DatasetError(Exception):
@@ -116,10 +119,23 @@ async def load_dataset(
     url = _with_group(base, group_id)
     host = urlsplit(url).hostname or 'unknown host'
     sess = session or new_session()
-    try:
-        resp = await sess.get(url, timeout=60)
-    except Exception as e:
-        raise DatasetError(f'request to {host} failed: {type(e).__name__}') from None
+    resp = None
+    last = ''
+    for attempt, delay in enumerate((*RETRY_DELAYS_S, None)):
+        # The network here drops connections for ~20 s at a time; one blip must not sink a 1-hour control window.
+        try:
+            resp = await sess.get(url, timeout=60)
+        except Exception as e:
+            last = f'request to {host} failed: {type(e).__name__}'
+            resp = None
+        else:
+            if resp.status_code < 500:
+                break
+            last = f'{host} returned HTTP {resp.status_code}'
+        if delay is None:
+            raise DatasetError(f'{last} (after {attempt + 1} attempts)')
+        await asyncio.sleep(delay)
+    assert resp is not None
     if resp.status_code != 200:
         raise DatasetError(f'{host} returned HTTP {resp.status_code}')
     try:

@@ -167,4 +167,4 @@ LLM_PROFILE=fake uvicorn server.app:app --port 8787   # full app offline: determ
 
 CI (`.github/workflows/ci.yml`) runs pytest, regenerates the types and fails if they are stale, and type-checks the web code. The plan and the decisions behind it are in `docs/superpowers/plans/2026-11-07-cqa-prototype.md`, terms in `GLOSSARY.md`, and team and agent conventions in `AGENTS.md`.
 
-The web UI is plain TypeScript ES modules with no framework and no bundler. Styles are scoped under `.cqa`, and the entry point is `mountCqa(root, {apiBase})`, so it can be embedded as a Dynamics 365 HTML web resource.
+The web UI is plain TypeScript ES modules with no framework and no bundler. Styles are scoped under `.cqa`, and the entry point is `mountCqa(root, {apiBase})`. That is the shape a Dynamics 365 HTML web resource needs. `docs/research/d365-web-resources.md` lists the remaining steps: rename three hyphenated modules, add a loader that reads `apiBase` from the `data` parameter, and provide an HTTPS API with CORS.

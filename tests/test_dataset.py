@@ -3,6 +3,7 @@ from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
+from server import dataset
 from server.dataset import DatasetError, load_dataset, load_fixture, normalize_response
 
 
@@ -126,12 +127,41 @@ async def test_load_dataset_cache_and_refresh(monkeypatch, tmp_path):
 
 async def test_failure_statuses_keep_cache(monkeypatch, tmp_path):
     monkeypatch.setenv('DATASET_URL', 'https://example.test/x?sig=SECRET')
+    monkeypatch.setattr(dataset, 'RETRY_DELAYS_S', (0.0, 0.0))
     (tmp_path / 'G.json').write_bytes(b'{"keep": 1}')
     for resp in (_Resp(500, {}), _Resp(200, {'isSuccess': False, 'error': 'boom'})):
         with pytest.raises(DatasetError) as ei:
             await load_dataset('G', refresh=True, session=_Session(resp), cache_dir=tmp_path)
         assert 'SECRET' not in str(ei.value)
         assert (tmp_path / 'G.json').read_bytes() == b'{"keep": 1}'
+
+
+class _FlakySession:
+    """Fails the first `fails` requests (connection error, then HTTP 502), then answers `resp`."""
+
+    def __init__(self, fails: int, resp):
+        self.fails, self.resp, self.calls = fails, resp, 0
+
+    async def get(self, url, timeout=None):
+        self.calls += 1
+        if self.calls <= self.fails:
+            if self.calls % 2:
+                raise ConnectionError('dropped')
+            return _Resp(502, {})
+        return self.resp
+
+
+async def test_transient_failures_are_retried(monkeypatch, tmp_path):
+    monkeypatch.setenv('DATASET_URL', 'https://example.test/x?sig=SECRET')
+    monkeypatch.setattr(dataset, 'RETRY_DELAYS_S', (0.0, 0.0, 0.0))
+    payload = json.loads(open('tests/fixtures/dev.json', encoding='utf-8').read())
+    sess = _FlakySession(2, _Resp(200, payload))
+    assert len(await load_dataset('G', refresh=True, session=sess, cache_dir=tmp_path)) == 65
+    assert sess.calls == 3
+    # More failures than attempts: a clear error that counts them and never leaks the signed URL.
+    with pytest.raises(DatasetError, match=r'after 4 attempts') as ei:
+        await load_dataset('G', refresh=True, session=_FlakySession(9, _Resp(200, payload)), cache_dir=tmp_path)
+    assert 'SECRET' not in str(ei.value)
 
 
 async def test_missing_url(monkeypatch, tmp_path):

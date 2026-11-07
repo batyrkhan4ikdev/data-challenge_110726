@@ -145,3 +145,17 @@ Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we alrea
 
 **#3060** 17:36, Yerassyl (open, no answer yet). The appendix lists `contact` as true/false only, but #2978 said that a call whose greeting is not in the recording is N/A. Can such a call be exported as `null`?
 → Our DEV export has `contact = true` for all 5 calls, so it is valid today. `server/submission.py` follows the appendix strictly (no null for contact). If a re-run produces a call with contact N/A, the validator flags it. Revisit once the organizers answer. The control set is chats only, and in the chat checklist c01 has no N/A.
+
+### Update 19:40 (through #3116; read by the m4 watcher, then checked)
+
+**#3104 → #3106** 19:00–19:04. Alikhan asked: «В диалогах p1-ru-009, p1-kz-015 и p1-en-014 оператор без идентификации сообщает клиенту информацию о его счёте (ограничение на вывод) … только «Нет» по 03 или также «Да» по 08? … есть ли норматив по длительности удержания клиента на линии в звонках?» Максим answered: «Как вам кажется, этот кейс является нарушением обоих критериев? Ответ на второй вопрос, нет»
+→ We read the rhetorical question as a yes: disclosing an account restriction before identification breaks both C3 and C8. There is no hold-time norm for calls.
+→ Our DEV output flagged p1-ru-009 and p1-en-014 under C8 but **missed p1-kz-015 (KZ)** in both runs; c03 was «Нет» in all three. The team rule in the `notes` of both default checklists now names the account status and restrictions (block, ban on withdrawals), orders and operations explicitly, and states that the rule applies in every language. DEV is re-run.
+
+**#3049 → #3055 / #3056** 17:31–17:34 (admin). Asked when results are due and when the submission form will come: «Скоро отправим ссылку для сдачи» / «Завтра в 12:00 дедлайн».
+**#3044 → #3050** 17:31, Nikolay Borovinskiy: «Каждая команда создаёт свой репозиторий, открытый на github. Там их проект + результаты, это доп гайд по контракту json с результатами.»
+**#3108 → #3114** 19:29, Nikolay Borovinskiy: «Все через гит.»
+→ Results go only through the team's public repo (ours is public), with a deadline of 12:00 Nov 8. The organizers will post a link for submitting the repo.
+
+**#3080 → #3084** 18:03, Nikolay Borovinskiy: «Видео не надо» (only the presentation and the live demo).
+**#3076 → #3083** 18:03, Nikolay Borovinskiy, on whether the test dialogs are the same size as DEV: «Не большие».
