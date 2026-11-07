@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import time
 from typing import Any, Protocol
 
@@ -12,6 +13,11 @@ from server.http import new_session
 
 TIMEOUT_S = 180
 RETRY_STATUSES = {429}
+ATTEMPTS = 3  # the venue network drops connections; one retry was not enough in practice
+PROMPT_JSON = (
+    'Ответь ТОЛЬКО одним JSON-объектом без markdown и без текста вокруг, строго по этой JSON Schema '
+    '(все поля обязательны, порядок полей как в схеме):\n{schema}'
+)
 
 
 class LLMError(Exception):
@@ -52,20 +58,22 @@ class OpenAIClient:
 
     def _body(self, messages: list[dict], schema: dict, temperature: float, n: int) -> dict:
         p = self.profile
-        if p.structured == 'json_schema':
-            fmt: dict = {
-                'type': 'json_schema',
-                'json_schema': {'name': 'cqa', 'schema': schema, 'strict': True},
-            }
-        else:
-            fmt = {'type': 'json_object'}
         body: dict = {
             'model': p.model,
             'messages': messages,
             'temperature': temperature,
             'max_tokens': p.max_tokens,
-            'response_format': fmt,
         }
+        if p.structured == 'json_schema':
+            body['response_format'] = {
+                'type': 'json_schema',
+                'json_schema': {'name': 'cqa', 'schema': schema, 'strict': True},
+            }
+        elif p.structured == 'json_object':
+            body['response_format'] = {'type': 'json_object'}
+        else:
+            # Gateways that drop response_format (aigw for Claude/GPT): the schema goes into the prompt instead.
+            body['messages'] = [*messages, {'role': 'user', 'content': PROMPT_JSON.format(schema=json.dumps(schema, ensure_ascii=False))}]
         if n != 1 or p.supports_n:
             body['n'] = n
         body.update(p.extra_body)
@@ -80,7 +88,7 @@ class OpenAIClient:
         async with self._sem:
             start = time.perf_counter()
             last = ''
-            for attempt in range(2):
+            for attempt in range(ATTEMPTS):
                 try:
                     resp = await self._get_session().post(
                         url, json=body, headers=headers, timeout=TIMEOUT_S
@@ -94,8 +102,8 @@ class OpenAIClient:
                     last = f'HTTP {status}: {(resp.text or "")[:300]}'
                     if not (status in RETRY_STATUSES or status >= 500):
                         raise LLMError(last)
-                if attempt == 0:
-                    await asyncio.sleep(1.0)
+                if attempt < ATTEMPTS - 1:
+                    await asyncio.sleep(1.0 * (attempt + 1))
             raise LLMError(last)
 
     @staticmethod

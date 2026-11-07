@@ -71,6 +71,18 @@ async def test_no_n_support_fires_n_requests(profile):
     assert len(s.calls) == 3
 
 
+async def test_prompt_mode_puts_schema_in_messages(profile):
+    p = profile.model_copy(update={'structured': 'prompt'})
+    s = Session([ok(['{}'])])
+    schema = {'type': 'object', 'properties': {'c01': {'type': 'string'}}}
+    await OpenAIClient(p, s).complete(MSGS, schema, 0.0, 1)
+    body = s.calls[0]['json']
+    assert 'response_format' not in body
+    assert body['messages'][:-1] == MSGS
+    assert '"c01"' in body['messages'][-1]['content']
+    assert MSGS == [{'role': 'user', 'content': 'x'}]
+
+
 async def test_retry_on_500(profile, monkeypatch):
     sleeps = []
 
@@ -83,6 +95,17 @@ async def test_retry_on_500(profile, monkeypatch):
     assert len(res) == 1
     assert len(s.calls) == 2
     assert sleeps == [1.0]
+
+
+async def test_gives_up_after_three_attempts(profile, monkeypatch):
+    async def fake_sleep(d):
+        pass
+
+    monkeypatch.setattr(asyncio, 'sleep', fake_sleep)
+    s = Session([Resp(502, text='bad gateway')] * 3)
+    with pytest.raises(LLMError, match='502'):
+        await OpenAIClient(profile, s).complete(MSGS, {}, 0.0, 1)
+    assert len(s.calls) == 3
 
 
 async def test_400_raises(profile):
