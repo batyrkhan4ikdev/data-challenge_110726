@@ -3,6 +3,7 @@ import { DEFAULT_GROUP, hrefDialogs, hrefEvaluation } from '../router.js';
 import type { Ctx } from '../router.js';
 import type { AppealQueueItem, EvaluationView, Record as DialogRecord } from '../types.gen.js';
 import { allowedVerdicts, badge, banner, errorDetails, errorMessage, fmt, h, rangeOf, verdictLabel, verdictTone } from '../ui/dom.js';
+import { acceptButton, reviewerInput, statsLine } from '../ui/confirmPanel.js';
 import { renderTranscript } from '../ui/transcript.js';
 
 interface Loaded {
@@ -249,7 +250,46 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   const onResolved = () => {
     open -= 1;
     count.textContent = t.review.count(open);
+    void stats.refresh();
   };
-  const list = h('div', { class: 'cqa-appeals' }, queue.map((q, i) => card(ctx, q, loaded[i], onResolved)));
-  root.replaceChildren(h('div', { class: 'cqa-page-head' }, h('div', null, title, count)), list);
+  const cards = queue.map((q, i) => card(ctx, q, loaded[i], onResolved));
+  const list = h('div', { class: 'cqa-appeals' }, cards);
+
+  // Подтверждения (issue #44): отдельно от апелляций, на итог не влияют.
+  const reviewer = reviewerInput();
+  const stats = statsLine(ctx);
+  const accepts = queue.map((q, i) => {
+    const a = acceptButton(ctx, q.evaluation_id, () => reviewer.value.trim(), () => void stats.refresh());
+    cards[i].querySelector('.cqa-appeal-head')?.appendChild(a.el);
+    return a;
+  });
+  const strip = h(
+    'div',
+    { class: 'cqa-review-strip' },
+    h('label', { class: 'cqa-inline' }, h('span', null, t.confirm.reviewer), reviewer),
+    stats.el,
+    h('p', { class: 'cqa-muted cqa-keys-hint' }, t.confirm.keysHint),
+  );
+
+  let focused = -1;
+  const focus = (i: number) => {
+    focused = Math.max(0, Math.min(cards.length - 1, i));
+    cards.forEach((c, n) => c.classList.toggle('is-focused', n === focused));
+    cards[focused].scrollIntoView({ block: 'nearest' });
+  };
+  const onKey = (e: KeyboardEvent) => {
+    const el = e.target as HTMLElement | null;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))) return;
+    if (e.key === 'j') focus(focused + 1);
+    else if (e.key === 'k') focus(focused < 0 ? 0 : focused - 1);
+    else if (e.key === 'a' && focused >= 0) accepts[focused].run();
+    else if (e.key === 'o' && focused >= 0) cards[focused].querySelector<HTMLElement>('.cqa-appeal-decision input, .cqa-appeal-decision textarea')?.focus();
+    else return;
+    e.preventDefault();
+  };
+  document.addEventListener('keydown', onKey);
+  ctx.signal.addEventListener('abort', () => document.removeEventListener('keydown', onKey));
+
+  root.replaceChildren(h('div', { class: 'cqa-page-head' }, h('div', null, title, count)), strip, list);
 }

@@ -79,3 +79,32 @@ async def test_facts_endpoint(tmp_path: Path) -> None:
         assert r.status_code == 200
         assert r.json()['first_response_s'] == 134 and r.json()['sla_ok'] is True
         assert (await c.get('/api/datasets/DEV/conversations/nope/facts')).status_code == 404
+
+
+def test_bot_lane_handoff_and_reask() -> None:
+    f = dialog_facts(
+        chat(
+            ('00:00', 'client', 'Не могу вывести деньги с брокерского счета'),
+            ('00:05', 'bot', 'Передаю вас оператору'),
+            ('00:20', 'system', 'Эскалация на оператора.'),
+            ('00:40', 'operator', 'Здравствуйте! Чем могу помочь?'),
+        )
+    )
+    lane = f.bot_lane
+    assert lane is not None
+    assert lane.bot_turns == 1
+    assert [(t.idx, t.text) for t in lane.client_before_handoff] == [(0, 'Не могу вывести деньги с брокерского счета')]
+    assert lane.handoff_idx == 2 and lane.handoff_offset_s == 20
+    assert lane.reasked is True and lane.reasked_idx == 3
+
+
+def test_bot_lane_no_reask_and_absent() -> None:
+    f = dialog_facts(
+        chat(
+            ('00:00', 'client', 'Не могу вывести деньги с брокерского счета'),
+            ('00:10', 'operator', 'Проверяю ваш перевод'),
+        )
+    )
+    assert f.bot_lane is not None
+    assert f.bot_lane.reasked is False and f.bot_lane.handoff_idx == 1
+    assert dialog_facts(chat(('00:00', 'operator', 'Добрый день'))).bot_lane is None

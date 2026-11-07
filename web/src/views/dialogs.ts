@@ -3,6 +3,10 @@ import { DEFAULT_GROUP, hrefDialogs, hrefEvaluation, hrefTranscript } from '../r
 import type { Ctx } from '../router.js';
 import type { BatchRequest, ChecklistSummary, ConversationSummary, Job } from '../types.gen.js';
 import { badge, banner, errorDetails, errorMessage, fmt, h, heading } from '../ui/dom.js';
+import { openUploadModal } from '../ui/uploadModal.js';
+
+/** Группа диалогов, добавленных вручную (server/uploads.py). */
+const UPLOADS_GROUP = 'UPLOADS';
 
 /** Подпись, видимая только в мобильной карточке, где заголовок колонки скрыт. */
 function cellLabel(text: string): HTMLElement {
@@ -21,6 +25,14 @@ function totalCell(row: ConversationSummary): HTMLElement {
     changed ? h('span', { class: 'cqa-chain-arrow' }, ' → ') : null,
     changed ? h('strong', null, fmt(l.final_total)) : null,
   );
+}
+
+/** Чип «приоритет просмотра»: причины в подсказке. Не вероятность ошибки, итог не меняется. */
+function attentionChip(row: ConversationSummary): HTMLElement | null {
+  const a = row.attention;
+  if (!a || !a.reasons.length) return null;
+  const tone = a.score >= 50 ? 'bad' : a.score >= 15 ? 'warn' : 'neutral';
+  return badge(t.dialogs.attentionChip(a.score), tone, `${t.dialogs.attentionTitle}\n• ${a.reasons.join('\n• ')}`);
 }
 
 export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
@@ -62,15 +74,25 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   const tbody = h('tbody', { role: 'rowgroup' });
   const allBox = h('input', { type: 'checkbox', 'aria-label': t.dialogs.selectAll, onchange: () => toggleAll(allBox.checked) });
   const grossOnly = h('input', { type: 'checkbox', onchange: () => drawRows() });
+  const sortSelect = h(
+    'select',
+    { class: 'cqa-input', 'aria-label': t.dialogs.sortLabel, onchange: () => drawRows() },
+    h('option', { value: '' }, `${t.dialogs.sortLabel}: ${t.dialogs.sortDefault}`),
+    h('option', { value: 'attention' }, `${t.dialogs.sortLabel}: ${t.dialogs.sortAttention}`),
+  );
   const tableWrap = h('div', { class: 'cqa-table-wrap', role: 'region', tabindex: '0', 'aria-label': t.dialogs.tableLabel });
 
   function visibleRows(): ConversationSummary[] {
-    return rows.filter(
+    const vis = rows.filter(
       (r) =>
         (!channelFilter.value || r.channel === channelFilter.value) &&
         (!langFilter.value || r.language === langFilter.value) &&
         (!grossOnly.checked || r.latest?.gross_error === true),
     );
+    if (sortSelect.value !== 'attention') return vis;
+    // Детерминированно: приоритет по убыванию, затем id; неоценённые в конце.
+    const score = (r: ConversationSummary) => r.attention?.score ?? -1;
+    return vis.sort((a, b) => score(b) - score(a) || a.conversation_id.localeCompare(b.conversation_id));
   }
 
   function updateSelection(): void {
@@ -150,7 +172,7 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
           h('td', { role: 'cell', class: 'cqa-cell-lang' }, r.language),
           h('td', { role: 'cell', class: 'cqa-num cqa-cell-turns' }, String(r.turns), cellLabel(` ${t.dialogs.turnsSuffix}`)),
           totalCell(r),
-          h('td', { role: 'cell', class: 'cqa-cell-gross' }, r.latest?.gross_error ? badge(t.dialogs.gross, 'bad') : null),
+          h('td', { role: 'cell', class: 'cqa-cell-gross' }, r.latest?.gross_error ? badge(t.dialogs.gross, 'bad') : null, attentionChip(r)),
         ),
       ),
     );
@@ -232,7 +254,7 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     [t.dialogs.colLang, 'cqa-cell-lang'],
     [t.dialogs.colTurns, 'cqa-num cqa-cell-turns'],
     [t.dialogs.colTotal, 'cqa-num cqa-cell-total'],
-    [t.dialogs.colGross, 'cqa-cell-gross'],
+    [t.dialogs.colAttention, 'cqa-cell-gross'],
   ];
   // Явные role сохраняют семантику таблицы, когда на узком экране строки становятся карточками (display:grid).
   tableWrap.appendChild(
@@ -260,6 +282,24 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   root.replaceChildren(
     heading(t.dialogs.title),
     h(
+      'div',
+      { class: 'cqa-toolbar cqa-toolbar--uploads' },
+      h(
+        'button',
+        {
+          type: 'button',
+          class: 'cqa-btn cqa-btn--primary',
+          onclick: () =>
+            openUploadModal(root, {
+              api: ctx.api,
+              onAdded: (record) => ctx.navigate(hrefTranscript(UPLOADS_GROUP, record.conversation_id)),
+            }),
+        },
+        t.uploads.open,
+      ),
+      group === UPLOADS_GROUP ? null : h('a', { class: 'cqa-link', href: hrefDialogs(UPLOADS_GROUP) }, t.uploads.group),
+    ),
+    h(
       'form',
       {
         class: 'cqa-toolbar cqa-toolbar--filters',
@@ -273,6 +313,7 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
       refreshBtn,
       channelFilter,
       langFilter,
+      sortSelect,
       h('label', { class: 'cqa-inline cqa-filter-gross' }, grossOnly, h('span', null, t.dialogs.grossOnly)),
       countLabel,
     ),

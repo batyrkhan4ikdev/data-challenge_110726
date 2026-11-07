@@ -318,6 +318,36 @@
       "title": "AsrQuality",
       "type": "object"
     },
+    "Attention": {
+      "description": "Приоритет просмотра оценки (не вероятность ошибки): см. `server/triage.py`.",
+      "properties": {
+        "criterion_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Criterion Ids",
+          "type": "array"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "score": {
+          "title": "Score",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "score",
+        "reasons",
+        "criterion_ids"
+      ],
+      "title": "Attention",
+      "type": "object"
+    },
     "BatchRequest": {
       "properties": {
         "checklist_id": {
@@ -401,6 +431,106 @@
         "conversation_ids"
       ],
       "title": "BatchRequest",
+      "type": "object"
+    },
+    "BotLane": {
+      "description": "Бот → оператор: подсказка по эвристике, не часть официального скоринга.",
+      "properties": {
+        "bot_turns": {
+          "title": "Bot Turns",
+          "type": "integer"
+        },
+        "client_before_handoff": {
+          "items": {
+            "$ref": "#/$defs/BotLaneTurn"
+          },
+          "title": "Client Before Handoff",
+          "type": "array"
+        },
+        "handoff_idx": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Handoff Idx"
+        },
+        "handoff_offset_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Handoff Offset S"
+        },
+        "reasked": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reasked"
+        },
+        "reasked_idx": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reasked Idx"
+        },
+        "reasked_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reasked Reason"
+        }
+      },
+      "required": [
+        "bot_turns",
+        "client_before_handoff"
+      ],
+      "title": "BotLane",
+      "type": "object"
+    },
+    "BotLaneTurn": {
+      "properties": {
+        "idx": {
+          "title": "Idx",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "idx",
+        "text"
+      ],
+      "title": "BotLaneTurn",
       "type": "object"
     },
     "BreakdownRow": {
@@ -537,8 +667,141 @@
       "title": "ChecklistSummary",
       "type": "object"
     },
+    "Confirmation": {
+      "description": "Подтверждение проверяющим критериев оценки. Отдельно от апелляций, на итог не влияет.",
+      "properties": {
+        "auto_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Auto Note"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "criterion_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Criterion Ids",
+          "type": "array"
+        },
+        "evaluation_id": {
+          "title": "Evaluation Id",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "batch",
+            "single"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        },
+        "reviewer": {
+          "title": "Reviewer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "evaluation_id",
+        "criterion_ids",
+        "mode",
+        "reviewer",
+        "note",
+        "auto_note",
+        "created_at"
+      ],
+      "title": "Confirmation",
+      "type": "object"
+    },
+    "ConfirmationCreate": {
+      "properties": {
+        "criterion_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Criterion Ids",
+          "type": "array"
+        },
+        "mode": {
+          "enum": [
+            "batch",
+            "single"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        },
+        "reviewer": {
+          "title": "Reviewer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterion_ids",
+        "mode",
+        "reviewer"
+      ],
+      "title": "ConfirmationCreate",
+      "type": "object"
+    },
+    "ConfirmationStats": {
+      "properties": {
+        "batch": {
+          "title": "Batch",
+          "type": "integer"
+        },
+        "overridden": {
+          "title": "Overridden",
+          "type": "integer"
+        },
+        "single": {
+          "title": "Single",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "batch",
+        "single",
+        "overridden"
+      ],
+      "title": "ConfirmationStats",
+      "type": "object"
+    },
     "ConversationSummary": {
       "properties": {
+        "attention": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Attention"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "channel": {
           "enum": [
             "agent chat",
@@ -865,6 +1128,17 @@
     },
     "DialogFacts": {
       "properties": {
+        "bot_lane": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BotLane"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "duration_s": {
           "anyOf": [
             {
@@ -994,6 +1268,150 @@
         "events"
       ],
       "title": "DialogFacts",
+      "type": "object"
+    },
+    "DriftCriterion": {
+      "properties": {
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "metric": {
+          "$ref": "#/$defs/DriftMetric"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "title",
+        "metric"
+      ],
+      "title": "DriftCriterion",
+      "type": "object"
+    },
+    "DriftMetric": {
+      "description": "PSI (population stability index) and two-sample KS between a baseline and a window sample.",
+      "properties": {
+        "ks": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ks"
+        },
+        "ks_p": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ks P"
+        },
+        "n_baseline": {
+          "title": "N Baseline",
+          "type": "integer"
+        },
+        "n_window": {
+          "title": "N Window",
+          "type": "integer"
+        },
+        "psi": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Psi"
+        },
+        "verdict": {
+          "anyOf": [
+            {
+              "enum": [
+                "stable",
+                "watch",
+                "drift"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Verdict"
+        }
+      },
+      "required": [
+        "psi",
+        "verdict",
+        "ks",
+        "ks_p",
+        "n_baseline",
+        "n_window"
+      ],
+      "title": "DriftMetric",
+      "type": "object"
+    },
+    "DriftReport": {
+      "description": "Score drift: `groups` = baseline group vs this group, `halves` = first vs second half by evaluation time.",
+      "properties": {
+        "baseline_label": {
+          "title": "Baseline Label",
+          "type": "string"
+        },
+        "criteria": {
+          "items": {
+            "$ref": "#/$defs/DriftCriterion"
+          },
+          "title": "Criteria",
+          "type": "array"
+        },
+        "enough_data": {
+          "title": "Enough Data",
+          "type": "boolean"
+        },
+        "min_n": {
+          "title": "Min N",
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "groups",
+            "halves"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "total": {
+          "$ref": "#/$defs/DriftMetric"
+        },
+        "window_label": {
+          "title": "Window Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode",
+        "baseline_label",
+        "window_label",
+        "min_n",
+        "enough_data",
+        "total",
+        "criteria"
+      ],
+      "title": "DriftReport",
       "type": "object"
     },
     "Evaluation": {
@@ -1246,6 +1664,17 @@
         "dialogs": {
           "title": "Dialogs",
           "type": "integer"
+        },
+        "drift": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DriftReport"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "evaluated": {
           "title": "Evaluated",
@@ -1868,6 +2297,29 @@
         "text"
       ],
       "title": "Turn",
+      "type": "object"
+    },
+    "UploadChatRequest": {
+      "properties": {
+        "language": {
+          "enum": [
+            "RU",
+            "KZ",
+            "EN"
+          ],
+          "title": "Language",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "language"
+      ],
+      "title": "UploadChatRequest",
       "type": "object"
     },
     "Usage": {

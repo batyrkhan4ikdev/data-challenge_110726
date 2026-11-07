@@ -1,7 +1,10 @@
+import type { CriterionReliability } from '../api.js';
 import { t } from '../i18n.js';
 import { hrefDialogs, hrefEvaluation } from '../router.js';
 import type { Ctx } from '../router.js';
 import type { BatchRequest, Criterion, EvaluationSummary, EvaluationView, RawCall, Record as DialogRecord } from '../types.gen.js';
+import { diffPanel } from '../ui/evalDiff.js';
+import { mountConfirmPanel } from '../ui/confirmPanel.js';
 import { openAppealModal } from '../ui/appealModal.js';
 import { renderCriteriaTable } from '../ui/criteriaTable.js';
 import { badge, banner, errorDetails, errorMessage, fmt, fmtDate, h, heading, rangeOf } from '../ui/dom.js';
@@ -107,6 +110,31 @@ function durationOf(record: DialogRecord | null): string | null {
   return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
 }
 
+/** «Выгрузить дело»: скачивает RegPack (ZIP) по этой оценке. */
+function regpackButton(ctx: Ctx, group: string, cid: string, evaluationId: string, status: HTMLElement): HTMLElement {
+  const btn = h('button', { type: 'button', class: 'cqa-btn', id: 'cqa-regpack' }, t.caseTools.regpack);
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    btn.textContent = t.caseTools.regpackBusy;
+    try {
+      const { blob, name, selfcheckOk } = await ctx.api.regpack(group, cid, evaluationId);
+      const url = URL.createObjectURL(blob);
+      const a = h('a', { href: url, download: name });
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      status.replaceChildren(selfcheckOk ? banner(t.caseTools.regpackOk, null, 'ok') : banner(t.caseTools.regpackMismatch));
+    } catch (e) {
+      status.replaceChildren(banner(`${t.caseTools.regpackFail}: ${errorMessage(e)}`, errorDetails(e)));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = t.caseTools.regpack;
+    }
+  });
+  return btn;
+}
+
 function pageHeader(
   view: EvaluationView,
   ctx: Ctx,
@@ -151,7 +179,7 @@ function pageHeader(
         transcriptLabel ? [' · ', h('span', { class: 'cqa-tsrc-used', id: 'cqa-transcript-used' }, `${t.transcripts.header}: ${transcriptLabel}`)] : null,
       ),
     ),
-    h('div', { class: 'cqa-page-actions' }, reBtn, status),
+    h('div', { class: 'cqa-page-actions' }, reBtn, regpackButton(ctx, ev.group_id, ev.conversation_id, ev.id, status), status),
   );
 }
 
@@ -249,6 +277,7 @@ function detailsBlock(
   rawBody: HTMLElement,
   table: HTMLElement,
   transcriptLabel: string | null,
+  diff: HTMLElement,
 ): HTMLElement {
   const { evaluation: ev, final, checklist } = view;
   const historyEl = h(
@@ -294,6 +323,7 @@ function detailsBlock(
       transcriptLabel ? h('div', null, h('dt', null, t.transcripts.header), h('dd', null, transcriptLabel)) : null,
     ),
     historyEl,
+    diff,
     h('div', { class: 'cqa-result-actions' }, rawToggle),
     rawBody,
     h('h3', null, t.result.detailsTable),
@@ -377,8 +407,11 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     if (first !== undefined) focusEvidence(first);
     else if (range) focusExpected(range);
   };
+  const reliability: CriterionReliability | null = await ctx.api.criterionReliability().catch(() => null);
+  if (ctx.signal.aborted) return;
   const table = renderCriteriaTable({
     view,
+    reliability,
     onEvidence: focusEvidence,
     onExpected: focusExpected,
     onAppeal: appeal,
@@ -420,9 +453,11 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     });
     header.appendChild(link);
   }
+  const confirmPanel = await mountConfirmPanel(ctx, view);
   root.replaceChildren(header,
     h('div', { class: 'cqa-split' }, score, left),
-    detailsBlock(view, record, history, rawToggle, rawBody, table, transcriptLabel));
+    confirmPanel,
+    detailsBlock(view, record, history, rawToggle, rawBody, table, transcriptLabel, diffPanel(ctx.api, history, ev.id)));
 }
 
 /** Диалог без оценок: только транскрипт и кнопка «Оценить». Оценённый диалог открывает последнюю оценку. */

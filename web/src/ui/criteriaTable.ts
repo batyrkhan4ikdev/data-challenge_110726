@@ -1,3 +1,4 @@
+import type { CriterionReliability } from '../api.js';
 import { t } from '../i18n.js';
 import type { Criterion, EvaluationView, FinalItem, Item, ScoreItem } from '../types.gen.js';
 import { badge, fmt, h, rangeOf, stepDescription, verdictLabel, verdictTone } from './dom.js';
@@ -9,6 +10,8 @@ export interface CriteriaTableOptions {
   onAppeal: (criterion: Criterion) => void;
   /** Callers must compare both transcript source and audio identity before enabling evidence. */
   evidenceEnabled?: boolean;
+  /** Измеренное согласие судьи с разметкой на DEV по критериям; без него бейдж не показывается. */
+  reliability?: CriterionReliability | null;
 }
 
 function verdictChip(c: Criterion | undefined, verdict: string): HTMLElement {
@@ -68,6 +71,20 @@ function votesBadge(item: Item | undefined, k: number): HTMLElement | null {
   return badge(`${t.result.votes}: ${text}`, 'info');
 }
 
+function reliabilityBadge(id: string, rel: CriterionReliability | null | undefined): HTMLElement | null {
+  const r = rel?.criteria[id];
+  if (!r) return null;
+  const low = r.agree < (rel?.threshold ?? 0.85);
+  const text = t.caseTools.reliability(Math.round(r.agree * 100));
+  const title = `${t.caseTools.reliabilityTitle} n=${r.n}`;
+  return h(
+    'span',
+    { class: 'cqa-reliability' },
+    badge(text, low ? 'warn' : 'neutral', title),
+    low ? badge(t.caseTools.reliabilityLow, 'warn', title) : null,
+  );
+}
+
 export function renderCriteriaTable(opts: CriteriaTableOptions): HTMLElement {
   const { view } = opts;
   const { checklist, evaluation, final, appeals } = view;
@@ -98,6 +115,7 @@ export function renderCriteriaTable(opts: CriteriaTableOptions): HTMLElement {
       { class: 'cqa-explanation' },
       item?.explanation ?? '',
       votesBadge(item, evaluation.k),
+      reliabilityBadge(c.id, opts.reliability),
       warnings.length ? badge('⚠', 'warn', warnings.join('\n')) : null,
     );
 

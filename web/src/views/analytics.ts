@@ -1,7 +1,7 @@
 import { t } from '../i18n.js';
 import { hrefDialogs, hrefTranscript } from '../router.js';
 import type { Ctx } from '../router.js';
-import type { BreakdownRow, GroupAnalytics } from '../types.gen.js';
+import type { BreakdownRow, DriftMetric, DriftReport, GroupAnalytics } from '../types.gen.js';
 import { banner, errorDetails, errorMessage, fmt, h } from '../ui/dom.js';
 import type { Child } from '../ui/dom.js';
 
@@ -58,7 +58,57 @@ function breakdown(title: string, rows: BreakdownRow[], label: (k: string) => st
   );
 }
 
-function content(data: GroupAnalytics, group: string): HTMLElement[] {
+const DRIFT_GROUPS = ['DEV', 'PROD', 'PART2'];
+
+function driftRow(label: string, m: DriftMetric, withKs: boolean): HTMLElement {
+  const d = t.analytics.drift;
+  const tone = m.verdict === 'drift' ? 'bad' : m.verdict === 'watch' ? 'warn' : m.verdict === 'stable' ? 'good' : '';
+  const num = (x: number | null, digits: number) => (x === null ? t.common.none : x.toFixed(digits).replace('.', ','));
+  return h(
+    'tr',
+    { 'data-drift': label },
+    h('td', null, label),
+    h('td', { class: 'cqa-num' }, `${m.n_baseline} / ${m.n_window}`),
+    h('td', { class: 'cqa-num' }, num(m.psi, 3)),
+    h('td', { class: 'cqa-num' }, withKs ? num(m.ks, 3) : '—'),
+    h('td', { class: 'cqa-num' }, withKs ? (m.ks_p === null ? t.common.none : m.ks_p < 0.001 ? '< 0,001' : num(m.ks_p, 3)) : '—'),
+    h('td', null, m.verdict ? h('span', { class: `cqa-badge cqa-badge--${tone}` }, d[m.verdict]) : d.none),
+  );
+}
+
+function driftCard(drift: DriftReport, group: string, baseline: string, onBaseline: (b: string) => void): HTMLElement {
+  const d = t.analytics.drift;
+  const select = h(
+    'select',
+    { class: 'cqa-select', id: 'cqa-drift-baseline', 'aria-label': d.baselineLabel },
+    h('option', { value: '', selected: !baseline }, d.halves),
+    DRIFT_GROUPS.filter((g) => g !== group).map((g) => h('option', { value: g, selected: g === baseline }, d.against(g))),
+  ) as HTMLSelectElement;
+  select.addEventListener('change', () => onBaseline(select.value));
+  const rows = [driftRow(d.total, drift.total, true), ...drift.criteria.map((c) => driftRow(`${c.criterion_id} · ${c.title}`, c.metric, false))];
+  return h(
+    'section',
+    { class: 'cqa-card cqa-drift', id: 'cqa-drift' },
+    h('h2', { class: 'cqa-card-title' }, d.title),
+    h('p', { class: 'cqa-muted' }, d.intro),
+    h('div', { class: 'cqa-drift-controls' }, h('label', { for: 'cqa-drift-baseline' }, `${d.baselineLabel}: `), select),
+    h('p', { class: 'cqa-muted' }, drift.mode === 'groups' ? d.modeGroups(drift.baseline_label, drift.window_label) : d.modeHalves),
+    h('p', { class: 'cqa-muted' }, d.thresholds),
+    drift.enough_data ? null : banner(d.tooFew(drift.min_n, drift.total.n_baseline, drift.total.n_window), null, 'info'),
+    h(
+      'div',
+      { class: 'cqa-table-wrap', tabindex: '0', role: 'region', 'aria-label': d.title },
+      h(
+        'table',
+        { class: 'cqa-table' },
+        h('thead', null, h('tr', null, [d.colWhat, d.colN, d.colPsi, d.colKs, d.colKsP, d.colVerdict].map((x, i) => h('th', { scope: 'col', class: i && i < 5 ? 'cqa-num' : '' }, x)))),
+        h('tbody', null, rows),
+      ),
+    ),
+  );
+}
+
+function content(data: GroupAnalytics, group: string, baseline: string, onBaseline: (b: string) => void): HTMLElement[] {
   const slots = data.criteria.reduce((n, c) => n + c.applicable + c.na, 0);
   const naTotal = data.criteria.reduce((n, c) => n + c.na, 0);
   const naShare = slots ? (naTotal / slots) * 100 : 0;
@@ -133,6 +183,7 @@ function content(data: GroupAnalytics, group: string): HTMLElement[] {
     kpis,
     h('div', { class: 'cqa-analytics-grid' }, criteria, h('div', null, hist, breakdown(t.analytics.byChannel, data.by_channel, (k) => t.channel[k] ?? k), breakdown(t.analytics.byLanguage, data.by_language, (k) => k))),
     grossList,
+    ...(data.drift ? [driftCard(data.drift, group, baseline, onBaseline)] : []),
   ];
 }
 
@@ -144,11 +195,12 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     h('div', null, h('h1', { class: 'cqa-page-title' }, t.analytics.title), h('p', { class: 'cqa-page-subtitle' }, t.analytics.subtitle(group))),
   );
 
+  let baseline = '';
   const load = async (): Promise<void> => {
     root.replaceChildren(head, ...skeleton());
     let data: GroupAnalytics;
     try {
-      data = await ctx.api.analytics(group);
+      data = await ctx.api.analytics(group, baseline || undefined);
     } catch (e) {
       if (ctx.signal.aborted) return;
       const alert = banner(errorMessage(e), errorDetails(e));
@@ -164,7 +216,13 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
       );
       return;
     }
-    root.replaceChildren(head, ...content(data, group));
+    root.replaceChildren(
+      head,
+      ...content(data, group, baseline, (b) => {
+        baseline = b;
+        void load();
+      }),
+    );
   };
   await load();
 }

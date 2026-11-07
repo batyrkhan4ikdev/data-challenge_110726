@@ -2344,3 +2344,37 @@
 .cqa .cqa-transcript-input {
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
 }
+
+/* #43 diff-view, #42 reliability, #50 bot lane */
+.cqa-diff-panel { margin-top: 1rem; }
+.cqa-diff-controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0; }
+.cqa-diff-changed td { background: color-mix(in srgb, var(--warn, #f5a623) 12%, transparent); vertical-align: top; }
+.cqa-diff-expl { font-size: .85em; color: var(--muted, #667); margin-top: .25rem; }
+.cqa-reliability { display: inline-flex; flex-wrap: wrap; gap: .25rem; margin-left: .25rem; }
+.cqa-facts-sub { margin: .75rem 0 .25rem; font-size: 1em; }
+
+/* #54 drift */
+.cqa-drift-controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0; }
+
+/* #44 confirmations / #52 triage */
+.cqa .cqa-review-strip { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: center; margin: 0 0 1rem; }
+.cqa .cqa-review-strip p { margin: 0; }
+.cqa .cqa-appeal.is-focused { outline: 2px solid var(--cqa-accent, #2563eb); outline-offset: 2px; }
+.cqa .cqa-confirm-accept { display: inline-flex; gap: 0.5rem; align-items: center; margin-left: auto; }
+.cqa .cqa-confirm-panel .cqa-btn--small { margin: 0 0.4rem 0.4rem 0; }
+.cqa .cqa-confirm-history { padding-left: 1.2rem; }
+.cqa .cqa-cell-gross .cqa-badge + .cqa-badge { margin-left: 0.35rem; }
+
+/* #44 confirmations / #52 triage */
+.cqa .cqa-review-strip { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: center; margin: 0 0 1rem; }
+.cqa .cqa-review-strip p { margin: 0; }
+.cqa .cqa-appeal.is-focused { outline: 2px solid var(--cqa-accent, #2563eb); outline-offset: 2px; }
+.cqa .cqa-confirm-accept { display: inline-flex; gap: 0.5rem; align-items: center; margin-left: auto; }
+.cqa .cqa-confirm-panel .cqa-btn--small { margin: 0 0.4rem 0.4rem 0; }
+.cqa .cqa-confirm-history { padding-left: 1.2rem; }
+.cqa .cqa-cell-gross .cqa-badge + .cqa-badge { margin-left: 0.35rem; }
+
+/* #39 uploads */
+.cqa-toolbar--uploads { justify-content: flex-start; gap: 12px; align-items: center; }
+.cqa-upload-fields { display: grid; gap: 12px; margin: 12px 0; }
+.cqa-upload-fields[hidden] { display: none; }

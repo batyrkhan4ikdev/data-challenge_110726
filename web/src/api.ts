@@ -1,6 +1,11 @@
 import { t } from './i18n.js';
 import type {
   ApiError,
+  AsrProviderInfo,
+  Attention,
+  Confirmation,
+  ConfirmationCreate,
+  ConfirmationStats,
   Appeal,
   AppealCreate,
   AppealQueueItem,
@@ -20,7 +25,17 @@ import type {
   Record as DialogRecord,
   TranscribeRequest,
   TranscriptSourceInfo,
+  UploadChatRequest,
 } from './types.gen.js';
+
+/** Язык загружаемого звонка: auto — определяет модель распознавания. */
+export type UploadLanguage = 'auto' | 'RU' | 'KZ' | 'EN';
+/** Ответ GET /api/criterion-reliability. */
+export interface CriterionReliability {
+  source: string | null;
+  threshold?: number;
+  criteria: { [criterionId: string]: { agree: number; n: number } };
+}
 
 /** Ответ GET /api/profiles (не входит в сгенерированные контракты). */
 export interface ProfileInfo {
@@ -83,8 +98,10 @@ export class Api {
     const q = refresh ? '?refresh=true' : '';
     return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations${q}`);
   }
-  analytics(group: string): Promise<GroupAnalytics> {
-    return this.request('GET', `/datasets/${encodeURIComponent(group)}/analytics`);
+  /** `baseline` — группа, с которой сравнивать распределение (дрейф); без неё сравниваются половины группы. */
+  analytics(group: string, baseline?: string): Promise<GroupAnalytics> {
+    const q = baseline ? `?baseline=${encodeURIComponent(baseline)}` : '';
+    return this.request('GET', `/datasets/${encodeURIComponent(group)}/analytics${q}`);
   }
   /** `source` — источник транскрипта (api — организатора, по умолчанию). */
   record(group: string, cid: string, source?: string): Promise<DialogRecord> {
@@ -104,6 +121,40 @@ export class Api {
   }
   putCustomTranscript(cid: string, body: CustomTranscriptRequest): Promise<DialogRecord> {
     return this.request('PUT', `/conversations/${encodeURIComponent(cid)}/transcripts/custom`, body);
+  }
+  /** Новый звонок в группе UPLOADS: файл → распознавание → роли и маскирование (долго, до пары минут). */
+  async uploadCall(file: File, language: UploadLanguage, provider: string): Promise<DialogRecord> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    form.append('language', language);
+    form.append('provider', provider);
+    let res: Response;
+    try {
+      res = await fetch(`${this.base}/uploads/call`, { method: 'POST', body: form });
+    } catch {
+      throw new ApiFail(0, t.common.networkError);
+    }
+    if (!res.ok) {
+      let err: Partial<ApiError> = {};
+      try {
+        err = (await res.json()) as Partial<ApiError>;
+      } catch {
+        /* тело не JSON */
+      }
+      throw new ApiFail(res.status, err.error || `${t.common.error} ${res.status}`, err.details ?? null);
+    }
+    return (await res.json()) as DialogRecord;
+  }
+  asrProviders(): Promise<AsrProviderInfo[]> {
+    return this.request('GET', '/asr/providers');
+  }
+  uploadChat(body: UploadChatRequest): Promise<DialogRecord> {
+    return this.request('POST', '/uploads/chat', body);
+  }
+  async deleteUpload(cid: string): Promise<void> {
+    const res = await fetch(`${this.base}/uploads/${encodeURIComponent(cid)}`, { method: 'DELETE' }).catch(() => null);
+    if (!res) throw new ApiFail(0, t.common.networkError);
+    if (!res.ok) throw new ApiFail(res.status, `${t.common.error} ${res.status}`);
   }
   checklists(): Promise<ChecklistSummary[]> {
     return this.request('GET', '/checklists');
@@ -133,6 +184,31 @@ export class Api {
   raw(id: string): Promise<RawCall[]> {
     return this.request('GET', `/evaluations/${encodeURIComponent(id)}/raw`);
   }
+  /** ZIP «дела» по оценке (RegPack); ошибки — как у остальных запросов. */
+  async regpack(group: string, cid: string, evaluationId: string): Promise<{ blob: Blob; name: string; selfcheckOk: boolean }> {
+    const q = `?group_id=${encodeURIComponent(group)}&evaluation_id=${encodeURIComponent(evaluationId)}`;
+    let res: Response;
+    try {
+      res = await fetch(`${this.base}/conversations/${encodeURIComponent(cid)}/regpack${q}`);
+    } catch {
+      throw new ApiFail(0, t.common.networkError);
+    }
+    if (!res.ok) {
+      let err: Partial<ApiError> = {};
+      try {
+        err = (await res.json()) as Partial<ApiError>;
+      } catch {
+        /* тело не JSON */
+      }
+      throw new ApiFail(res.status, err.error || `${t.common.error} ${res.status}`, err.details ?? null);
+    }
+    const m = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '');
+    return { blob: await res.blob(), name: m?.[1] ?? `regpack-${cid}.zip`, selfcheckOk: res.headers.get('X-Regpack-Selfcheck') === 'ok' };
+  }
+  /** Измеренное согласие судьи с разметкой на DEV по критериям (data/criterion_reliability.json). */
+  criterionReliability(): Promise<CriterionReliability> {
+    return this.request('GET', '/criterion-reliability');
+  }
   createAppeal(body: AppealCreate): Promise<Appeal> {
     return this.request('POST', '/appeals', body);
   }
@@ -142,6 +218,18 @@ export class Api {
   }
   decide(id: string, body: DecisionCreate): Promise<DecisionResult> {
     return this.request('POST', `/appeals/${encodeURIComponent(id)}/decision`, body);
+  }
+  attention(evaluationId: string): Promise<Attention> {
+    return this.request('GET', `/evaluations/${encodeURIComponent(evaluationId)}/attention`);
+  }
+  confirmations(evaluationId: string): Promise<Confirmation[]> {
+    return this.request('GET', `/evaluations/${encodeURIComponent(evaluationId)}/confirmations`);
+  }
+  createConfirmation(evaluationId: string, body: ConfirmationCreate): Promise<Confirmation> {
+    return this.request('POST', `/evaluations/${encodeURIComponent(evaluationId)}/confirmations`, body);
+  }
+  confirmationStats(): Promise<ConfirmationStats> {
+    return this.request('GET', '/confirmations/stats');
   }
 
   /** Запускает пакет и опрашивает /jobs/{id} раз в секунду, пока state != finished. */

@@ -3,6 +3,7 @@ from litestar.params import FromPath, FromQuery
 
 from server.analytics import group_analytics
 from server.facts import dialog_facts
+from server.triage import evaluation_attention
 from server.models import ConversationSummary, DialogFacts, GroupAnalytics, Record
 from server.routes import Svc
 from server.transcripts import API
@@ -25,13 +26,16 @@ class DatasetsController(Controller):
                     language=r.language,
                     turns=len(r.transcript),
                     latest=await svc.summary(latest) if latest else None,
+                    attention=await evaluation_attention(svc, latest, r) if latest else None,
                 )
             )
         return out
 
     @get('/{group_id:str}/analytics')
-    async def analytics(self, svc: Svc, group_id: FromPath[str]) -> GroupAnalytics:
-        return await group_analytics(svc, group_id)
+    async def analytics(
+        self, svc: Svc, group_id: FromPath[str], baseline: FromQuery[str | None] = None
+    ) -> GroupAnalytics:
+        return await group_analytics(svc, group_id, baseline)
 
     @get('/{group_id:str}/conversations/{cid:str}')
     async def conversation(

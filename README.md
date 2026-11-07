@@ -54,11 +54,12 @@ The interface follows the Freedom Broker visual language: a light shell (page `#
 
 | Screen | What you do |
 |---|---|
-| **Диалоги** (`#/dialogs/DEV`) | Load a dataset group, filter by channel / language / gross errors, select dialogs, pick a checklist (by default chosen by channel), and click **Оценить выбранные**. Mode and k are under «Параметры оценки». Progress and per-dialog errors are shown live. A scored dialog opens its latest result. On a phone each row is a card with the ID, the total and the gross-error badge. |
-| **Анализ разговора** (result card) | The score ring and per-criterion points come first, then «Почему снижена оценка»; the transcript sits beside them on a wide screen and below them on a narrow one. The audio player for calls is a native `<audio>`, and turns are numbered from 1. «Почему снижена оценка» lists every criterion that lost points with its full reason, **Перейти к фрагменту** (scrolls to the turn; for calls, seeks the audio) and **Оспорить оценку** (files an appeal). «Подробности оценки» holds the full criteria table, votes, warnings, model/mode, the raw model calls and the history by checklist version. **Переоценить по текущему чек-листу** re-applies an edited checklist. |
-| **Апелляции** (`#/review`) | The queue of open appeals: the criterion, the disputed verdict, the model's reason, the operator's comment and the dialog fragment, then the decision. **Подтвердить** or **Изменить** (the reason is required) recomputes the final total; the card shows the new total and a link back to the dialog, and the result card shows the original → decision → final chain. |
+| **Диалоги** (`#/dialogs/DEV`) | Load a dataset group, filter by channel / language / gross errors, select dialogs, pick a checklist (by default chosen by channel), and click **Оценить выбранные**. Mode and k are under «Параметры оценки». Progress and per-dialog errors are shown live. A scored dialog opens its latest result. «Порядок: требует внимания» sorts by a review priority (gross error, open appeals, warnings, N/A, criteria the judge often disagrees on, verdicts that contradict the dialog facts); the reasons are in the chip's tooltip, and it is a priority, not a probability of error. On a phone each row is a card with the ID, the total and the gross-error badge. |
+| **Загрузить звонок или чат** (on «Диалоги») | Adds a new dialog to the group `UPLOADS`: an audio file (mp3/wav/ogg/m4a/webm/flac, up to 50 MB, converted to MP3 with ffmpeg when needed) goes through ASR, speaker roles and masking; a pasted chat (`оператор:` / `клиент:` / `бот:` lines) is taken as is. The language is detected from the audio by default (Kazakh audio is re-run as `kk`). Uploaded dialogs then go through the same cycle: evaluation, result, appeal, re-evaluation, analytics. Records and audio stay under `data/store/uploads/` (gitignored). API: `POST /api/uploads/call` (multipart), `POST /api/uploads/chat`, `GET /api/uploads/{id}/audio`, `DELETE /api/uploads/{id}`. |
+| **Анализ разговора** (result card) | The score ring and per-criterion points come first, then «Почему снижена оценка»; the transcript sits beside them on a wide screen and below them on a narrow one. The audio player for calls is a native `<audio>`, and turns are numbered from 1. «Почему снижена оценка» lists every criterion that lost points with its full reason, **Перейти к фрагменту** (scrolls to the turn; for calls, seeks the audio) and **Оспорить оценку** (files an appeal). «Подробности оценки» holds the full criteria table (each criterion with its measured agreement with the DEV labels, and «часто спорный» below 85%), votes, warnings, model/mode, the raw model calls, the history by checklist version and **Сравнение оценок**: any two evaluations side by side, only changed criteria expanded. **Переоценить по текущему чек-листу** re-applies an edited checklist. **Выгрузить дело** downloads a ZIP with the transcript, evaluation, exact checklist version, appeals, final result and raw model calls, with SHA-256 hashes and a self-check of the recomputed total (`scripts/verify_regpack.py <zip>` repeats it offline). «Подтверждения проверяющего» accepts undisputed criteria in one batch (with an auto-generated «принято пакетом без раскрытия доказательств» line) or one by one; confirmations are stored apart from appeals and never change a total. The facts panel adds a «Бот / оператор» lane: what the client told the bot before the handoff and whether the operator asked again. |
+| **Апелляции** (`#/review`) | The queue of open appeals: the criterion, the disputed verdict, the model's reason, the operator's comment and the dialog fragment, then the decision. **Подтвердить** or **Изменить** (the reason is required) recomputes the final total; the card shows the new total and a link back to the dialog, and the result card shows the original → decision → final chain. Keyboard: `j`/`k` next/previous card, `a` accept undisputed, `o` open the decision form. |
 | **Чек-листы** (`#/checklists`) | Create or edit checklists: criteria, wording, weight, answer type (yes/no or scale with steps), N/A on or off and its condition, sections, and gross-error criteria. Every save creates a new version (the button locks while a save is running), and old evaluations keep the version they were scored with. |
-| **Аналитика** (`#/analytics/DEV`) | Per group: dialogs evaluated, mean total, gross errors as real links, N/A share, the pass rate per criterion, breakdowns by channel and language, and the score distribution with its four ranges labelled. |
+| **Аналитика** (`#/analytics/DEV`) | Per group: dialogs evaluated, mean total, gross errors as real links, N/A share, the pass rate per criterion, breakdowns by channel and language, and the score distribution with its four ranges labelled. «Дрейф оценок» compares the score distribution against a baseline group (or the first half of the group's evaluations): PSI with the usual 0.1 / 0.25 thresholds and the two-sample KS test, in total and per criterion, and says so when n < 30 is too small to conclude. |
 
 ![Result card](docs/screenshots/result-evidence.png)
 
@@ -168,6 +169,12 @@ A run writes JSONL rows and a `summary.md` under `bench/results/<timestamp>/`. T
 - validity and failure rates, latency and cost;
 - on `--set gold`: weighted per-criterion agreement, total MAE and bias, kappa, the N/A confusion matrix, gross-error precision and recall, and agreement by language and channel.
 
+Gates and queues on top of the bench runs:
+- `scripts/regress_gate.py --baseline <run> --candidate <run> [--max-drop 0.03]`: paired comparison against gold with a bootstrap CI; exits 1 when the candidate loses more than `max-drop`. CI runs it on the two runs in `bench/baselines/`.
+- `scripts/holdout_gate.py`: a fixed, language-stratified 45/15 tune/holdout split of the 60 DEV chats (`bench/gold/holdout.json`); flags a notes change as overfit when tune improves and holdout does not. Results on our past notes changes: `bench/holdout.md`.
+- `bench/arbitration_queue.py`: which (dialog, criterion) cells a human should arbitrate next, by committee disagreement × weight × scale distance → `bench/gold/arbitration_queue.csv`.
+- `bench/asr_noise_floor.py`: the 5 DEV calls scored on each transcript source; verdict flips and total MAE against the FreedomSpeech reference → `bench/asr/noise-floor.md`.
+
 ## Call transcripts and ASR
 
 The organizers' call transcripts are poor ASR (e.g. «идентификацию успешно проеданная»). In the call card, the **«Транскрипт»** switch picks the source the evaluation runs on:
@@ -239,3 +246,13 @@ In the control's `data` parameter set JSON, for example `{"apiBase":"https://cqa
 On the API set `CQA_ALLOWED_ORIGINS=https://example.crm.dynamics.com`; separate several origins with commas, an empty value turns CORS off.
 In the control settings «Restrict cross-frame scripting» must be OFF and «Pass record object-type code and unique identifier» must be ON.
 The package is ready to upload as an HTML web resource and was checked on a local stand; conditions are listed in the [D365 report](docs/research/d365-web-resources.md). Verification in a real D365 organization and HTTPS for the API are still needed.
+
+## Run with Docker
+
+```
+docker compose build
+docker compose up -d      # http://localhost:8787
+docker compose down
+```
+
+Secrets are read from `.env` at run time (never baked into the image). Store data persists in the `cqa-store` volume; to play call audio, uncomment the `data/audio` bind in `docker-compose.yml`.

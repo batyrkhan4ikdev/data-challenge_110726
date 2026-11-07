@@ -13,6 +13,7 @@ from server.models import (
 )
 from server.routes import Svc
 from server.transcripts import CUSTOM, parse_custom_text
+from server.uploads import UPLOADS
 
 CALLS_ONLY = 'Распознавание и свой транскрипт доступны только для звонков'
 ASR_UNAVAILABLE = 'Модуль распознавания речи недоступен'
@@ -69,11 +70,14 @@ class TranscriptsController(Controller):
         # The judge model that assigns roles and masks PII: env `LLM_PROFILE`, like a batch without an explicit profile.
         judge, _, _ = resolve_settings(BatchRequest(group_id=data.group_id, conversation_ids=[cid]), svc.profiles)
         try:
-            raw_audio = await audio.fetch_call_audio(base)
+            if data.group_id == UPLOADS:
+                raw_audio, _, filename = await svc.uploads.audio(cid)
+            else:
+                raw_audio, filename = await audio.fetch_call_audio(base), f'{cid}.mp3'
             # Only a KZ label forces a language. Forcing `ru` on a mislabelled Kazakh call (record `1234`)
             # would make the output look Russian and silence the Kazakh re-run, so RU/EN auto-detect instead.
             hint = 'kk' if (base.language or '').upper() == 'KZ' else None
-            result = await providers.transcribe(provider, raw_audio, f'{cid}.mp3', language=hint)
+            result = await providers.transcribe(provider, raw_audio, filename, language=hint)
             record = await to_record.asr_to_record(result, base, judge)
         except AsrError as e:
             message = str(e) or type(e).__name__

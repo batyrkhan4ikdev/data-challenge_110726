@@ -576,3 +576,13 @@ async def test_kazakh_audio_is_re_run_with_kk(monkeypatch):
     plain = auto.model_copy(update={'accepts_language': False})
     await P.transcribe(plain, b'mp3', 'c.mp3')
     assert calls == [None]  # no second call: the endpoint takes no language
+
+
+def test_decoding_loop_is_collapsed_but_real_repeats_stay():
+    """Whisper looped «өте» 109 times on record 1234; that inflated words and the Kazakh share used for the kk re-run."""
+    from server.asr.providers import REPEAT_MARK, collapse_repeats
+
+    text, removed = collapse_repeats('Бұл өте, өте өте. Өте өте өте жақсы')
+    assert text == f'Бұл өте {REPEAT_MARK} жақсы' and removed == 5
+    # «да, да, да» is speech, not a loop
+    assert collapse_repeats('да, да, да, хорошо') == ('да, да, да, хорошо', 0)

@@ -1,0 +1,14 @@
+services:
+  cqa:
+    build: .
+    ports:
+      - "8787:8787"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - cqa-store:/app/data/store
+      # optional: call audio for playback
+      # - ./data/audio:/app/data/audio:ro
+volumes:
+  cqa-store:

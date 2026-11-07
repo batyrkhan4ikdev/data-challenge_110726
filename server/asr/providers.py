@@ -328,6 +328,25 @@ def kazakh_share(text: str) -> float:
     return sum(1 for w in words if KAZAKH_LETTERS & set(w)) / len(words) if words else 0.0
 
 
+REPEAT_MIN = 5  # Whisper's decoding loop: on record 1234 it wrote «өте» 109 times in a row
+_REPEAT = re.compile(r'(?<!\w)(\w+)(?:[\s,.!?…-]+\1(?!\w)){' + str(REPEAT_MIN - 1) + r',}', re.IGNORECASE)
+REPEAT_MARK = '[…повтор распознавания убран]'
+
+
+def collapse_repeats(text: str) -> tuple[str, int]:
+    """Replaces a run of the same word repeated `REPEAT_MIN`+ times by one copy and a mark; (text, words removed).
+    No speaker says a word five times in a row, a decoding loop does, and it would inflate both the word count and
+    the Kazakh-letter share."""
+    removed = 0
+
+    def keep_one(m: re.Match[str]) -> str:
+        nonlocal removed
+        removed += len(m.group(0).split()) - 1
+        return f'{m.group(1)} {REPEAT_MARK}'
+
+    return _REPEAT.sub(keep_one, text), removed
+
+
 async def transcribe(provider: AsrProvider, audio: bytes, filename: str = 'call.mp3', language: str | None = None) -> AsrResult:
     """`language`: ISO code for providers that take one (`accepts_language`); otherwise the provider's own default.
 
@@ -372,7 +391,8 @@ async def _transcribe_once(provider: AsrProvider, audio: bytes, filename: str, l
         duration = data.get('duration')
         reported += float(duration) if isinstance(duration, int | float) and duration > 0 else 0.0
     seconds = time.perf_counter() - started
-    text = '\n'.join(t for t in texts if t)
+    text, _ = collapse_repeats('\n'.join(t for t in texts if t))
+    segments = [s.model_copy(update={'text': collapse_repeats(s.text)[0]}) for s in segments]
     if not segments or not text:
         raise AsrError(f'{provider.label}: пустой результат распознавания')
     return AsrResult(

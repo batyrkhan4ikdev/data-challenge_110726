@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 
 API = 'api'
 CUSTOM = 'custom'
+UPLOADED_LABEL = 'Загруженный (как распознан при загрузке)'
 LABELS = {API: 'Организатор (API)', CUSTOM: 'Свой транскрипт', 'freedomspeech': 'FreedomSpeech'}
 
 EMPTY_CUSTOM = 'Транскрипт пуст: вставьте текст с репликами'
@@ -172,7 +173,8 @@ class TranscriptStore:
             provider = providers.get(source)
             q = quality.get(source)
             label = (
-                (provider.label if provider else None)
+                (UPLOADED_LABEL if source == API and cid.startswith('up-') else None)
+                or (provider.label if provider else None)
                 or LABELS.get(source)
                 or (q.label if q and q.label else None)
                 or source

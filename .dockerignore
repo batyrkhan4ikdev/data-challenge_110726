@@ -1,0 +1,13 @@
+.env
+.venv
+**/node_modules
+data/audio
+data/asr/raw
+data/store
+bench/results
+out
+.git
+**/__pycache__
+web/dist
+*.egg-info
+data/cache

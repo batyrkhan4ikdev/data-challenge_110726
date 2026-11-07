@@ -50,6 +50,38 @@ export function factsCard(slot: Promise<DialogFacts>, onJump: (idx: number) => v
       if (d.identity_verified_idx !== null && d.identity_verified_idx !== undefined) {
         rows.push(row(f.verified, link(d.identity_verified_idx)));
       }
+      const lane = d.bot_lane;
+      if (lane) {
+        const bl = t.caseTools.bot;
+        rows.push(h('h3', { class: 'cqa-facts-sub' }, bl.title, ' ', badge(bl.hint, 'neutral')));
+        rows.push(row(bl.botTurns, String(lane.bot_turns)));
+        rows.push(
+          row(
+            bl.told,
+            ...(lane.client_before_handoff.length
+              ? lane.client_before_handoff.flatMap((x) => [link(x.idx), ` ${x.text} `])
+              : [f.none]),
+          ),
+        );
+        rows.push(
+          row(
+            bl.handoff,
+            lane.handoff_idx === null || lane.handoff_idx === undefined ? f.none : link(lane.handoff_idx),
+            lane.handoff_offset_s === null || lane.handoff_offset_s === undefined ? '' : ` ${clock(lane.handoff_offset_s)}`,
+          ),
+        );
+        if (lane.reasked !== null && lane.reasked !== undefined) {
+          rows.push(
+            row(
+              bl.reasked,
+              lane.reasked ? badge(bl.reaskedYes, 'warn', lane.reasked_reason ?? undefined) : badge(bl.reaskedNo, 'good'),
+              ' ',
+              lane.reasked_idx === null || lane.reasked_idx === undefined ? '' : link(lane.reasked_idx),
+              lane.reasked_reason ? ` ${lane.reasked_reason}` : '',
+            ),
+          );
+        }
+      }
       const events = h(
         'ul',
         { class: 'cqa-facts-events' },

@@ -13,6 +13,7 @@ from server.models import Appeal, Checklist, Evaluation, EvaluationSummary, Fina
 from server.scoring import final_result
 from server.store import NotFound, Store
 from server.transcripts import API, TranscriptStore
+from server.uploads import UPLOADS, UploadStore
 
 DatasetLoader = Callable[[str, bool], Awaitable[list[Record]]]
 
@@ -27,6 +28,7 @@ class Services:
     profiles: dict[str, Profile]
     dataset_loader: DatasetLoader
     transcripts: TranscriptStore
+    uploads: UploadStore
     _datasets: dict[str, list[Record]] = field(default_factory=dict)
     _dataset_locks: defaultdict[str, asyncio.Lock] = field(default_factory=lambda: defaultdict(asyncio.Lock))
 
@@ -49,7 +51,10 @@ class Services:
         return record.model_copy(update={'audio_url': base.audio_url})
 
     async def records(self, group_id: str, refresh: bool = False) -> list[Record]:
-        """Dataset records, cached in memory per group; `refresh` reloads. A failed load keeps the cache."""
+        """Dataset records, cached in memory per group; `refresh` reloads. A failed load keeps the cache.
+        `UPLOADS` is read from the store every time: it changes with each upload."""
+        if group_id == UPLOADS:
+            return await self.uploads.records()
         async with self._dataset_locks[group_id]:
             if refresh or group_id not in self._datasets:
                 self._datasets[group_id] = await self.dataset_loader(group_id, refresh)

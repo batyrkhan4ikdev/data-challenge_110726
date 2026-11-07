@@ -53,6 +53,8 @@ Open the call **p4-ru-003**. The organizers' transcript is unusable for QA («и
 
 «Распознать заново» on T-one or GigaAM-v3 runs on our H200 in seconds (about 40 s). Do not re-transcribe live with Gemini or WhisperX: they take 110–163 s per call (`bench/asr/summary.md`). Roles are assigned and personal data masked by our own model by default, so customer data stays on our GPU. Click an evidence turn and the audio seeks to that moment.
 
+**Your own recording.** «Диалоги» → **Загрузить звонок или чат** → pick an audio file (e.g. the Kazakh call `1234`, which the dataset labels RU), language «определить автоматически», model WhisperX (H200) → «Распознать и добавить». It takes about 1–1.5 min on WhisperX for 3 minutes of audio: the language comes out KZ, roles are assigned, personal data masked. Then «Оценить по этому транскрипту» → the usual result card, appeal and «Выгрузить дело». A pasted chat goes the same way in seconds. Everything lands in the group `UPLOADS`.
+
 ## If they ask for laptop access
 
 Hand over the dialogs tab. Everything above is safe to click; live evaluation of any DEV dialog takes about 30 s.

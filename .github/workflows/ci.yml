@@ -15,6 +15,7 @@ jobs:
           python-version: '3.14'
       - run: pip install -e .[dev]
       - run: pytest -q
+      - run: python scripts/regress_gate.py --baseline bench/baselines/20261107-195213 --candidate bench/baselines/20261107-204453
       - uses: actions/setup-node@v4
         with:
           node-version: '24'

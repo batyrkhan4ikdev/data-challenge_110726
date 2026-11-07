@@ -36,6 +36,23 @@ class DialogEvent(BaseModel):
     offset_s: float | None = None
 
 
+class BotLaneTurn(BaseModel):
+    idx: int
+    text: str
+
+
+class BotLane(BaseModel):
+    """Бот → оператор: подсказка по эвристике, не часть официального скоринга."""
+
+    bot_turns: int
+    client_before_handoff: list[BotLaneTurn]
+    handoff_idx: int | None = None
+    handoff_offset_s: float | None = None
+    reasked: bool | None = None
+    reasked_idx: int | None = None
+    reasked_reason: str | None = None
+
+
 class DialogFacts(BaseModel):
     duration_s: float | None = None
     escalation_idx: int | None = None
@@ -49,6 +66,7 @@ class DialogFacts(BaseModel):
     masked: list[MaskedToken]
     events: list[DialogEvent]
     identity_verified_idx: int | None = None
+    bot_lane: BotLane | None = None
 
 
 class Usage(BaseModel):
@@ -68,12 +86,21 @@ class EvaluationSummary(BaseModel):
     created_at: datetime
 
 
+class Attention(BaseModel):
+    """Приоритет просмотра оценки (не вероятность ошибки): см. `server/triage.py`."""
+
+    score: int
+    reasons: list[str]
+    criterion_ids: list[str]  # критерии с причиной внимания; остальные «неспорные»
+
+
 class ConversationSummary(BaseModel):
     conversation_id: str
     channel: Channel
     language: Literal['RU', 'KZ', 'EN']
     turns: int
     latest: EvaluationSummary | None
+    attention: Attention | None = None
 
 
 class ScaleStep(BaseModel):
@@ -330,6 +357,35 @@ class HistogramBin(BaseModel):
     count: int
 
 
+class DriftMetric(BaseModel):
+    """PSI (population stability index) and two-sample KS between a baseline and a window sample."""
+
+    psi: float | None
+    verdict: Literal['stable', 'watch', 'drift'] | None
+    ks: float | None
+    ks_p: float | None
+    n_baseline: int
+    n_window: int
+
+
+class DriftCriterion(BaseModel):
+    criterion_id: str
+    title: str
+    metric: DriftMetric
+
+
+class DriftReport(BaseModel):
+    """Score drift: `groups` = baseline group vs this group, `halves` = first vs second half by evaluation time."""
+
+    mode: Literal['groups', 'halves']
+    baseline_label: str
+    window_label: str
+    min_n: int
+    enough_data: bool
+    total: DriftMetric
+    criteria: list[DriftCriterion]
+
+
 class GroupAnalytics(BaseModel):
     group_id: str
     dialogs: int
@@ -341,6 +397,38 @@ class GroupAnalytics(BaseModel):
     by_language: list[BreakdownRow]
     criteria: list[CriterionStat]
     histogram: list[HistogramBin]
+    drift: DriftReport | None = None
+
+
+class Confirmation(BaseModel):
+    """Подтверждение проверяющим критериев оценки. Отдельно от апелляций, на итог не влияет."""
+
+    id: str
+    evaluation_id: str
+    criterion_ids: list[str]
+    mode: Literal['batch', 'single']
+    reviewer: str
+    note: str
+    auto_note: str | None  # обязательная строка пакетного подтверждения
+    created_at: datetime
+
+
+class ConfirmationCreate(BaseModel):
+    criterion_ids: list[str]
+    mode: Literal['batch', 'single']
+    reviewer: str
+    note: str = ''
+
+
+class ConfirmationStats(BaseModel):
+    batch: int  # критериев принято пакетом
+    single: int  # критериев принято по одному
+    overridden: int  # критериев изменено через апелляцию
+
+
+class UploadChatRequest(BaseModel):
+    text: str  # lines starting with «оператор:» / «клиент:» / «бот:»
+    language: Literal['RU', 'KZ', 'EN']
 
 
 ALL_MODELS: list[type[BaseModel]] = [
@@ -348,6 +436,6 @@ ALL_MODELS: list[type[BaseModel]] = [
     Checklist, ChecklistSummary, Item, ScoreItem, SectionScore, Score, Evaluation, RawCall,
     Decision, Appeal, FinalItem, FinalResult, EvaluationView, Job, ApiError, BatchRequest,
     AppealCreate, DecisionCreate, AppealQueueItem, DecisionResult, AsrQuality, AsrProviderInfo, TranscriptSourceInfo,
-    TranscribeRequest, CustomTranscriptRequest,
-    BreakdownRow, CriterionStat, HistogramBin, GroupAnalytics,
+    TranscribeRequest, CustomTranscriptRequest, UploadChatRequest,
+    BreakdownRow, CriterionStat, HistogramBin, GroupAnalytics, DriftMetric, DriftCriterion, DriftReport, Attention, Confirmation, ConfirmationCreate, ConfirmationStats,
 ]

@@ -56,6 +56,9 @@ export type ManualScore = number | null;
 export type Notes = string | null;
 export type SecondsPerMin = number | null;
 export type SpeakerTurns = number | null;
+export type CriterionIds = string[];
+export type Reasons = string[];
+export type Score = number;
 export type ChecklistId = string | null;
 export type ConversationIds = string[];
 export type GroupId = string;
@@ -63,6 +66,15 @@ export type K = number | null;
 export type Mode = ("single" | "per_criterion") | null;
 export type Profile = string | null;
 export type TranscriptSource = string | null;
+export type BotTurns = number;
+export type Idx = number;
+export type Text = string;
+export type ClientBeforeHandoff = BotLaneTurn[];
+export type HandoffIdx = number | null;
+export type HandoffOffsetS = number | null;
+export type Reasked = boolean | null;
+export type ReaskedIdx = number | null;
+export type ReaskedReason = string | null;
 export type Count = number;
 export type Key = string;
 export type MeanTotal = number | null;
@@ -80,15 +92,30 @@ export type ChannelDefault1 = ("agent chat" | "voice call") | null;
 export type Id5 = string;
 export type Name1 = string;
 export type Version1 = number;
+export type AutoNote = string | null;
+export type CreatedAt1 = string;
+export type CriterionIds1 = string[];
+export type EvaluationId3 = string;
+export type Id6 = string;
+export type Mode1 = "batch" | "single";
+export type Note1 = string;
+export type Reviewer = string;
+export type CriterionIds2 = string[];
+export type Mode2 = "batch" | "single";
+export type Note2 = string;
+export type Reviewer1 = string;
+export type Batch = number;
+export type Overridden = number;
+export type Single = number;
 export type Channel = "agent chat" | "voice call";
 export type ConversationId1 = string;
 export type Language = "RU" | "KZ" | "EN";
 export type ChecklistId1 = string;
 export type ChecklistVersion = number;
-export type CreatedAt1 = string;
+export type CreatedAt2 = string;
 export type FinalTotal = number | null;
 export type GrossError = boolean;
-export type Id6 = string;
+export type Id7 = string;
 export type Total = number | null;
 export type Turns = number;
 export type Applicable = number;
@@ -99,7 +126,7 @@ export type No = number;
 export type Title2 = string;
 export type Yes = number;
 export type GroupId1 = string;
-export type Text = string;
+export type Text1 = string;
 export type Action1 = "confirm" | "change";
 export type NewVerdict1 = string | null;
 export type Reason1 = string;
@@ -121,9 +148,9 @@ export type Title3 = string;
 export type Total1 = number | null;
 export type Sections1 = SectionScore[];
 export type Total2 = number | null;
-export type Idx = number;
+export type Idx1 = number;
 export type OffsetS = number | null;
-export type Text1 = string;
+export type Text2 = string;
 export type DurationS = number | null;
 export type EscalationIdx = number | null;
 export type Events = DialogEvent[];
@@ -138,15 +165,29 @@ export type MaxWaitIdx = number | null;
 export type MaxWaitS = number | null;
 export type SlaOk = boolean | null;
 export type SlaS = number;
+export type CriterionId6 = string;
+export type Ks = number | null;
+export type KsP = number | null;
+export type NBaseline = number;
+export type NWindow = number;
+export type Psi = number | null;
+export type Verdict2 = ("stable" | "watch" | "drift") | null;
+export type Title4 = string;
+export type BaselineLabel = string;
+export type Criteria1 = DriftCriterion[];
+export type EnoughData = boolean;
+export type MinN = number;
+export type Mode3 = "groups" | "halves";
+export type WindowLabel = string;
 export type ChecklistId2 = string;
 export type ChecklistVersion1 = number;
 export type ConversationId2 = string;
-export type CreatedAt2 = string;
+export type CreatedAt3 = string;
 export type GroupId2 = string;
-export type Id7 = string;
+export type Id8 = string;
 export type Items2 = Item[];
 export type K1 = number;
-export type Mode1 = "single" | "per_criterion";
+export type Mode4 = "single" | "per_criterion";
 export type Model = string;
 export type Profile1 = string;
 export type TranscriptSource1 = string;
@@ -157,7 +198,7 @@ export type Seconds = number;
 export type Appeals = Appeal[];
 export type ByChannel = BreakdownRow[];
 export type ByLanguage = BreakdownRow[];
-export type Criteria1 = CriterionStat[];
+export type Criteria2 = CriterionStat[];
 export type Dialogs = number;
 export type Evaluated = number;
 export type GrossErrorCount = number;
@@ -169,11 +210,11 @@ export type Histogram = HistogramBin[];
 export type MeanTotal1 = number | null;
 export type Done = number;
 export type EvaluationIds = string[];
-export type Id8 = string;
+export type Id9 = string;
 export type State = "running" | "finished";
 export type Total3 = number;
-export type CriterionIds = string[];
-export type EvaluationId3 = string;
+export type CriterionIds3 = string[];
+export type EvaluationId4 = string;
 export type Messages = {
   [k: string]: unknown;
 }[];
@@ -185,20 +226,22 @@ export type AudioUrl = string | null;
 export type Channel1 = "agent chat" | "voice call";
 export type ConversationId3 = string;
 export type Language1 = "RU" | "KZ" | "EN";
-export type Idx1 = number;
+export type Idx2 = number;
 export type OffsetS1 = number | null;
 export type Speaker = "client" | "operator" | "bot" | "system";
-export type Text2 = string;
+export type Text3 = string;
 export type Timestamp = string;
 export type Transcript = Turn[];
 export type GroupId4 = string;
 export type Provider = string;
 export type Available1 = boolean;
-export type CreatedAt3 = string | null;
+export type CreatedAt4 = string | null;
 export type Kind1 = "api" | "asr" | "custom";
 export type Label3 = string;
 export type ProviderHosting = string | null;
 export type Source1 = string;
+export type Language2 = "RU" | "KZ" | "EN";
+export type Text4 = string;
 
 export interface Schema {
   [k: string]: unknown;
@@ -338,6 +381,18 @@ export interface AsrQuality {
   [k: string]: unknown;
 }
 /**
+ * Приоритет просмотра оценки (не вероятность ошибки): см. `server/triage.py`.
+ *
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "Attention".
+ */
+export interface Attention {
+  criterion_ids: CriterionIds;
+  reasons: Reasons;
+  score: Score;
+  [k: string]: unknown;
+}
+/**
  * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "BatchRequest".
  */
@@ -349,6 +404,31 @@ export interface BatchRequest {
   mode?: Mode;
   profile?: Profile;
   transcript_source?: TranscriptSource;
+  [k: string]: unknown;
+}
+/**
+ * Бот → оператор: подсказка по эвристике, не часть официального скоринга.
+ *
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "BotLane".
+ */
+export interface BotLane {
+  bot_turns: BotTurns;
+  client_before_handoff: ClientBeforeHandoff;
+  handoff_idx?: HandoffIdx;
+  handoff_offset_s?: HandoffOffsetS;
+  reasked?: Reasked;
+  reasked_idx?: ReaskedIdx;
+  reasked_reason?: ReaskedReason;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "BotLaneTurn".
+ */
+export interface BotLaneTurn {
+  idx: Idx;
+  text: Text;
   [k: string]: unknown;
 }
 /**
@@ -397,10 +477,49 @@ export interface ChecklistSummary {
   [k: string]: unknown;
 }
 /**
+ * Подтверждение проверяющим критериев оценки. Отдельно от апелляций, на итог не влияет.
+ *
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "Confirmation".
+ */
+export interface Confirmation {
+  auto_note: AutoNote;
+  created_at: CreatedAt1;
+  criterion_ids: CriterionIds1;
+  evaluation_id: EvaluationId3;
+  id: Id6;
+  mode: Mode1;
+  note: Note1;
+  reviewer: Reviewer;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "ConfirmationCreate".
+ */
+export interface ConfirmationCreate {
+  criterion_ids: CriterionIds2;
+  mode: Mode2;
+  note?: Note2;
+  reviewer: Reviewer1;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "ConfirmationStats".
+ */
+export interface ConfirmationStats {
+  batch: Batch;
+  overridden: Overridden;
+  single: Single;
+  [k: string]: unknown;
+}
+/**
  * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "ConversationSummary".
  */
 export interface ConversationSummary {
+  attention?: Attention | null;
   channel: Channel;
   conversation_id: ConversationId1;
   language: Language;
@@ -415,10 +534,10 @@ export interface ConversationSummary {
 export interface EvaluationSummary {
   checklist_id: ChecklistId1;
   checklist_version: ChecklistVersion;
-  created_at: CreatedAt1;
+  created_at: CreatedAt2;
   final_total: FinalTotal;
   gross_error: GrossError;
-  id: Id6;
+  id: Id7;
   total: Total;
   [k: string]: unknown;
 }
@@ -442,7 +561,7 @@ export interface CriterionStat {
  */
 export interface CustomTranscriptRequest {
   group_id: GroupId1;
-  text: Text;
+  text: Text1;
   [k: string]: unknown;
 }
 /**
@@ -470,7 +589,7 @@ export interface DecisionResult {
  */
 export interface FinalResult {
   items: Items;
-  score: Score;
+  score: Score1;
   [k: string]: unknown;
 }
 /**
@@ -488,7 +607,7 @@ export interface FinalItem {
  * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "Score".
  */
-export interface Score {
+export interface Score1 {
   applicable_weight: ApplicableWeight;
   gross_error: GrossError1;
   items: Items1;
@@ -524,9 +643,9 @@ export interface SectionScore {
  * via the `definition` "DialogEvent".
  */
 export interface DialogEvent {
-  idx: Idx;
+  idx: Idx1;
   offset_s?: OffsetS;
-  text: Text1;
+  text: Text2;
   [k: string]: unknown;
 }
 /**
@@ -534,6 +653,7 @@ export interface DialogEvent {
  * via the `definition` "DialogFacts".
  */
 export interface DialogFacts {
+  bot_lane?: BotLane | null;
   duration_s?: DurationS;
   escalation_idx?: EscalationIdx;
   events: Events;
@@ -563,21 +683,62 @@ export interface Turns1 {
 }
 /**
  * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "DriftCriterion".
+ */
+export interface DriftCriterion {
+  criterion_id: CriterionId6;
+  metric: DriftMetric;
+  title: Title4;
+  [k: string]: unknown;
+}
+/**
+ * PSI (population stability index) and two-sample KS between a baseline and a window sample.
+ *
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "DriftMetric".
+ */
+export interface DriftMetric {
+  ks: Ks;
+  ks_p: KsP;
+  n_baseline: NBaseline;
+  n_window: NWindow;
+  psi: Psi;
+  verdict: Verdict2;
+  [k: string]: unknown;
+}
+/**
+ * Score drift: `groups` = baseline group vs this group, `halves` = first vs second half by evaluation time.
+ *
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "DriftReport".
+ */
+export interface DriftReport {
+  baseline_label: BaselineLabel;
+  criteria: Criteria1;
+  enough_data: EnoughData;
+  min_n: MinN;
+  mode: Mode3;
+  total: DriftMetric;
+  window_label: WindowLabel;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "Evaluation".
  */
 export interface Evaluation {
   checklist_id: ChecklistId2;
   checklist_version: ChecklistVersion1;
   conversation_id: ConversationId2;
-  created_at: CreatedAt2;
+  created_at: CreatedAt3;
   group_id: GroupId2;
-  id: Id7;
+  id: Id8;
   items: Items2;
   k: K1;
-  mode: Mode1;
+  mode: Mode4;
   model: Model;
   profile: Profile1;
-  score: Score;
+  score: Score1;
   transcript_source?: TranscriptSource1;
   usage: Usage;
   [k: string]: unknown;
@@ -611,8 +772,9 @@ export interface EvaluationView {
 export interface GroupAnalytics {
   by_channel: ByChannel;
   by_language: ByLanguage;
-  criteria: Criteria1;
+  criteria: Criteria2;
   dialogs: Dialogs;
+  drift?: DriftReport | null;
   evaluated: Evaluated;
   gross_error_count: GrossErrorCount;
   gross_error_ids: GrossErrorIds;
@@ -638,7 +800,7 @@ export interface Job {
   done: Done;
   evaluation_ids: EvaluationIds;
   failed: Failed;
-  id: Id8;
+  id: Id9;
   state: State;
   total: Total3;
   [k: string]: unknown;
@@ -651,8 +813,8 @@ export interface Failed {
  * via the `definition` "RawCall".
  */
 export interface RawCall {
-  criterion_ids: CriterionIds;
-  evaluation_id: EvaluationId3;
+  criterion_ids: CriterionIds3;
+  evaluation_id: EvaluationId4;
   messages: Messages;
   model: Model1;
   response_text: ResponseText;
@@ -677,10 +839,10 @@ export interface Record {
  * via the `definition` "Turn".
  */
 export interface Turn {
-  idx: Idx1;
+  idx: Idx2;
   offset_s?: OffsetS1;
   speaker: Speaker;
-  text: Text2;
+  text: Text3;
   timestamp: Timestamp;
   [k: string]: unknown;
 }
@@ -699,11 +861,20 @@ export interface TranscribeRequest {
  */
 export interface TranscriptSourceInfo {
   available: Available1;
-  created_at?: CreatedAt3;
+  created_at?: CreatedAt4;
   kind: Kind1;
   label: Label3;
   provider_hosting?: ProviderHosting;
   quality?: AsrQuality | null;
   source: Source1;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "UploadChatRequest".
+ */
+export interface UploadChatRequest {
+  language: Language2;
+  text: Text4;
   [k: string]: unknown;
 }

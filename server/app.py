@@ -11,6 +11,7 @@ from litestar.static_files import create_static_files_router
 from pydantic import ValidationError
 
 from server.checklists import ChecklistError, ChecklistStore
+from server.confirmations import ConfirmationsController
 from server.config import load_profiles
 from server.dataset import DatasetError, load_dataset
 from server.jobs import JobRunner, fallback_names
@@ -20,9 +21,12 @@ from server.routes.appeals import AppealsController
 from server.routes.checklists import ChecklistsController
 from server.routes.datasets import DatasetsController
 from server.routes.evaluations import EvaluationsController
+from server.routes.regpack import RegPackController
 from server.routes.transcripts import TranscriptsController
+from server.routes.uploads import UploadsController
 from server.store import NotFound, Store
 from server.transcripts import TranscriptStore
+from server.uploads import UploadStore
 
 WEB = Path(__file__).resolve().parent.parent / 'web'
 INVALID_CHECKLIST = 'Чек-лист невалиден'
@@ -98,6 +102,7 @@ def create_app(
         profiles=profiles,
         dataset_loader=dataset_loader or load_dataset,
         transcripts=transcripts,
+        uploads=UploadStore(Path(store_root) / 'uploads'),
     )
 
     async def seed() -> None:
@@ -111,13 +116,16 @@ def create_app(
             EvaluationsController,
             AppealsController,
             TranscriptsController,
+            RegPackController,
+            UploadsController,
+            ConfirmationsController,
         ],
     )
     allowed_origins = [origin.strip() for origin in os.environ.get('CQA_ALLOWED_ORIGINS', '').split(',') if origin.strip()]
     return Litestar(
         cors_config=CORSConfig(
             allow_origins=allowed_origins,
-            allow_methods=['GET', 'POST', 'PUT'],
+            allow_methods=['GET', 'POST', 'PUT', 'DELETE'],
             allow_headers=['Content-Type'],
         ) if allowed_origins else None,
         route_handlers=[
