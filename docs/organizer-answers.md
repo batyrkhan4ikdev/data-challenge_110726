@@ -159,3 +159,10 @@ Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we alrea
 
 **#3080 → #3084** 18:03, Nikolay Borovinskiy: «Видео не надо» (only the presentation and the live demo).
 **#3076 → #3083** 18:03, Nikolay Borovinskiy, on whether the test dialogs are the same size as DEV: «Не большие».
+
+### Update 22:00 (through #3260)
+
+**#3112 → #3133, #3257, #3259** 20:17–21:21, Максим. Asked: «Нам дев данные самим размечать? есть ли эталонные данные по оценкам?» He first asked what was meant («Поясните… что вы подразумеваете под «дев данные самим размечать»?»), then answered: «Для вас эталонные данные, то что вы получаете через апи» / «В текущий момент».
+→ Nothing beyond what the API returns. The fresh DEV payload (preflight, 21:55) still has only `conversation_id, channel, language, transcript, audio_url`, with no labels, which matches #2966. Our gold stays the LLM consensus plus Batyrkhantzy111's 20 human rows.
+
+**#3167** 20:35, Nikolay Borovinskiy: «Не читают, хотят тренить модельку на 65 транскриптах..» — supports our decision not to fine-tune.

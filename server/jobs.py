@@ -99,10 +99,11 @@ class JobRunner:
                     for p in chain:
                         try:
                             ev, raw = await evaluate(record, checklist, profile=p, mode=mode, k=k, group_id=group_id)
+                            await self.store.save_evaluation(ev, raw)
                         except Exception as e:
+                            # A failed save is a failed attempt too: the dialog must end up in `failed`, never vanish.
                             errors.append(f'{p.name}: {type(e).__name__}: {str(e)[:200]}')
                             continue
-                        await self.store.save_evaluation(ev, raw)
                         job.evaluation_ids.append(ev.id)
                         return
                     job.failed[record.conversation_id] = ' | '.join(errors)

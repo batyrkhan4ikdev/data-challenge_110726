@@ -182,7 +182,7 @@ All models ran with thinking off. GLM-5.3 ignores `enable_thinking=false` (4.9k 
 | Grok 4.7 (reasoning low) | 36 | 264/288 (0.917) | **267/288 (0.927)** |
 | DeepSeek-V4-Pro (reasoning off) | 50 | 360/400 (0.900) | **371/400 (0.927)** |
 
-None of the frontier models beats the self-hosted gemma on our task; the gap is 1–2 pp in gemma's favour. These models are from families independent of the gold labelers, which removes the worry that the gold simply favours gemma's family.
+No frontier model beat gemma here, but the setup favours gemma: the checklist notes were iterated on gemma's own misses on these 65 dialogs. The gap is 1.0–2.7 pp, a few verdicts on 33–50 chats. That ranks the models but does not separate them.
 
 ## Round 4: human arbitration (Batyrkhantzy111, cfefd8e, 21:27)
 
@@ -196,4 +196,7 @@ There are now **20 human rows** in `bench/gold/labels.Batyrkhantzy111.arbitratio
 | + human C7 rule («open question → Нет») + C4 = 5 rule | 0.936 | 16 / 20 | 55 | 56 | 4.84 |
 | + courtesy is not a recap («Рада, что получилось» → Нет) | **0.931** | **16 / 20** | 54 | **57** | **4.53** |
 
-The last row is the control setting. Its examples are paraphrases that occur nowhere in DEV. The 0.936 → 0.931 difference is c06 noise: it moves ±2 verdicts on every notes edit.
+The last row is the control setting. Notes are frozen after it until the control run, unless an organizer announces a rule.
+- **11 → 16 human rows is in-sample by construction.** The C7 and C4 rules were written from these same arbitrated cases, and the 12 arbitrated verdicts cover only about 4 scenarios. The wording is generic, but its effect on other dialogs is untested.
+- Only the 60-chat agreement and the c07 count (55 → 57) say anything about dialogs the rules weren't built from.
+- The 0.936 → 0.931 difference is c06 noise: it moves ±2 verdicts on every notes edit.

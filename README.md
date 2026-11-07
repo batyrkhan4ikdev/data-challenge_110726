@@ -137,7 +137,7 @@ The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/r
 - frontier models via OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): each scored 1–2 pp below gemma on the same dialogs;
 - a three-judge ensemble, which tied gemma.
 
-These numbers are in-sample, because the same dialogs were used to tune the checklist notes. The details are in `docs/research/benchmark-phase1.md`.
+These numbers are in-sample: the same dialogs were used to tune the checklist notes, and the agreement is with other models' labels plus 20 human rows, not with the organizers' expert labels. Expect roughly **0.91–0.93 on unseen chats**. The details are in `docs/research/benchmark-phase1.md`.
 
 **Cost of one evaluation** (all calls included):
 - **Self-hosted:** an H200 costs $5.35/GPU-hour (median on-demand price of Vast, RunPod, Nebius and CoreWeave, 2026-11; see `docs/research/llm-candidates.md`). The cost per evaluation is `$/h × GPU-seconds ÷ concurrency ÷ 3600`.

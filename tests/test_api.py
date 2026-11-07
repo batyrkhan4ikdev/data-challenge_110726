@@ -71,6 +71,15 @@ async def test_failed_dialog_falls_back_in_order(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match='nope'):
         JobRunner(store, checklists, profiles, ['nope'])
 
+    # A store failure must land the dialog in `failed` and still let the job finish.
+    async def broken_save(ev, raw):
+        raise OSError('disk full')
+
+    store.save_evaluation = broken_save
+    job = await runner.wait((await runner.start(req, records)).id)
+    assert job.state == 'finished' and job.done == 1 and job.evaluation_ids == []
+    assert 'disk full' in job.failed[rec.conversation_id]
+
 
 async def run_batch(client: AsyncTestClient, ids: list[str], checklist_id: str | None = None) -> dict:
     r = await client.post(
