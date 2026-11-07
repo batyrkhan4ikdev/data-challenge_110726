@@ -12,7 +12,7 @@ The organizers want the live product to be the presentation, with the full cycle
 
 ## 0. Frame (30 s, slide 1)
 
-One sentence: we score every operator chat and call against a versioned checklist, with a reason and the exact turn for each verdict, on our own GPU by default, in about 30 s per dialog (per-criterion mode). Accuracy is about 0.93 against labels that match five other teams' published DEV labels at 94.6–99.3% (`bench/gold/README.md`).
+One sentence: we score every operator chat and call against a versioned checklist, with a reason and the exact turn for each verdict, on our own GPU by default, in about 30 s per dialog (per-criterion mode). Accuracy is about 0.93 against labels that match five other teams' published DEV labels at 94.6–99.3% (the one fully blind manual set, 14 dialogs, is lower at 84%; `bench/gold/README.md`).
 
 ## 1. Checklist setup (60 s): «добавить критерий, изменить, поменять вес»
 
