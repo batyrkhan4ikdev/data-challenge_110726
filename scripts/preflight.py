@@ -43,11 +43,17 @@ def git(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run(['git', *args], capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=60)
 
 
+CONTROL_MODE, CONTROL_K = 'per_criterion', '1'  # what the DEV numbers were measured with
+
+
 def check_env(profiles: dict[str, Profile]) -> list[Profile]:
     """Report missing keys; return [primary, *fallbacks] profiles in FALLBACK_PROFILE order."""
     missing = [k for k in ('DATASET_URL', 'TEAM_NAME', 'LLM_PROFILE', 'EVAL_MODE', 'EVAL_K', 'FALLBACK_PROFILE')
                if not os.environ.get(k)]
     report(not missing, '.env keys set' + (f' — missing {missing}' if missing else ''))
+    mode, k = os.environ.get('EVAL_MODE'), os.environ.get('EVAL_K')
+    report(mode == CONTROL_MODE and k == CONTROL_K,
+           f'control settings EVAL_MODE={CONTROL_MODE} EVAL_K={CONTROL_K} (got {mode}, {k})')
     print(f'      LLM_PROFILE={os.environ.get("LLM_PROFILE")} EVAL_MODE={os.environ.get("EVAL_MODE")} '
           f'EVAL_K={os.environ.get("EVAL_K")} FALLBACK_PROFILE={os.environ.get("FALLBACK_PROFILE")} '
           f'TEAM_NAME={os.environ.get("TEAM_NAME")!r}')

@@ -34,7 +34,7 @@ Select 2–3 dialogs → **Оценить выбранные**: progress is live
 ## 4. Viewing results (90 s): «результаты конкретного диалога, почему ошибка»
 
 1. **p1-ru-022**, gross error: the operator offers to take the money personally, «в обход компании». Open the c08 row and its evidence: the highlighted turn. The flag is reported separately and does not zero the total (31.25).
-2. **p1-ru-029**: the score ring, points as `x / weight`, and «Почему снижена оценка» with «Перейти к фрагменту». One N/A: c03 «Идентификация» is N/A when no account data was disclosed, the reason is shown, and the weight is redistributed.
+2. **p1-ru-029**: the score ring, points as `x / weight`, and «Почему снижена оценка» with «Перейти к фрагменту». Two N/A: c02 «Выявление потребности» (the client gave everything up front) and c03 «Идентификация» (no account data was disclosed); each reason is shown, and the weight is redistributed.
 3. «Факты диалога»: first operator response against the 3-minute SLA, the longest client wait, masked data. It is computed from the transcript without an LLM.
 4. **Аналитика** (10 s): mean total, pass rate per criterion, by language and channel.
 

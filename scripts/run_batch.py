@@ -261,7 +261,8 @@ def write_submission(
     doc = submission.build(team_name.strip(), ids, evs, failed, profiles, primary)
     path = RESULTS / which / 'results.json'
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    # tmp + replace: a run killed mid-write must not leave a truncated file where a good one was
+    atomic_write(path, json.dumps(doc, ensure_ascii=False, indent=2) + '\n')
     problems = submission.validate(json.loads(path.read_text(encoding='utf-8')), ids)
     errors = sum(r['status'] == 'error' for r in doc['results'])
     print(f'wrote {path.as_posix()}: {len(doc["results"])} entries, {errors} errors, model {doc["model"]}')
