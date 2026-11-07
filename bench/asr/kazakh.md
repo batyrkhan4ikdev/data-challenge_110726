@@ -2,7 +2,7 @@
 
 One 180 s mono 16 kHz call, record `1234`, which **the dataset labels `language: RU` while the speech is Kazakh**. It is the only Kazakh audio we hold: the 5 DEV calls are Russian and the PART2 records are chats with no audio.
 
-There is no reference transcript, so the column that ranks is **kk** — the share of words carrying a Kazakh-only letter (`ә ғ қ ң ө ұ ү һ і`). Russian text scores 0. It measures whether the model produced Kazakh at all, not whether the words are right. Audio and raw output stay in `data/audio/` and `data/asr/raw/` (gitignored).
+There is no reference transcript. The **kk** column is a **proxy, not accuracy**: the share of words carrying a Kazakh-only letter (`ә ғ қ ң ө ұ ү һ і`). It only shows whether the model produced Kazakh script at all. A model can score high on invented words, and a lower score can simply mean the speaker really used Russian ones, which this call mixes in. **Which transcript is right is Batyrkhantzy111's listening review** (`manual_score` in `data/asr/quality.json`); treat every ranking below as provisional until it lands. Audio and raw output stay in `data/audio/` and `data/asr/raw/` (gitignored).
 
 | provider | where | detected | words | **kk** | segments | speakers | s |
 |---|---|---|---|---|---|---|---|
@@ -19,7 +19,7 @@ There is no reference transcript, so the column that ranks is **kk** — the sha
 
 ## What it says
 
-- **WhisperX wins on Kazakh**, and it is the only provider that both reaches 0.71 and labels speakers. FreedomSpeech transcribes the most words (352) but a third of them come out Russian-shaped, so on Kazakh it is not the default to keep.
+- **WhisperX produces the most Kazakh script** (0.71) and is the only provider that also labels speakers. FreedomSpeech transcribes the most words (352) at a lower Kazakh share (0.53); whether that is Russian creeping in or genuine code-switching by the speakers is exactly what the manual review has to settle.
 - **The automatic re-run works on real audio.** With no hint the hub first answers `language: auto` at kk 0.32; `transcribe()` sees Kazakh letters above the 0.15 threshold and re-runs with `kk`, landing on the same 340 words / 0.712 as the forced provider. The cost is the wasted first pass: 80.2 s against 22.1 s. So prefer `h200-whisperx-kk` when the audio is known to be Kazakh, and leave `h200-whisperx` for unknown audio.
 - **GigaAM-v3 and T-one are Russian-only** (0.000): they transliterate Kazakh into Russian words. They stay the right choice for Russian calls, where they led the earlier benchmark (`summary.md`), and the wrong one here.
 - **Gemini 3.5 Transcribe returned 33 words for 180 s** — it gave up on Kazakh rather than transcribing it.
