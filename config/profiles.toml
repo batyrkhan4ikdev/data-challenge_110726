@@ -157,6 +157,68 @@ max_tokens = 4096
 extra_body = { chat_template_kwargs = { enable_thinking = false } }
 hosting = "external_api"
 
+# Frontier models via OpenRouter (test budget). Families independent of the gold labelers (Opus, Astra) first.
+# Reasoning is kept minimal to match the other runs; it is billed as output tokens.
+[profiles.or-gemini-argon]
+provider = "openai"
+base_url_env = "OPENROUTER_BASE_URL"
+api_key_env = "OPENROUTER_API_KEY"
+model = "google/gemini-4-argon"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 8192
+extra_body = { reasoning = { effort = "low" } }
+cost = { kind = "tokens", usd_per_mtok_in = 2.0, usd_per_mtok_out = 10.0 }
+hosting = "external_api"
+
+[profiles.or-gemini-flash]
+provider = "openai"
+base_url_env = "OPENROUTER_BASE_URL"
+api_key_env = "OPENROUTER_API_KEY"
+model = "google/gemini-3.8-flash"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 8192
+extra_body = { reasoning = { effort = "low" } }
+cost = { kind = "tokens", usd_per_mtok_in = 0.83, usd_per_mtok_out = 4.12 }
+hosting = "external_api"
+
+[profiles.or-grok]
+provider = "openai"
+base_url_env = "OPENROUTER_BASE_URL"
+api_key_env = "OPENROUTER_API_KEY"
+model = "x-ai/grok-4.7"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 8192
+extra_body = { reasoning = { effort = "low" } }
+cost = { kind = "tokens", usd_per_mtok_in = 2.0, usd_per_mtok_out = 6.0 }
+hosting = "external_api"
+
+[profiles.or-qwen-max]
+provider = "openai"
+base_url_env = "OPENROUTER_BASE_URL"
+api_key_env = "OPENROUTER_API_KEY"
+model = "qwen/qwen3.8-max-0902"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 8192
+extra_body = { reasoning = { effort = "low" } }  # this endpoint refuses reasoning = disabled
+cost = { kind = "tokens", usd_per_mtok_in = 2.0, usd_per_mtok_out = 6.0 }
+hosting = "external_api"
+
+[profiles.or-deepseek-pro]
+provider = "openai"
+base_url_env = "OPENROUTER_BASE_URL"
+api_key_env = "OPENROUTER_API_KEY"
+model = "deepseek/deepseek-v4-pro-0813"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 8192
+extra_body = { reasoning = { enabled = false } }
+cost = { kind = "tokens", usd_per_mtok_in = 0.12, usd_per_mtok_out = 4.66 }
+hosting = "external_api"
+
 # Per-criterion vote of three judges (majority; scales take the median; gemma breaks ties and leads the evidence).
 # Same accuracy as gemma alone on the 65-dialog gold (0.928 vs 0.929, see docs/research/benchmark-phase1.md),
 # lower total error (MAE 4.55 vs 4.91); kept as an option, not the control default.
