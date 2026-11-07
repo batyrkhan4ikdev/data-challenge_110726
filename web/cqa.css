@@ -1020,77 +1020,232 @@
   flex-direction: column;
   gap: 12px;
 }
+.cqa .cqa-form-errors:empty {
+  display: none;
+}
+.cqa .cqa-form-errors .cqa-banner {
+  margin: 0;
+}
 .cqa .cqa-form-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   justify-content: flex-end;
-  flex-direction: row-reverse;
 }
+
+/* Модальное окно апелляции: шапка и действия видимы, прокручивается только тело. */
 .cqa .cqa-modal {
   border: none;
   border-radius: var(--cqa-radius-xl);
   padding: 24px;
   width: min(560px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
   max-height: calc(100dvh - 24px);
-  overflow: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
   color: var(--cqa-text);
   background: var(--cqa-surface);
   font-family: var(--cqa-font);
   font-size: var(--cqa-fs);
+  line-height: 1.45;
   box-shadow: var(--cqa-shadow-modal);
+}
+.cqa .cqa-modal[open] {
+  display: flex;
+  flex-direction: column;
 }
 .cqa .cqa-modal::backdrop {
   background: rgba(25, 25, 25, 0.5);
 }
-.cqa .cqa-modal h2 {
-  margin: 0 0 12px;
+.cqa .cqa-modal-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 16px;
+}
+.cqa .cqa-modal-title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+.cqa .cqa-modal-title:focus {
+  outline: none;
+}
+.cqa .cqa-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Место для кольца фокуса у полей внутри прокручиваемой области. */
+  margin: -4px;
+  padding: 4px;
+}
+.cqa .cqa-modal-criterion {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  color: var(--cqa-heading);
+}
+
+/* Очередь апелляций. */
+.cqa .cqa-review-empty {
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.cqa .cqa-review-empty h2 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+.cqa .cqa-review-empty p {
+  margin: 0 0 8px;
 }
 .cqa .cqa-appeal-head {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: center;
+  gap: 8px 12px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--cqa-border);
+}
+.cqa .cqa-appeal-title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+.cqa .cqa-appeal-dialog {
+  margin-left: auto;
 }
 .cqa .cqa-appeal-cols {
   display: grid;
   grid-template-columns: minmax(280px, 5fr) minmax(0, 6fr);
-  gap: 16px;
+  grid-template-areas: 'context evidence' 'decision evidence';
+  grid-template-rows: auto 1fr;
+  gap: 16px 24px;
+}
+.cqa .cqa-appeal-cols--single {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'context' 'decision';
+}
+.cqa .cqa-appeal-context {
+  grid-area: context;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.cqa .cqa-appeal-evidence {
+  grid-area: evidence;
+  min-width: 0;
+}
+.cqa .cqa-appeal-decision {
+  grid-area: decision;
+  min-width: 0;
+}
+.cqa .cqa-appeal-verdict {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.cqa .cqa-appeal-text h3,
+.cqa .cqa-appeal-evidence h3,
+.cqa .cqa-decision h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--cqa-muted);
+}
+.cqa .cqa-appeal-text p {
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 .cqa .cqa-appeal-comment {
-  padding: 8px 12px;
+  padding: 12px 16px;
   background: var(--cqa-warn-bg);
   border-radius: var(--cqa-radius);
+}
+.cqa .cqa-appeal-comment h3 {
+  color: var(--cqa-warn);
 }
 .cqa .cqa-fragment {
   border: 1px solid var(--cqa-border);
   border-radius: var(--cqa-radius);
-  padding: 0 4px 8px;
+  padding: 4px;
   max-height: 420px;
   overflow: auto;
 }
-.cqa .cqa-fragment h3 {
-  padding: 0 8px;
-}
 .cqa .cqa-decision {
-  margin-top: 12px;
-  padding-top: 8px;
+  padding-top: 16px;
   border-top: 1px solid var(--cqa-border);
 }
 .cqa .cqa-radios {
   display: flex;
-  gap: 16px;
+  gap: 8px 24px;
   align-items: center;
   flex-wrap: wrap;
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
 }
 .cqa .cqa-radio {
   display: inline-flex;
   gap: 8px;
   align-items: center;
+  min-height: 32px;
+  cursor: pointer;
+}
+.cqa .cqa-decision-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.cqa .cqa-appeal-result {
+  margin: 0;
+}
+.cqa .cqa-appeal-result p {
+  margin: 4px 0 0;
+}
+.cqa .cqa-appeal-total {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 .cqa .cqa-appeal.is-resolved {
   border-color: var(--cqa-good-line);
+}
+@media (max-width: 1100px) {
+  .cqa .cqa-appeal-cols {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'context' 'evidence' 'decision';
+    grid-template-rows: auto;
+  }
+}
+@media (max-width: 860px) {
+  .cqa .cqa-modal {
+    padding: 16px;
+  }
+  .cqa .cqa-form-actions {
+    flex-direction: column-reverse;
+  }
+  .cqa .cqa-form-actions .cqa-btn,
+  .cqa .cqa-decision-actions .cqa-btn {
+    width: 100%;
+  }
+  .cqa .cqa-radio {
+    min-height: 44px;
+  }
+  .cqa .cqa-appeal-dialog {
+    margin-left: 0;
+    flex-basis: 100%;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
 }
 
 /* ---- 10. Checklist editor ---- */
