@@ -108,3 +108,4 @@ def test_human_labels_override_consensus(tmp_path):
             w.writerow([cid, "c05", "t", "yes|no", "no", "1", "e", "no" if name == "labels.consensus.csv" else "", "", ""])
     # The human "yes" on c01 beats the LLM consensus "no"; c05 exists only in the consensus and stays.
     assert load_gold(tmp_path) == {cid: {"c01": "yes", "c05": "no"}}
+    assert load_gold(tmp_path, human_only=True) == {cid: {"c01": "yes"}}

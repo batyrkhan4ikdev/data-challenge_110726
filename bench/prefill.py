@@ -98,22 +98,24 @@ async def _run(assignments: list[dict], override: str | None) -> dict[str, list[
 CONSENSUS = "labels.consensus.csv"
 
 
-def _label_files(directory: Path) -> list[Path]:
+def _label_files(directory: Path, human_only: bool = False) -> list[Path]:
     """LLM-consensus labels first, human per-labeler files after, so a filled human row always wins."""
     files = sorted(Path(directory).glob("labels.*.csv"))
+    if human_only:
+        return [p for p in files if p.name != CONSENSUS]
     return sorted(files, key=lambda p: p.name != CONSENSUS)
 
 
-def load_gold(directory: Path = GOLD_DIR) -> dict[str, dict[str, str]]:
+def load_gold(directory: Path = GOLD_DIR, human_only: bool = False) -> dict[str, dict[str, str]]:
     """Read every labels.*.csv; return {cid: {criterion: gold_verdict}} for filled rows.
 
-    Human labels override `labels.consensus.csv` row by row. Raises GoldError listing invalid rows
-    as `file:line: reason`.
+    Human labels override `labels.consensus.csv` row by row; `human_only` skips the consensus file.
+    Raises GoldError listing invalid rows as `file:line: reason`.
     """
     records = load_records()
     gold: dict[str, dict[str, str]] = {}
     problems: list[str] = []
-    for path in _label_files(directory):
+    for path in _label_files(directory, human_only):
         with path.open(encoding="utf-8-sig", newline="") as f:
             reader = csv.DictReader(f)
             for row in reader:

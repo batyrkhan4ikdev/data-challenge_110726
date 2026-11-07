@@ -232,6 +232,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--mode", default="single", choices=["single", "per_criterion"])
     parser.add_argument("--k", type=int, default=1)
     parser.add_argument("--set", dest="set_name", default="smoke", choices=["smoke", "gold", "all"])
+    parser.add_argument("--gold", dest="gold_source", default="all", choices=["all", "human"],
+                        help="gold rows: all (human over LLM consensus) or human only (skip labels.consensus.csv)")
     parser.add_argument("--n", type=int)
     parser.add_argument("--concurrency", type=int, default=8)
     args = parser.parse_args(argv)
@@ -240,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
     gold = None
     if args.set_name == "gold":
         try:
-            gold = load_gold()
+            gold = load_gold(human_only=args.gold_source == "human")
         except GoldError as e:
             print("\n".join(e.problems), file=sys.stderr)
             return 1
@@ -265,7 +267,7 @@ def main(argv: list[str] | None = None) -> int:
 
     out_dir = RESULTS / datetime.now().strftime("%Y%m%d-%H%M%S")
     out_dir.mkdir(parents=True, exist_ok=True)
-    summary = [f"# Benchmark · set={args.set_name} · n={len(ids)}", ""]
+    summary = [f"# Benchmark · set={args.set_name} · gold={args.gold_source} · n={len(ids)}", ""]
     for name in names:
         profile = profiles[name]
         rows = asyncio.run(run_profile(profile, ids, records, args.mode, args.k, args.concurrency))
