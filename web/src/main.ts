@@ -21,7 +21,7 @@ export interface CqaOptions {
 }
 
 /** Логотип берётся относительно модуля: так путь работает и в `web/dist`, и внутри `cqa_/dist` веб-ресурса. */
-const LOGO_LIGHT = new URL('../assets/logo-cqa-light.svg', import.meta.url).href;
+const LOGO_LIGHT = new URL('../assets/logoCqaLight.svg', import.meta.url).href;
 
 const notFound: View = async (root) => {
   root.replaceChildren(banner(t.common.notFound, null, 'info'));

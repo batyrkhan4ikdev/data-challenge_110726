@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 
 from litestar import Litestar, Request, Response, Router
+from litestar.config.cors import CORSConfig
 from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.exceptions import HTTPException, ValidationException
@@ -100,7 +101,13 @@ def create_app(
         path='/api',
         route_handlers=[DatasetsController, ChecklistsController, EvaluationsController, AppealsController],
     )
+    allowed_origins = [origin.strip() for origin in os.environ.get('CQA_ALLOWED_ORIGINS', '').split(',') if origin.strip()]
     return Litestar(
+        cors_config=CORSConfig(
+            allow_origins=allowed_origins,
+            allow_methods=['GET', 'POST', 'PUT'],
+            allow_headers=['Content-Type'],
+        ) if allowed_origins else None,
         route_handlers=[
             api,
             create_static_files_router(path='/static', directories=[WEB / 'dist'], name='static'),

@@ -175,4 +175,13 @@ LLM_PROFILE=fake uvicorn server.app:app --port 8787   # full app offline: determ
 
 CI (`.github/workflows/ci.yml`) runs pytest, regenerates the types and fails if they are stale, and type-checks the web code. The plan and the decisions behind it are in `docs/superpowers/plans/2026-11-07-cqa-prototype.md`, terms in `GLOSSARY.md`, and team and agent conventions in `AGENTS.md`.
 
-The web UI is plain TypeScript ES modules with no framework and no bundler. Styles are scoped under `.cqa`, and the entry point is `mountCqa(root, {apiBase})`. That is the shape a Dynamics 365 HTML web resource needs. `docs/research/d365-web-resources.md` lists the remaining steps: rename three hyphenated modules, add a loader that reads `apiBase` from the `data` parameter, and provide an HTTPS API with CORS.
+The web UI is plain TypeScript ES modules with no framework and no bundler. Styles are scoped under `.cqa`, and the entry point is `mountCqa(root, {apiBase})`. The D365 loader, resource packager and opt-in CORS are included. Deployment conditions and local checks are documented in `docs/research/d365-web-resources.md`.
+
+## Встраивание в Dynamics 365
+
+Сборка: `web/node_modules/.bin/tsc -p web`, затем `python scripts/package_d365.py`.
+Загрузите все файлы из `out/d365/cqa_/` как web resources с теми же именами: `cqa_/index.htm`, `cqa_/loader.js`, `cqa_/cqa.css`, `cqa_/dist/**/*.js`, `cqa_/assets/*.svg`.
+В параметре `data` контрола задайте JSON, например `{"apiBase":"https://cqa.example.com/api","route":"#/dialogs/DEV"}`.
+На API укажите `CQA_ALLOWED_ORIGINS=https://example.crm.dynamics.com`; несколько origin разделяются запятой, пустое значение выключает CORS.
+В настройках контрола «Restrict cross-frame scripting» должно быть OFF, «Pass record object-type code and unique identifier» должно быть ON.
+Пакет готов к загрузке как HTML web resource, проверено на локальном стенде, условия перечислены в [отчёте D365](docs/research/d365-web-resources.md). Проверка в организации D365 и HTTPS для API ещё нужны.
