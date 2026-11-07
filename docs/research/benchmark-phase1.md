@@ -172,3 +172,14 @@ All models ran with thinking off. GLM-5.3 ignores `enable_thinking=false` (4.9k 
 - 19 of them sit where the gold itself is split (2:2 or 3:1), so only a human decision can settle them.
 - The other 9 are single cases spread over c02, c04, c05, c06 and c07, with no shared pattern; a rule for any of them would be fitted to one DEV dialog.
 - **Further prompt tuning on this gold is at its noise floor.**
+
+**Frontier models via OpenRouter (21:27, $2.38 of the $5 test budget).** Single mode, same notes. OpenRouter reserves credit for `max_tokens` on every request, so at 8 concurrent requests per model part of each run was refused with HTTP 402. The comparison below is therefore **paired**: on the chats each model did score, gemma per_criterion is measured on exactly the same dialogs.
+
+| model | chats scored | its hits | gemma hits on the same chats |
+|---|---|---|---|
+| Gemini 3.8 Flash (reasoning low) | 49 | 363/392 (0.926) | **367/392 (0.936)** |
+| Gemini 4 Argon (reasoning low) | 33 | 243/264 (0.920) | **249/264 (0.943)** |
+| Grok 4.7 (reasoning low) | 36 | 264/288 (0.917) | **267/288 (0.927)** |
+| DeepSeek-V4-Pro (reasoning off) | 50 | 360/400 (0.900) | **371/400 (0.927)** |
+
+None of the frontier models beats the self-hosted gemma on our task; the gap is 1–2 pp in gemma's favour. These models are from families independent of the gold labelers, which removes the worry that the gold simply favours gemma's family.
