@@ -1370,10 +1370,19 @@
 .cqa .cqa-kpi--bad .cqa-kpi-value {
   color: var(--cqa-bad);
 }
+.cqa .cqa-kpi-unit {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--cqa-muted);
+}
+.cqa .cqa-kpi-hint {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
 .cqa .cqa-analytics-grid {
   display: grid;
   grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-  gap: 16px;
+  gap: 0 16px;
   align-items: start;
 }
 .cqa .cqa-bar-row {
@@ -1391,8 +1400,12 @@
   display: flex;
   flex-direction: column;
 }
+.cqa .cqa-bar-label strong {
+  overflow-wrap: anywhere;
+}
 .cqa .cqa-bar-label .cqa-muted {
   font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 .cqa .cqa-bar {
   height: 10px;
@@ -1414,8 +1427,13 @@
 }
 .cqa .cqa-bar-value {
   text-align: right;
+  white-space: nowrap;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+.cqa .cqa-hist-note {
+  font-size: 13px;
+  margin: -8px 0 16px;
 }
 .cqa .cqa-hist {
   display: grid;
@@ -1454,20 +1472,72 @@
 .cqa .cqa-hist-label {
   font-size: 12px;
   color: var(--cqa-muted);
+  font-variant-numeric: tabular-nums;
+}
+.cqa .cqa-breakdown .cqa-table-wrap {
+  margin-bottom: 0;
 }
 .cqa .cqa-gross-list {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
-.cqa .cqa-gross-list li {
+.cqa .cqa-gross-list a {
+  display: inline-flex;
+  align-items: center;
   padding: 4px 12px;
   background: var(--cqa-bad-bg);
   border-radius: 6px;
-}
-.cqa .cqa-gross-list a {
   color: var(--cqa-bad);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.cqa .cqa-gross-list a:hover {
+  color: var(--cqa-bad-ink);
+}
+.cqa .cqa-analytics-retry {
+  margin-top: 8px;
+}
+/* Загрузка: статичные плашки без анимации вместо нулей. */
+.cqa .cqa-skel {
+  display: block;
+  border-radius: 6px;
+  background: var(--cqa-track);
+}
+.cqa .cqa-skel--value {
+  width: 60%;
+  height: 28px;
+  margin-top: 8px;
+}
+.cqa .cqa-skel--title {
+  width: 45%;
+  height: 20px;
+  margin-bottom: 20px;
+}
+.cqa .cqa-skel--row {
+  height: 10px;
+  margin: 0 0 28px;
+}
+.cqa .cqa-skel--chart {
+  height: 160px;
+}
+@media (max-width: 860px) {
+  .cqa .cqa-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .cqa .cqa-kpi-value {
+    font-size: 24px;
+  }
+  .cqa .cqa-kpi-unit {
+    font-size: 15px;
+  }
+  .cqa .cqa-hist {
+    gap: 8px;
+  }
+  .cqa .cqa-gross-list a {
+    min-height: 44px;
+  }
 }
 
 /* ---- 12. Responsive ---- */
@@ -1549,10 +1619,6 @@
   }
   .cqa .cqa-page-actions {
     width: 100%;
-  }
-  .cqa .cqa-kpis {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
   }
   .cqa .cqa-btn,
   .cqa .cqa-input {

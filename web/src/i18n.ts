@@ -260,10 +260,14 @@ export const t = {
     colCount: 'Диалогов',
     colMean: 'Средняя оценка',
     histogram: 'Распределение оценок',
+    histNote: 'Число диалогов в каждом диапазоне итогового балла (из 100)',
+    histAria: (ranges: string) => `Распределение оценок по диапазонам итогового балла: ${ranges}`,
+    histRange: (label: string, count: number) => `${label} баллов — ${count} диал.`,
     grossList: 'Диалоги с грубой ошибкой',
     grossNone: 'Грубых ошибок нет',
     empty: 'Оценённых диалогов пока нет',
-    open: 'Открыть оценку',
+    toDialogs: 'Перейти к списку диалогов',
+    retry: 'Повторить',
   },
 } as const;
 
