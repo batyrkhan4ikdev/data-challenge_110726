@@ -6,7 +6,7 @@ import { navIcon } from './ui/icons.js';
 import type { NavIcon } from './ui/icons.js';
 import { badge, banner, errorDetails, errorMessage, h } from './ui/dom.js';
 import { render as renderAnalytics } from './views/analytics.js';
-import { render as renderChecklistEditor } from './views/checklist-editor.js';
+import { render as renderChecklistEditor } from './views/checklistEditor.js';
 import { render as renderChecklists } from './views/checklists.js';
 import { render as renderDialogs } from './views/dialogs.js';
 import { render as renderResult, renderTranscriptOnly } from './views/result.js';
@@ -14,7 +14,14 @@ import { render as renderReview } from './views/review.js';
 
 export interface CqaOptions {
   apiBase: string;
+  /** Стартовый маршрут (`#/dialogs/DEV`), если в адресе страницы своего маршрута ещё нет. */
+  route?: string;
+  /** Запись Dynamics 365, к которой привязан контрол (параметры `id` и `typename` веб-ресурса). Пока только хранится. */
+  record?: { id?: string; typename?: string };
 }
+
+/** Логотип берётся относительно модуля: так путь работает и в `web/dist`, и внутри `cqa_/dist` веб-ресурса. */
+const LOGO_LIGHT = new URL('../assets/logo-cqa-light.svg', import.meta.url).href;
 
 const notFound: View = async (root) => {
   root.replaceChildren(banner(t.common.notFound, null, 'info'));
@@ -56,6 +63,7 @@ const NAV_ITEMS: [NavKey, string, NavIcon][] = [
 export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
   root.classList.add('cqa');
   const api = new Api(opts.apiBase);
+  if (opts.route && !/^#\/?.+/.test(location.hash)) location.hash = opts.route;
 
   const badgeSlot = h('div', { class: 'cqa-model-badge' });
   const navLinks = new Map<string, HTMLAnchorElement>();
@@ -68,12 +76,19 @@ export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
       return a;
     }),
   );
-  const main = h('main', { class: 'cqa-main', id: 'cqa-main' });
+  const main = h('main', { class: 'cqa-main', id: 'cqa-main', tabindex: '-1', 'aria-label': t.appTitle });
+  // Не якорь `#cqa-main`: хэш принадлежит маршрутизатору.
+  const skip = h('a', { class: 'cqa-skip-link', href: '#cqa-main' }, t.skipToContent);
+  skip.addEventListener('click', (e) => {
+    e.preventDefault();
+    main.focus();
+  });
   root.replaceChildren(
+    skip,
     h(
       'aside',
       { class: 'cqa-sidebar' },
-      h('div', { class: 'cqa-brand', title: t.appTitle }, 'CQA'),
+      h('a', { class: 'cqa-brand', href: '#/dialogs/DEV', 'aria-label': t.appTitle }, h('img', { src: LOGO_LIGHT, alt: t.logoAlt, width: 233, height: 48 })),
       nav,
       badgeSlot,
     ),
@@ -90,6 +105,7 @@ export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
     .catch(() => undefined);
 
   let controller: AbortController | null = null;
+  let first = true;
 
   const show = (route: Route) => {
     controller?.abort();
@@ -100,8 +116,11 @@ export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
       if (key === active) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     }
-    const container = h('div', { class: 'cqa-view' }, h('p', { class: 'cqa-muted' }, t.common.loading));
+    const container = h('div', { class: 'cqa-view' }, h('p', { class: 'cqa-loading', role: 'status' }, t.common.loading));
     main.replaceChildren(container);
+    // После явной смены маршрута фокус переходит к содержимому; первая загрузка фокус не забирает.
+    if (!first) main.focus({ preventScroll: true });
+    first = false;
     const ctx: Ctx = {
       api,
       params: route.params,
@@ -124,6 +143,3 @@ export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
     root.classList.remove('cqa');
   };
 }
-
-const app = document.getElementById('app');
-if (app) mountCqa(app, { apiBase: '/api' });

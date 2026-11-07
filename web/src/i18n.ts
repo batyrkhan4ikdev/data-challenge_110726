@@ -1,6 +1,8 @@
 // Все строки интерфейса (русский). Единственное место для текстов UI.
 export const t = {
   appTitle: 'Контроль качества диалогов',
+  logoAlt: 'Freedom Broker CQA',
+  skipToContent: 'К основному содержимому',
   nav: {
     dialogs: 'Диалоги',
     review: 'Апелляции',
