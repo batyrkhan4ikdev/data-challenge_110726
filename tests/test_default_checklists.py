@@ -28,7 +28,8 @@ def test_structure(checklist: Checklist) -> None:
     assert [c.id for c in crit] == [f'c0{i}' for i in range(1, 9)]
     assert [c.weight for c in crit] == [10, 15, 20, 20, 15, 15, 5, 0]
     assert [c.section_id for c in crit] == ['s1', 's1', 's2', 's2', 's3', 's3', 's3', 's4']
-    assert {c.id for c in crit if c.na_allowed} == {'c02', 'c03', 'c04', 'c07'}
+    expected_na = {'c02', 'c03', 'c04', 'c07'} | ({'c01'} if checklist.id == 'call' else set())  # call c01: #2978
+    assert {c.id for c in crit if c.na_allowed} == expected_na
     by_id = {c.id: c for c in crit}
     assert [s.value for s in by_id['c04'].steps] == [0, 5, 10, 15, 20]
     assert [s.value for s in by_id['c06'].steps] == [0, 4, 7, 10]

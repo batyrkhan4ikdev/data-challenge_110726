@@ -79,3 +79,28 @@ The Telegram tool does not expose which message a reply points to, so each answe
 
 **#2968** 16:04, Максим: "Хотите делайте презентацию на локальной машине, хотите захостите аппку. Главное чтобы можно было тыкать в ui в реалтайме"
 → The UI must work live during the check: evaluate, appeal and swap a criterion in real time. Local is fine.
+
+### Update 17:00 (through #2991)
+
+**#2978** 16:10, Максим, answering Dimash's 7 questions (#2859):
+> 1. По ответу на каждый критерий 2. Только чаты 3. Как бы вы это сделали? На второй вопрос, да 4. N/a 5. Как бы вы реализовали данную проверку? 6. База есть. Система как индикатор если что-то пошло не так, не по сценарию. Для проведения апелляции и переработке скрипта ответов 7. Да
+
+| Question (#2859) | Answer | Our decision |
+|---|---|---|
+| Compare against the reference per criterion, on the total, or both? Is the gross-error flag counted? | **per criterion** | The benchmark ranks by weighted per-criterion agreement (B4/B6) |
+| Control set: chats only, or calls too? | **chats only** | Tune the prompt mainly on chats. Calls stay supported |
+| Does the new criterion replace one with the same weight? Re-score the control dialogs? | our call; **yes, re-score** | The weight is whatever the organizers give. «Переоценить по текущему чек-листу» is one click in the UI, plus `run_batch.py --refresh` |
+| Calls: greeting not in the recording → «Нет» or N/A? | **N/A** | `call.default.json` c01: `na_allowed=true`, with N/A condition «приветствие оператора не попало в запись» |
+| Calls: is asking full name + address/phone enough for identification? | our call | Team rule: the operator asked for identification data and the client gave it (masks in the transcript count) |
+| Knowledge base for consultation? | exists, not shared; the system is an indicator of deviation from the script | C4 is judged by the logic and completeness of the answer; no invented facts |
+| Round half up to 2 decimals (50.625 → 50.63)? | **yes** | Already done this way (A3) |
+
+**#2980** 16:11, Максим, answering «вы будете чекать ридми и сами пробовать запускать?»: "Ридми да, запускать нет"
+
+**#2981** 16:18, Nikolay Borovinskiy:
+> Мы не ожидаем идеального совпадения с экспертными оценками до каждого балла. … При сравнении с Ground Truth мы будем смотреть на близость результатов и адекватность оценки в целом … N/A, грубые ошибки, неполные данные и спорные утверждения должны обрабатываться разумно. Если информации недостаточно для уверенного вывода, система не должна придумывать факты. … Нам важнее увидеть, что ваша система действительно умеет анализировать новые разговоры, а результаты выглядят обоснованными и воспроизводимыми.
+
+**#2991** 16:28, Nikolay Borovinskiy. The demo is a live product:
+> Покажите все диалоги, в которых система обнаружила грубые ошибки, и объяснения … как оператор может отправить результат оценки на апелляцию … как изменить чек-лист: добавить новый критерий, изменить существующий или поменять его вес … результаты оценки конкретного диалога, включая обоснование … можем попросить предоставить доступ к запущенному решению, например на вашем ноутбуке.
+
+→ UI changes: a gross-error filter in the dialog list, and the gross-error badge jumps to the explanation. «Воспроизводимыми» argues for temperature 0 and k=1, or a fixed vote count, for the control run.
