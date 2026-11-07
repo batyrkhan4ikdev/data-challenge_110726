@@ -62,7 +62,9 @@ async def evaluate(
         completions.extend(result)
         return result
 
-    def collect(result: list[Completion], ids: list[str]) -> tuple[dict[str, Item], dict[str, str]]:
+    def collect(
+        result: list[Completion], ids: list[str], lenient: bool = False
+    ) -> tuple[dict[str, Item], dict[str, str]]:
         samples: list[dict[str, Item]] = []
         errors: dict[str, str] = {}
         for comp in result:
@@ -70,7 +72,7 @@ async def evaluate(
                 for cid in ids:
                     errors.setdefault(cid, TRUNCATED)
                 continue
-            items, errs = parse_items(comp.text, record, checklist, ids)
+            items, errs = parse_items(comp.text, record, checklist, ids, lenient=lenient)
             samples.append(items)
             for cid, err in errs.items():
                 errors.setdefault(cid, err)
@@ -78,7 +80,8 @@ async def evaluate(
 
     async def run_group(ids: list[str]) -> dict[str, Item]:
         messages = build_messages(record, checklist, ids)
-        items, errors = collect(await call(messages, ids), ids)
+        first = await call(messages, ids)
+        items, errors = collect(first, ids)
         failed = [cid for cid in ids if cid not in items]
         if not failed:
             return items
@@ -91,9 +94,15 @@ async def evaluate(
                 ),
             }
         ]
-        retried, errors = collect(await call(retry, failed), failed)
+        second = await call(retry, failed)
+        retried, errors = collect(second, failed)
         items.update(retried)
         still = [cid for cid in failed if cid not in items]
+        if still:
+            # A missing citation must not cost the whole dialog: accept the verdict with a warning.
+            fallback, _ = collect(second + first, still, lenient=True)
+            items.update(fallback)
+            still = [cid for cid in still if cid not in items]
         if still:
             raise EvaluationError(f'невалидный ответ модели после повтора: {_describe(still, errors)}')
         return items

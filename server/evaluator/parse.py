@@ -16,7 +16,7 @@ def _load(text: str) -> Any:
     return json.loads(text[start : end + 1])
 
 
-def _check(raw: Any, c: Criterion, n: int) -> Item | str:
+def _check(raw: Any, c: Criterion, n: int, lenient: bool) -> Item | str:
     if not isinstance(raw, dict):
         return 'значение критерия не является объектом'
     verdict = raw.get('verdict')
@@ -44,15 +44,18 @@ def _check(raw: Any, c: Criterion, n: int) -> Item | str:
         return 'na_reason должен быть строкой или null'
 
     gross = c.kind == 'gross_error'
+    soft = ''
     if verdict == 'na':
         if not (na_reason or '').strip():
             return 'для N/A нужно указать na_reason'
     elif verdict == 'no':
         if not gross and not evidence and expected is None:
-            return 'для «Нет» нужны evidence_idx или expected_range'
+            soft = 'для «Нет» нужны evidence_idx или expected_range'
     elif not evidence:
         what = 'для «Да» по грубой ошибке' if gross else f'для вердикта {verdict!r}'
-        return f'{what} нужны непустые evidence_idx'
+        soft = f'{what} нужны непустые evidence_idx'
+    if soft and not lenient:
+        return soft
 
     return Item(
         criterion_id=c.id,
@@ -62,12 +65,15 @@ def _check(raw: Any, c: Criterion, n: int) -> Item | str:
         expected_range=tuple(expected) if expected is not None else None,
         na_reason=na_reason,
         votes={},
+        warnings=[f'нет подтверждающей реплики: {soft}'] if soft else [],
     )
 
 
 def parse_items(
-    text: str, record: Record, checklist: Checklist, criterion_ids: list[str]
+    text: str, record: Record, checklist: Checklist, criterion_ids: list[str], *, lenient: bool = False
 ) -> tuple[dict[str, Item], dict[str, str]]:
+    """Strict by default. `lenient` accepts a missing-evidence item with a warning instead of an error;
+    malformed JSON, out-of-range indices, disallowed verdicts and N/A without a reason stay errors."""
     try:
         data = _load(text)
     except ValueError as e:
@@ -81,7 +87,7 @@ def parse_items(
         if cid not in data:
             errors[cid] = 'критерий отсутствует в ответе'
             continue
-        result = _check(data[cid], by_id[cid], n)
+        result = _check(data[cid], by_id[cid], n, lenient)
         if isinstance(result, Item):
             items[cid] = result
         else:

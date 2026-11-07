@@ -133,6 +133,18 @@ async def test_two_invalid_replies_raise():
     assert len(llm.calls) == 2
 
 
+async def test_missing_evidence_twice_keeps_verdict_with_warning():
+    # The p1-ru-019 failure mode: a sound verdict without a citation must not discard the dialog.
+    bare = entry('yes', [])
+    llm = Scripted([comp(answer(c05=bare))], [comp({'c05': bare})])
+    ev, _ = await evaluate(P1, CHECKLIST, profile=PROFILE, llm=llm)
+    c05 = ev.items[4]
+    assert (c05.verdict, c05.evidence_idx) == ('yes', [])
+    assert c05.warnings and 'нет подтверждающей реплики' in c05.warnings[0]
+    assert all(not it.warnings for it in ev.items if it.criterion_id != 'c05')
+    assert ev.score == compute_score(CHECKLIST, {it.criterion_id: it.verdict for it in ev.items})
+
+
 def test_na_on_c01_rejected():
     obj = answer(c01=entry('na', na='не применимо'))
     items, errors = parse_items(json.dumps(obj), P1, CHECKLIST, ALL_IDS)

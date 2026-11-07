@@ -98,6 +98,7 @@ class Item(BaseModel):
     expected_range: tuple[int, int] | None = None
     na_reason: str | None = None
     votes: dict[str, int] = {}
+    warnings: list[str] = []  # accepted despite a soft rule violation (e.g. missing evidence after the retry)
 
 
 class ScoreItem(BaseModel):

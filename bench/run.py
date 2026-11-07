@@ -65,6 +65,7 @@ async def run_profile(
             "total": None,
             "gross_error": None,
             "citation_ok_rate": None,
+            "warnings": 0,
         }
         async with sem:
             t0 = time.perf_counter()
@@ -82,6 +83,7 @@ async def run_profile(
             total=evaluation.score.total,
             gross_error=evaluation.score.gross_error,
             citation_ok_rate=citation_ok_rate(evaluation, record, checklist),
+            warnings=sum(bool(it.warnings) for it in evaluation.items),
         )
         return row
 
@@ -212,6 +214,10 @@ def summarise(
             statistics.fmean(r["citation_ok_rate"] for r in done if r["citation_ok_rate"] is not None)
             if any(r["citation_ok_rate"] is not None for r in done)
             else None,
+        ],
+        [
+            "evidence_fallback_rate",
+            statistics.fmean(r.get("warnings", 0) / len(r["verdicts"]) for r in done) if done else None,
         ],
     ]
     lines = [f"## {profile.name} · {mode} · k={k}", ""] + _table(table)
