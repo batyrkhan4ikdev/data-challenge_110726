@@ -33,3 +33,41 @@ Case-relevant messages from the Telegram chat `Data Challenge'26` (id 4473389149
 → This is the source of `data/checklists/call.default.json` (plan task 0.2). It is also why the system supports several named checklists.
 
 **#2334** 12:39, Nikolay Borovinskiy: "Условия отбора топ 50 строятся не только по метрикам, отбор не прозрачный. … полноценного лидерборда скорее всего не будет."
+
+### Update 15:45 (topics Freedom Broker 732, Q&A Organizers 4, Announcements 5; messages through #2861)
+
+The Telegram tool does not expose which message a reply points to, so each answer below is matched to its question by content and timing. These matches are inference.
+
+**#2729** 15:03, Максим, answering #2705 «деплоить обязательно?»: "Нет, не обязательно. Можете демонстрировать на локальных машинках"
+→ A public deploy is optional. I3 (the Cloudflare tunnel) drops to nice-to-have, and the demo runs on localhost.
+
+**#2814** 15:28, Максим. Most likely answers #2686 (team −60HZ, 5 questions), because every point fits:
+> 1. Внимательно перечитайте чеклист по данному пункту 2. N/a 3. На ваше усмотрение 4. не понял вопроса 5. Как вы решите
+
+| Question in #2686 | Answer | Rule for prompt and gold |
+|---|---|---|
+| C7: operator answered and said goodbye, but gave no summary and no offer of further help | reread the checklist | Checklist: «Да — подвёл итог **или** предложил дальнейшую помощь **и** попрощался». A goodbye alone is **Нет** |
+| C2: client gave every detail up front (some to the bot), operator answered without clarifying | **N/A** | «данных хватало с самого начала» also covers details the client gave the bot |
+| C3/C8: operator revealed account data before identification | our call | Team default: C3 «Нет»; C8 «Да» only when the revealed data is confidential (balance, account, personal data) **and** no identification happened before it. Pin this in the B2 prompt |
+| Calls C1: does IVR count; recording starts after the greeting; does «[Имя скрыто]» count as introducing oneself | did not understand | Open. Team default: «[Имя скрыто]» counts as introducing oneself. If the operator's greeting is not in the record, C1 «Нет» (C1 has no N/A) |
+| Control: is accuracy per criterion or on the total; file format | «Как вы решите» (your call) | We pick the format: export per-criterion verdicts and the total (A5 `out/<group>.results.json`, plus a CSV) |
+
+**#2815** 15:28, Максим, answering #2813 (should we account for intonation, voice volume, speed?): "можете сделать, если считаете нужным"
+**#2825** 15:33: "Да", answering #2812 «наша модель же исключительно проверяет готовый транскрипт по критериям?»
+**#2826** 15:34: "Именно. Как дополнительный источник к транскрипту", answering #2810 «чтобы проверяющий мог прослушать запись при проверке»
+**#2827** 15:34: "Вызвав апи", answering #2508 / #2811 (how the control set and audio arrive)
+**#2834 / #2838** 15:35–15:36: "А что ваша модель будет делать с аудиозаписями? Нужна ли транскрипция аудио?" … "Только если хотите упороться после реализации основного функционала"
+→ Scoring is transcript-only. Audio is for the reviewer to listen to (player plus seek, C4). Audio analysis is optional, after the core works. The control set arrives through the same API.
+
+**#2832–#2833** 15:35, dauka (organizers): "после дедлайна сдачи кейса, организаторы прогонят тесты и отберут некоторое количество команд … и только они будут питчить". **#2829**: "питчинг будет примерно с 12.30 и дальше".
+→ Results must be ready and visible right at the stop-code (12:00). Only shortlisted teams pitch.
+
+**#2845** 15:38, Максим to #2843/#2844 (Батырхан (BDA) re-posted our `docs/mentor-questions.md` as #2502): "Отвечено". Aryn asked for a link to the answer (#2855); no reply yet.
+
+**Still unanswered:**
+- How the comparison with Ground Truth works.
+- A labeled example.
+- Whether the control set includes calls.
+- Whether the swapped criterion keeps its weight, and whether to re-score.
+- C1 when the bot answers first.
+- Whether there is a knowledge base for C4 (#2343 says one exists but has not been shared).
