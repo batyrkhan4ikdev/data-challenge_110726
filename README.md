@@ -130,12 +130,12 @@ Models are named profiles in `config/profiles.toml`.
 
 An `ensemble` profile (`provider = "ensemble"`, `members = ["profile:mode", …]`) runs every member on the dialog and takes, per criterion, the majority verdict; on scales it takes the median. The first member breaks ties and supplies the explanation and evidence when it agrees. A member that fails is dropped with a warning on the items; the dialog fails only if all members fail.
 
-The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). The gold so far is an **LLM consensus**: 4 blind labelings per dialog by GPT-6 Astra and Claude Opus 5.5, with ties settled by the checklist text. It is not yet human-labelled. Human rows in `bench/gold/labels.<login>.csv` override it, and `--gold human` ranks models on those rows only. We prefer a self-hosted model unless a cloud model is more than 5 pp better.
+The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). The gold is an **LLM consensus**: 4 blind labelings per dialog by GPT-6 Astra and Claude Opus 5.5. On top of it sit **20 human rows** (`bench/gold/labels.Batyrkhantzy111.arbitration.csv`), which settle the disputed verdicts and override the consensus. `--gold human` ranks models on the human rows only. We prefer a self-hosted model unless a cloud model is more than 5 pp better.
 
-**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. On the 65-dialog consensus gold it scores **0.929 weighted agreement** on the chats (mean of 3 runs, 0.927–0.930), with 99.6% of verdicts identical between runs. It was compared against 11 other models and setups:
-- the best cloud model reached 0.884 (GPT-6 Luna);
-- the best open-weight single judge reached 0.919 (Qwen3.8-27B);
-- a three-judge ensemble tied gemma at 0.928, though with a lower total error (MAE 4.55 against 4.91).
+**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats and matches 16 of the 20 human rows. 99.6% of its verdicts are identical between runs. It was compared against about 15 other models and setups:
+- open-weight models: Qwen3.8-27B 0.92, Qwen3.8-Flash-Next 0.91, DeepSeek-V4.1-Flash 0.90, Kimi-K2.6 0.85;
+- frontier models via OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): each scored 1–2 pp below gemma on the same dialogs;
+- a three-judge ensemble, which tied gemma.
 
 These numbers are in-sample, because the same dialogs were used to tune the checklist notes. The details are in `docs/research/benchmark-phase1.md`.
 
