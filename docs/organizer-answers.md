@@ -71,3 +71,11 @@ The Telegram tool does not expose which message a reply points to, so each answe
 - Whether the swapped criterion keeps its weight, and whether to re-score.
 - C1 when the bot answers first.
 - Whether there is a knowledge base for C4 (#2343 says one exists but has not been shared).
+
+### Update 16:05 (through #2968)
+
+**#2966** 16:02, Максим, answering #2965 (how you compare with the reference; can we get DEV dialogs with expert scores): "Эталона у вас нет, ребят. Прод версию получите по этой же апишке"
+→ No reference labels will be given. Our 24-dialog gold set (B5) stays the only accuracy signal. The control set arrives through the same API, with a different `group_id`.
+
+**#2968** 16:04, Максим: "Хотите делайте презентацию на локальной машине, хотите захостите аппку. Главное чтобы можно было тыкать в ui в реалтайме"
+→ The UI must work live during the check: evaluate, appeal and swap a criterion in real time. Local is fine.

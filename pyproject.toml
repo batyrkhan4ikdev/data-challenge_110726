@@ -10,6 +10,7 @@ dependencies = [
     "litestar[standard]",
     "pydantic>=2",
     "niquests",
+    "certifi",
     "python-dotenv",
 ]
 
