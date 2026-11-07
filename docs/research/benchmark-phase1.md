@@ -59,3 +59,24 @@ Cost per evaluation:
 - Choose by weighted per-criterion agreement with gold. The organizers compare per criterion (#2978).
 - Prefer self-hosted unless a paid model leads by more than 5 pp.
 - For reproducibility (#2981), the control run uses temperature 0 with k=1, or k=3 with a fixed seed if voting wins.
+
+## Phase 2, preliminary (5 consensus-gold dialogs, 2026-11-07 17:04)
+
+The gold labels are `bench/gold/labels.consensus.csv` (e79aaab, Batyrkhantzy111): 4 blind LLM labelings plus manual checks, with disputes settled by the organizer rules. It covers 5 dialogs: p1-ru-007, p1-ru-017, p1-en-011, p1-kz-010 and the call p4-ru-005. Raw results are in `bench/results/20261107-170403/` and `…-170753/`.
+
+| run | weighted agreement | total MAE | bias | s/dialog | c01 | c02 | c03 | c04 | c05 | c06 | c07 | c08 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| h200-gemma · per_criterion | **0.911** | 4.8 | −1.1 | 57 | 0.8 | 0.8 | 1.0 | 1.0 | 1.0 | 0.8 | 0.8 | 1.0 |
+| h200-gemma · single | 0.851 | 7.4 | +7.4 | 4.8 | 0.8 | 0.8 | 1.0 | 1.0 | 0.8 | 0.6 | 0.8 | 1.0 |
+| aigw-sonnet · single | 0.832 | 10.2 | −10.2 | 8.2 | 1.0 | 1.0 | 0.8 | 0.6 | 1.0 | 0.8 | 0.6 | 1.0 |
+| h200-glimmer · single | 0.822 | **4.6** | +1.5 | 9.3 | 0.8 | 0.8 | 0.8 | 0.8 | 0.8 | 1.0 | 0.6 | 1.0 |
+| aigw-luna · single | 0.782 | 13.5 | −12.9 | 18.2 | 1.0 | 0.4 | 0.8 | 0.8 | 1.0 | 0.8 | 0.6 | 1.0 |
+| h200-gptoss · single | 0.780 | 14.5 | −14.5 | 10.5 | 0.8 | 1.0 | 0.8 | 0.6 | 0.8 | 0.8 | 0.6 | 0.8 |
+| h200-kz · single | 0.772 | 9.8 | +9.6 | 43.3 | 1.0 | 0.6 | 1.0 | 0.8 | 0.8 | 0.6 | 0.2 | 1.0 |
+| h200-glimmer · per_criterion | 0.683 | 24.0 | −24.0 | 12.4 | 0.8 | 0.8 | 0.4 | 0.8 | 0.6 | 0.8 | 0.6 | 1.0 |
+
+- **Ranking.** It matches the phase-1 consensus ranking: gemma per_criterion first, then gemma single and Sonnet. Bias splits the models into two groups:
+  - lenient: gemma single, kz;
+  - strict: Sonnet, Luna, gptoss, and glimmer per_criterion.
+- **Gross errors.** All 6 single-mode profiles flag the gross error in p1-en-013 (turn [11], «I charge for private advice»).
+- **Interim default for the control run:** `LLM_PROFILE=h200-gemma`, `EVAL_MODE=per_criterion`, `EVAL_K=1`. It runs at about 1 min per dialog, so 10 control dialogs take about 3 min at concurrency 4. With n=5 this is provisional; re-run on the full gold set (B6) when the 24 labeled dialogs are filled.
