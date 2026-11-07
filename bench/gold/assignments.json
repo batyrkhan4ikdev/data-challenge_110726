@@ -1,0 +1,122 @@
+[
+  {
+    "conversation_id": "p1-ru-026",
+    "labeler": "arynyklas",
+    "prefill_profile": "h200-gptoss"
+  },
+  {
+    "conversation_id": "p1-ru-004",
+    "labeler": "Batyrkhantzy111",
+    "prefill_profile": "h200-gemma"
+  },
+  {
+    "conversation_id": "p1-kz-003",
+    "labeler": "Batyrkhantzy111",
+    "prefill_profile": "h200-kz"
+  },
+  {
+    "conversation_id": "p1-kz-009",
+    "labeler": "arynyklas",
+    "prefill_profile": "h200-gptoss"
+  },
+  {
+    "conversation_id": "p1-ru-029",
+    "labeler": "kakhotitee",
+    "prefill_profile": "h200-gemma"
+  },
+  {
+    "conversation_id": "p1-ru-023",
+    "labeler": "arynyklas",
+    "prefill_profile": "h200-kz"
+  },
+  {
+    "conversation_id": "p1-ru-021",
+    "labeler": "Batyrkhantzy111",
+    "prefill_profile": "h200-gptoss"
+  },
+  {
+    "conversation_id": "p1-kz-012",
+    "labeler": "kakhotitee",
+    "prefill_profile": "h200-gemma"
+  },
+  {
+    "conversation_id": "p1-kz-002",
+    "labeler": "kakhotitee",
+    "prefill_profile": "h200-kz"
+  },
+  {
+    "conversation_id": "p1-kz-014",
+    "labeler": "Batyrkhantzy111",
+    "prefill_profile": "h200-gptoss"
+  },
+  {
+    "conversation_id": "p1-ru-022",
+    "labeler": "arynyklas",
+    "prefill_profile": "h200-gemma"
+  },
+  {
+    "conversation_id": "p1-ru-003",
+    "labeler": "kakhotitee",
+    "prefill_profile": "h200-kz"
+  },
+  {
+    "conversation_id": "p4-ru-005",
+    "labeler": "Batyrkhantzy111",
+    "prefill_profile": "h200-gptoss"
+  },
+  {
+    "conversation_id": "p1-ru-015",
+    "labeler": "Batyrkhantzy111",
+    "prefill_profile": "h200-gemma"
+  },
+  {
+    "conversation_id": "p4-ru-004",
+    "labeler": "arynyklas",
+    "prefill_profile": "h200-kz"
+  },
+  {
+    "conversation_id": "p1-en-014",
+    "labeler": "Batyrkhantzy111",
+    "prefill_profile": "h200-gptoss"
+  },
+  {
+    "conversation_id": "p1-en-003",
+    "labeler": "kakhotitee",
+    "prefill_profile": "h200-gemma"
+  },
+  {
+    "conversation_id": "p1-kz-005",
+    "labeler": "arynyklas",
+    "prefill_profile": "h200-kz"
+  },
+  {
+    "conversation_id": "p1-en-008",
+    "labeler": "arynyklas",
+    "prefill_profile": "h200-gptoss"
+  },
+  {
+    "conversation_id": "p4-ru-002",
+    "labeler": "kakhotitee",
+    "prefill_profile": "h200-gemma"
+  },
+  {
+    "conversation_id": "p1-en-005",
+    "labeler": "arynyklas",
+    "prefill_profile": "h200-kz"
+  },
+  {
+    "conversation_id": "p1-en-002",
+    "labeler": "kakhotitee",
+    "prefill_profile": "h200-gptoss"
+  },
+  {
+    "conversation_id": "p1-en-011",
+    "labeler": "Batyrkhantzy111",
+    "prefill_profile": "h200-gemma"
+  },
+  {
+    "conversation_id": "p1-ru-005",
+    "labeler": "kakhotitee",
+    "prefill_profile": "h200-kz"
+  }
+]
