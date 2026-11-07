@@ -101,6 +101,22 @@ attempts = 2
 extra = { response_format = "verbose_json" }
 extra_form = { diarize = true, num_speakers = 2 }
 
+# The same WhisperX model with Kazakh forced instead of auto-detect, for Kazakh or code-switched audio.
+# Probed 2026-11-08 on the hub: `language=kk` is accepted (HTTP 200, `language: "kk"` in the response), while
+# omitting it answers `language: "auto"`. Untested on real Kazakh audio: we hold none (all DEV calls are Russian).
+[providers.h200-whisperx-kk]
+kind = "openai_audio"
+base_url_env = "H200_ASR_BASE_URL"
+api_key_env = "H200_API_KEY"
+model = "whisperx-large-v3"
+label = "WhisperX large-v3 (қазақша) + pyannote (H200)"
+hosting = "local"
+max_audio_s = 300
+timeout_s = 110
+attempts = 2
+extra = { response_format = "verbose_json" }
+extra_form = { diarize = true, num_speakers = 2, language = "kk" }
+
 [providers.h200-gigaam-v3]
 kind = "openai_audio"
 base_url_env = "H200_ASR_BASE_URL"
