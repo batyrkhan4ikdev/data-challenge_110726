@@ -28,12 +28,48 @@ def fake_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv('LLM_PROFILE', 'fake')
     monkeypatch.delenv('EVAL_MODE', raising=False)
     monkeypatch.delenv('EVAL_K', raising=False)
+    monkeypatch.delenv('FALLBACK_PROFILE', raising=False)  # .env may set a real chain; tests never leave the machine
 
 
 @pytest.fixture
 async def client(tmp_path: Path):
     async with AsyncTestClient(create_app(tmp_path, fixture_loader, DEFAULTS)) as c:
         yield c
+
+
+async def test_failed_dialog_falls_back_in_order(tmp_path: Path) -> None:
+    from server.checklists import ChecklistStore
+    from server.config import Profile
+    from server.jobs import JobRunner
+    from server.models import BatchRequest
+    from server.store import Store
+
+    store = Store(tmp_path)
+    checklists = ChecklistStore(tmp_path / 'checklists')
+    await checklists.seed_defaults(DEFAULTS)
+    # 'dead' has no base URL configured, so every call fails like an unreachable endpoint.
+    profiles = {
+        'dead': Profile(name='dead', provider='openai', base_url_env='CQA_TEST_UNSET_URL'),
+        'dead2': Profile(name='dead2', provider='openai', base_url_env='CQA_TEST_UNSET_URL'),
+        'fake': Profile(name='fake', provider='fake'),
+    }
+    rec = RECORDS[0]
+    req = BatchRequest(group_id='DEV', conversation_ids=[rec.conversation_id], checklist_id=None, profile='dead')
+    records = {rec.conversation_id: rec}
+
+    runner = JobRunner(store, checklists, profiles, ['dead2', 'fake'])
+    job = await runner.wait((await runner.start(req, records)).id)
+    assert job.failed == {} and len(job.evaluation_ids) == 1
+    assert (await store.get_evaluation(job.evaluation_ids[0])).profile == 'fake'
+
+    # Every link fails: one error that names each profile tried, in order.
+    alone = JobRunner(store, checklists, profiles, ['dead2'])
+    job = await alone.wait((await alone.start(req, records)).id)
+    reason = job.failed[rec.conversation_id]
+    assert reason.index('dead:') < reason.index('dead2:') and job.evaluation_ids == []
+
+    with pytest.raises(ValueError, match='nope'):
+        JobRunner(store, checklists, profiles, ['nope'])
 
 
 async def run_batch(client: AsyncTestClient, ids: list[str], checklist_id: str | None = None) -> dict:

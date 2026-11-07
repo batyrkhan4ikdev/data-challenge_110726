@@ -6,7 +6,7 @@ The demo is the live product (#2991): slides are optional, the UI is clicked in 
 
 1. Start the app: `.venv/Scripts/python.exe -m uvicorn server.app:app --port 8787`, then open `http://localhost:8787/#/dialogs/DEV`.
 2. Check that `data/store` holds the DEV results; the list should show totals for all 65 dialogs. If it doesn't, run `python scripts/run_batch.py DEV --refresh`, which takes about 7 minutes.
-3. Check the model endpoint with `curl --ssl-no-revoke https://hk-gemma.sek.su/health`. If it is down, live evaluation still works on `aigw-sonnet`: pick that profile in the batch dialog.
+3. Check the model endpoint with `curl --ssl-no-revoke https://hk-gemma.sek.su/health`. If it is down, live evaluation still works: each dialog falls back along `FALLBACK_PROFILE` (`aigw-sonnet` → `aigw-luna` → `h200-glimmer` until 12:00), and the result card shows which model scored it.
 4. Have a spare tab open on the control group, `#/dialogs/<CONTROL_GROUP>`.
 
 ## 1. What it is (30 s)

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Any
 
@@ -11,7 +12,7 @@ from pydantic import ValidationError
 from server.checklists import ChecklistError, ChecklistStore
 from server.config import load_profiles
 from server.dataset import DatasetError, load_dataset
-from server.jobs import JobRunner
+from server.jobs import JobRunner, fallback_names
 from server.models import ApiError
 from server.routes import DatasetLoader, Services, provide_services
 from server.routes.appeals import AppealsController
@@ -73,15 +74,21 @@ def create_app(
     store_root: Path = Path('data/store'),
     dataset_loader: DatasetLoader | None = None,
     seed_dir: Path = Path('data/checklists'),
+    fallbacks: list[str] | None = None,
 ) -> Litestar:
-    """The API under `/api`, `web/dist` at `/static` and `web/` (html mode) at `/`."""
+    """The API under `/api`, `web/dist` at `/static` and `web/` (html mode) at `/`.
+
+    `fallbacks` defaults to env `FALLBACK_PROFILE`, so live UI evaluations survive a dead model endpoint too.
+    """
     store = Store(store_root)
     checklists = ChecklistStore(Path(store_root) / 'checklists')
     profiles = load_profiles()
+    if fallbacks is None:
+        fallbacks = fallback_names(os.environ.get('FALLBACK_PROFILE'), profiles)
     services = Services(
         store=store,
         checklists=checklists,
-        jobs=JobRunner(store, checklists, profiles),
+        jobs=JobRunner(store, checklists, profiles, fallbacks),
         profiles=profiles,
         dataset_loader=dataset_loader or load_dataset,
     )

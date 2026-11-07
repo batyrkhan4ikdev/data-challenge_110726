@@ -30,13 +30,29 @@ def resolve_settings(req: BatchRequest, profiles: dict[str, Profile]) -> tuple[P
     return profiles[name], cast(Mode, mode), k
 
 
-class JobRunner:
-    """In-memory batch jobs. Each job pins its checklist versions at start."""
+def fallback_names(value: str | None, profiles: dict[str, Profile]) -> list[str]:
+    """Parse a comma-separated fallback chain (env `FALLBACK_PROFILE`); unknown names are a `ValueError`."""
+    names = [n.strip() for n in (value or '').split(',') if n.strip()]
+    unknown = [n for n in names if n not in profiles]
+    if unknown:
+        raise ValueError(f'неизвестные fallback-профили {unknown}; доступны: {", ".join(profiles)}')
+    return names
 
-    def __init__(self, store: Store, checklists: ChecklistStore, profiles: dict[str, Profile]) -> None:
+
+class JobRunner:
+    """In-memory batch jobs. Each job pins its checklist versions at start.
+
+    A dialog that fails on the job's profile is retried on each `fallbacks` profile in order, so a dead
+    endpoint or a rate-limited gateway costs a slower answer, not a failed dialog (UI and batch CLI alike).
+    """
+
+    def __init__(
+        self, store: Store, checklists: ChecklistStore, profiles: dict[str, Profile], fallbacks: list[str] | None = None
+    ) -> None:
         self.store = store
         self.checklists = checklists
         self.profiles = profiles
+        self.fallbacks = fallback_names(','.join(fallbacks or []), profiles)
         self._sem = asyncio.Semaphore(int(os.environ.get('EVAL_CONCURRENCY', 4)))
         self._jobs: dict[str, Job] = {}
         self._tasks: dict[str, asyncio.Task[None]] = {}
@@ -74,17 +90,22 @@ class JobRunner:
     async def _run(
         self, job: Job, plan: list[tuple[Record, Checklist]], group_id: str, profile: Profile, mode: Mode, k: int
     ) -> None:
+        chain = [profile, *(self.profiles[n] for n in self.fallbacks if n != profile.name)]
+
         async def one(record: Record, checklist: Checklist) -> None:
             async with self._sem:
+                errors: list[str] = []
                 try:
-                    ev, raw = await evaluate(
-                        record, checklist, profile=profile, mode=mode, k=k, group_id=group_id
-                    )
-                    await self.store.save_evaluation(ev, raw)
-                except Exception as e:
-                    job.failed[record.conversation_id] = f'{type(e).__name__}: {str(e)[:300]}'
-                else:
-                    job.evaluation_ids.append(ev.id)
+                    for p in chain:
+                        try:
+                            ev, raw = await evaluate(record, checklist, profile=p, mode=mode, k=k, group_id=group_id)
+                        except Exception as e:
+                            errors.append(f'{p.name}: {type(e).__name__}: {str(e)[:200]}')
+                            continue
+                        await self.store.save_evaluation(ev, raw)
+                        job.evaluation_ids.append(ev.id)
+                        return
+                    job.failed[record.conversation_id] = ' | '.join(errors)
                 finally:
                     job.done += 1
 

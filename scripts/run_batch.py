@@ -25,7 +25,7 @@ os.chdir(ROOT)
 from server.checklists import ChecklistStore  # noqa: E402
 from server.config import Profile, load_profiles  # noqa: E402
 from server.dataset import DatasetError, load_dataset  # noqa: E402
-from server.jobs import JobRunner, resolve_settings  # noqa: E402
+from server.jobs import JobRunner, fallback_names, resolve_settings  # noqa: E402
 from server.models import BatchRequest, Evaluation, Mode, Record  # noqa: E402
 from server.store import NotFound, Store  # noqa: E402
 from server import submission  # noqa: E402
@@ -165,10 +165,10 @@ async def main(argv: list[str] | None = None) -> int:
     except ValueError as e:
         print(f'ошибка: {e}', file=sys.stderr)
         return 2
-    fallbacks = [n.strip() for n in (args.fallback_profile or '').split(',') if n.strip() and n.strip() != profile.name]
-    unknown = [n for n in fallbacks if n not in profiles]
-    if unknown:
-        print(f'ошибка: неизвестные fallback-профили {unknown}', file=sys.stderr)
+    try:
+        fallbacks = fallback_names(args.fallback_profile, profiles)
+    except ValueError as e:
+        print(f'ошибка: {e}', file=sys.stderr)
         return 2
     rejects: dict[str, str] = {}
     try:
@@ -195,9 +195,10 @@ async def main(argv: list[str] | None = None) -> int:
                       f'организаторов: перезапустите с --reset-defaults.', file=sys.stderr)
         if drift and not args.reset_defaults:
             return 2
-    runner = JobRunner(store, checklists, profiles)
+    runner = JobRunner(store, checklists, profiles, fallbacks)
     req.conversation_ids = [r.conversation_id for r in records]
-    print(f'{args.group_id}: {len(records)} dialogs · profile {profile.name} ({profile.model}) · {mode} · k={k}')
+    print(f'{args.group_id}: {len(records)} dialogs · profile {profile.name} ({profile.model}) · {mode} · k={k}'
+          f' · fallbacks {", ".join(fallbacks) or "none"}')
 
     t0 = time.perf_counter()
     evs: dict[str, Evaluation] = {}
@@ -211,18 +212,6 @@ async def main(argv: list[str] | None = None) -> int:
         job = await runner.wait(job.id)
         evs = {ev.conversation_id: ev for ev in [await store.get_evaluation(i) for i in job.evaluation_ids]}
         failed = dict(job.failed)
-
-    for name in fallbacks:
-        if not failed:
-            break
-        print(f'{len(failed)} dialogs still failing; retrying on fallback {name}')
-        retry_req = req.model_copy(update={'conversation_ids': list(failed), 'profile': name})
-        retry = await runner.wait((await runner.start(retry_req, {r.conversation_id: r for r in records})).id)
-        for i in retry.evaluation_ids:
-            ev = await store.get_evaluation(i)
-            evs[ev.conversation_id] = ev
-            failed.pop(ev.conversation_id, None)
-        failed.update({cid: f'{name}: {reason}' for cid, reason in retry.failed.items()})
     failed.update(rejects)  # unparseable records stay visible as errors; never dropped, never zeroed
     wall = time.perf_counter() - t0
 
