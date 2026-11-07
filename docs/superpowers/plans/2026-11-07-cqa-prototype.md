@@ -191,15 +191,26 @@ Model profiles live in `config/profiles.toml`, loaded by `server.config.load_pro
 [profiles.fake]
 provider = "fake"
 
-[profiles.example-vllm]
+[profiles.h200-gemma]
 provider = "openai"
-base_url_env = "H200_BASE_URL"
+base_url_env = "H200_GEMMA_BASE_URL"   # https://hk-gemma.sek.su/v1
 api_key_env = "H200_API_KEY"
-model = "served-model-name"
-supports_n = true                 # send n=k in one request; else k parallel requests
-structured = "json_schema"        # response_format type
-cost = { kind = "gpu", usd_per_hour = 0.0, concurrency = 8 }   # or { kind = "tokens", usd_per_mtok_in = 0.0, usd_per_mtok_out = 0.0 }
+model = "gemma-4:31b"                  # dense 31B, ctx 65536
+supports_n = true                      # send n=k in one request; else k parallel requests
+structured = "json_schema"             # response_format type
+max_concurrency = 48
+extra_body = {}                        # merged into every request, e.g. { chat_template_kwargs = { enable_thinking = true } }
+cost = { kind = "gpu", usd_per_hour = 0.0, concurrency = 48 }   # or { kind = "tokens", usd_per_mtok_in = 0.0, usd_per_mtok_out = 0.0 }
+
+[profiles.h200-gptoss]                 # H200_GPTOSS_BASE_URL, model "gpt-oss-120b", MoE 120B, ctx 131072
+[profiles.h200-kz]                     # H200_KZ_BASE_URL, model "issai/Qwen3.5-35B-A3B-Kazakh", ctx 65536
 ```
+
+H200 endpoints are served by the GPU agent's own Cloudflare named tunnel `hackathon-h200`. One key for all three lives in `.env`. Only `/v1/*` and `/health` are routed.
+
+Client requirements:
+- The client sends `User-Agent: Mozilla/5.0 (cqa)`, because Cloudflare blocks default library user agents.
+- Strict `json_schema` was seen getting stuck in a whitespace loop on gemma until the server disabled any-whitespace in xgrammar. The client therefore treats `finish_reason=="length"` as an invalid reply, which is retried like any other invalid output.
 
 Env `LLM_PROFILE` selects the default profile, and `EVAL_MODE` / `EVAL_K` select the default mode and k.
 
