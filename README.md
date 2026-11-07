@@ -85,7 +85,16 @@ This prints a table and the token, time and cost totals. It writes `out/<GROUP_I
 
 `team_name` comes from `--team-name` or env `TEAM_NAME`. Commit and push both files before stop-code.
 
-Dialogs that fail on the primary profile (for example, the self-hosted endpoint is unreachable) are re-run once on `--fallback-profile`, which defaults to env `FALLBACK_PROFILE`. Costs are reported per profile.
+Dialogs that fail on the primary profile (for example, the self-hosted endpoint is unreachable) are re-run on each profile in `--fallback-profile`, in order. That is a comma-separated list, defaulting to env `FALLBACK_PROFILE` (`aigw-sonnet,aigw-luna`). Costs are reported per profile.
+
+`--submit` scores with the organizers' checklist. If the default `chat`/`call` checklist was edited in the UI (for example, during a demo), the run aborts before evaluating. Re-run it with `--reset-defaults`, which saves `data/checklists/*.default.json` back as a new version and keeps the history.
+
+Before the control run, `python scripts/preflight.py [--group <CONTROL_GROUP>]` checks everything the run needs in about 30 s:
+- the `.env` keys;
+- git: on `main`, clean, in sync with `origin`;
+- the default checklists;
+- the dataset API (DEV, plus the control group, which must return 10 records);
+- one real completion from the primary model and from each fallback.
 
 ## How the evaluation works
 

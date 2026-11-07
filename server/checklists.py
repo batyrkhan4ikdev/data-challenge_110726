@@ -1,6 +1,7 @@
 import asyncio
 import builtins
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
 
 from server.models import Channel, Checklist, ChecklistSummary
@@ -188,3 +189,24 @@ class ChecklistStore:
             if best is None or mtime > best[0]:
                 best = (mtime, s.id)
         return await self.get(best[1] if best else FALLBACK_ID)
+
+    async def seed_drift(self, directory: Path, channels: Iterable[Channel]) -> builtins.list[tuple[Checklist, Checklist]]:
+        """(current default, seed) for each channel whose default checklist no longer equals `<directory>/*.default.json`.
+
+        Used before an organizer submission: the control set must be scored with the organizers' checklist,
+        not with whatever was last edited in the UI (version numbers are ignored in the comparison).
+        """
+        paths = await asyncio.to_thread(lambda: sorted(Path(directory).glob('*.default.json')))
+        seeds: dict[Channel | None, Checklist] = {}
+        for path in paths:
+            c = Checklist.model_validate_json(await asyncio.to_thread(path.read_text, encoding='utf-8'))
+            seeds[c.channel_default] = c
+        drift = []
+        for channel in sorted(set(channels)):
+            seed = seeds.get(channel)
+            if seed is None:
+                continue
+            current = await self.default_for(channel)
+            if current.model_dump(exclude={'version'}) != seed.model_dump(exclude={'version'}):
+                drift.append((current, seed))
+        return drift

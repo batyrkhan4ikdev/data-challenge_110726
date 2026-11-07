@@ -153,3 +153,19 @@ async def test_default_for_falls_back_to_chat(tmp_path: Path) -> None:
     s = ChecklistStore(tmp_path / 'checklists')
     await s.create(load('chat').model_copy(update={'channel_default': None}))
     assert (await s.default_for('voice call')).id == 'chat'
+
+
+async def test_seed_drift_catches_ui_edits_and_newer_copies(store: ChecklistStore) -> None:
+    channels = ['agent chat', 'voice call']
+    assert await store.seed_drift(DEFAULTS, channels) == []
+    # A weight edit in the editor makes v2 the chat default: drift.
+    await store.save(edit('c07', weight=10))
+    [(current, seed)] = await store.seed_drift(DEFAULTS, channels)
+    assert (current.id, current.version, seed.id) == ('chat', 2, 'chat')
+    # Saving the seed content back restores parity, even though the version is now 3.
+    await store.save(seed)
+    assert await store.seed_drift(DEFAULTS, channels) == []
+    # A newer checklist that claims the chat channel wins `default_for`, so it is drift too.
+    await store.create(load('chat').model_copy(update={'id': 'chat-copy', 'name': 'Копия'}))
+    [(current, _)] = await store.seed_drift(DEFAULTS, ['agent chat'])
+    assert current.id == 'chat-copy'

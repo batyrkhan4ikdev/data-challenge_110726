@@ -47,11 +47,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument(
         '--fallback-profile',
         default=os.environ.get('FALLBACK_PROFILE') or None,
-        help='re-run dialogs that failed with the primary profile on this one (default: env FALLBACK_PROFILE)',
+        help='comma-separated profiles, tried in order on dialogs that still fail (default: env FALLBACK_PROFILE)',
     )
     p.add_argument('--submit', choices=['dev', 'prod'], help='also write results/<set>/results.json for the organizers')
     p.add_argument('--team-name', default=os.environ.get('TEAM_NAME') or None,
                    help='team_name in results.json (default: env TEAM_NAME)')
+    p.add_argument('--reset-defaults', action='store_true',
+                   help='with --submit: if a default checklist was edited, save data/checklists/*.default.json '
+                        'back as its new version (history is kept) instead of aborting')
     return p.parse_args(argv)
 
 
@@ -162,6 +165,11 @@ async def main(argv: list[str] | None = None) -> int:
     except ValueError as e:
         print(f'ошибка: {e}', file=sys.stderr)
         return 2
+    fallbacks = [n.strip() for n in (args.fallback_profile or '').split(',') if n.strip() and n.strip() != profile.name]
+    unknown = [n for n in fallbacks if n not in profiles]
+    if unknown:
+        print(f'ошибка: неизвестные fallback-профили {unknown}', file=sys.stderr)
+        return 2
     rejects: dict[str, str] = {}
     try:
         records = await load_dataset(args.group_id, args.refresh, rejects=rejects)
@@ -174,6 +182,19 @@ async def main(argv: list[str] | None = None) -> int:
     store = Store(STORE)
     checklists = ChecklistStore(STORE / 'checklists')
     await checklists.seed_defaults(SEED)
+    if args.submit and args.checklist == 'auto':
+        drift = await checklists.seed_drift(SEED, {r.channel for r in records})
+        for current, seed in drift:
+            if args.reset_defaults:
+                restored = await checklists.save(seed)
+                print(f'restored {seed.id} from {SEED.as_posix()}/{seed.id}.default.json as v{restored.version} '
+                      f'(was {current.id} v{current.version})')
+            else:
+                print(f'ошибка: для «{seed.channel_default}» сейчас действует {current.id} v{current.version}, а он '
+                      f'отличается от {SEED.as_posix()}/{seed.id}.default.json. Сдача оценивается по чек-листу '
+                      f'организаторов: перезапустите с --reset-defaults.', file=sys.stderr)
+        if drift and not args.reset_defaults:
+            return 2
     runner = JobRunner(store, checklists, profiles)
     req.conversation_ids = [r.conversation_id for r in records]
     print(f'{args.group_id}: {len(records)} dialogs · profile {profile.name} ({profile.model}) · {mode} · k={k}')
@@ -191,18 +212,17 @@ async def main(argv: list[str] | None = None) -> int:
         evs = {ev.conversation_id: ev for ev in [await store.get_evaluation(i) for i in job.evaluation_ids]}
         failed = dict(job.failed)
 
-    if failed and args.fallback_profile:
-        if args.fallback_profile not in profiles:
-            print(f'ошибка: неизвестный fallback-профиль {args.fallback_profile!r}', file=sys.stderr)
-            return 2
-        print(f'{len(failed)} dialogs failed on {profile.name}; retrying on fallback {args.fallback_profile}')
-        retry_req = req.model_copy(update={'conversation_ids': list(failed), 'profile': args.fallback_profile})
+    for name in fallbacks:
+        if not failed:
+            break
+        print(f'{len(failed)} dialogs still failing; retrying on fallback {name}')
+        retry_req = req.model_copy(update={'conversation_ids': list(failed), 'profile': name})
         retry = await runner.wait((await runner.start(retry_req, {r.conversation_id: r for r in records})).id)
         for i in retry.evaluation_ids:
             ev = await store.get_evaluation(i)
             evs[ev.conversation_id] = ev
             failed.pop(ev.conversation_id, None)
-        failed.update(retry.failed)
+        failed.update({cid: f'{name}: {reason}' for cid, reason in retry.failed.items()})
     failed.update(rejects)  # unparseable records stay visible as errors; never dropped, never zeroed
     wall = time.perf_counter() - t0
 
