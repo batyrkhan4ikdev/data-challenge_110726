@@ -8,6 +8,7 @@ import niquests
 from pydantic import BaseModel
 
 from server.config import Profile
+from server.http import new_session
 
 TIMEOUT_S = 180
 RETRY_STATUSES = {429}
@@ -46,7 +47,7 @@ class OpenAIClient:
 
     def _get_session(self) -> Any:
         if self._session is None:
-            self._session = niquests.AsyncSession()
+            self._session = new_session()
         return self._session
 
     def _body(self, messages: list[dict], schema: dict, temperature: float, n: int) -> dict:
