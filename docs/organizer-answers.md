@@ -197,3 +197,6 @@ Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we alrea
 
 **#3370 → #3396/#3398** 00:53–00:54, Nikolay Borovinskiy: «Презентацию необязательно загружать в Git — её можно корректировать и после стоп-кода. Это касается только презентации, код решения после стоп-кода не меняем. Как уже говорил, достаточно пары слайдов. Лучшая презентация — живой продукт: покажите весь цикл работы вашего решения, от настройки чек-листа и получения диалогов до оценки, просмотра результатов, апелляции и ручной переоценки. … (макс 8-10 мин с вопросами)»
 → The deck shrinks to a few slides, and the demo follows their cycle in that order (`docs/demo.md`, `docs/pitch.md`). The slides can still change after stop-code; the code can't.
+
+**#3407 → #3410** 00:58, Nikolay Borovinskiy. Asked whether the product can be published on a cloud host instead of HTML in GitHub. Answer: «В гите должен быть код, в тч html, хелперы, апи и любые компоненты которые вы сами разработали. Публиковать для презентации можете в облако, доп балов за это не получите )»
+→ Already satisfied: `web/index.html`, `web/*.css`, `web/src/**/*.ts`, `server/` (API), `scripts/`, `bench/` and `config/` are tracked. `web/dist` is build output (`npm run build --prefix web`, README «Run»). There is no cloud deploy, and it earns no bonus.
