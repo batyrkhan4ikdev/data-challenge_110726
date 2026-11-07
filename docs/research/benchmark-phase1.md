@@ -19,6 +19,10 @@ These numbers are proxies. Phase 2 against the 24 gold dialogs decides the defau
 | aigw-sonnet · single | 12/12 | 1.00 | 6.9 | 0.847 | n/a | 78.7 | 0.26 |
 | aigw-luna · single | 12/12 | 1.00 | 20.6 | 0.876 | 0.802 | 84.6 | 0.23 |
 | aigw-alemllm · single | 9/12 | 0.89 | 7.4 | 0.631 | 0.648 | 70.6 | 0.18 |
+| h200-glimmer · single | 12/12 | 1.00 | 13.5 | 0.839 | 0.785 | 83.5 | — |
+| h200-glimmer · per_criterion | 12/12 | 1.00 | 48.0 | 0.773 | 0.777 | 66.0 | — |
+
+The glimmer runs were added at 16:36. The vs-consensus values above were computed without them. With glimmer in the consensus the order stays the same: gemma per_criterion 0.917, gemma single 0.889, sonnet 0.868, luna 0.864, glimmer single 0.839.
 
 Cost per evaluation:
 - **Self-hosted:** about $0.001, computed as H200 $5.35/h × GPU-seconds ÷ concurrency.
