@@ -126,6 +126,7 @@ Criterion columns are matches out of 60. Summaries: gemma in `bench/results/2026
 | baseline (C8 rule only) | 47 | 51 | 49 | 0.900 | 6.12 | — |
 | **C7: a short recap of the result or next step plus a goodbye is «Да»; courtesy alone («Рад был помочь») is not** | **56** | 52 | 50 | **0.918** | **4.83** | **yes**: 9 fixed, 0 broken |
 | C6/C4: «0 only if the dialog is incoherent / no answer at all», partial answers get 5–15 | 55 | 52 | 48 | 0.916 | 4.90 | **no**: 3 fixed, 5 broken, c06 drifted lenient (4→10 ×3); reverted |
+| **C3 scope: identification only before disclosing this client's data or a protected action; otherwise N/A, even if the question is about the account** (20:44, on top of C7) | 55 | 52 | 50 | **0.930** | 4.87 | **yes**: c03 57 → **60/60**. It fixed all 3 misses where the labelers were unanimous (p1-kz-012, p1-ru-002, p1-ru-018); c08 stayed 60/60, and the other flips are c06 noise |
 
 **Caveats:**
 - **These numbers are in-sample.** The same 65 DEV dialogs shaped the C7 rule and scored it, and the gold is LLM-made. Two of the labelers (Opus, Astra) belong to the same families as our cloud fallbacks. Don't read 0.918 as the expected accuracy on the control set. What carries over is the ranking, and that the C7 rule is general: it fixed 9 dialogs across RU and KZ and broke none.

@@ -272,3 +272,52 @@ async def test_fake_client_output_parses():
         items, errors = parse_items(c.text, P1, CHECKLIST, ALL_IDS)
         assert errors == {}
         assert list(items) == ALL_IDS
+
+
+def ensemble_profiles(tmp_path, *members: str):
+    from server.config import load_profiles
+    path = tmp_path / 'profiles.toml'
+    path.write_text(
+        '[profiles.f1]\nprovider = "fake"\nmodel = "m1"\n'
+        '[profiles.f2]\nprovider = "fake"\nmodel = "m2"\nhosting = "external_api"\n'
+        '[profiles.dead]\nprovider = "openai"\nbase_url_env = "CQA_TEST_UNSET_URL"\nmodel = "dead"\n'
+        f'[profiles.ens]\nprovider = "ensemble"\nmembers = {list(members)!r}\n'.replace("'", '"'),
+        encoding='utf-8',
+    )
+    return load_profiles(path)
+
+
+async def test_ensemble_votes_per_criterion(tmp_path):
+    profiles = ensemble_profiles(tmp_path, 'f1:per_criterion', 'f1:single', 'f2:single')
+    ens = profiles['ens']
+    assert ens.model == 'm1, m2' and ens.hosting == 'hybrid'
+    ev, raw = await evaluate(P1, CHECKLIST, profile=ens, mode='single')
+    by_id = {c.id: c for c in CHECKLIST.criteria}
+    for it in ev.items:
+        assert sum(it.votes.values()) == 3
+        if by_id[it.criterion_id].answer_type == 'scale' and 'na' not in it.votes:
+            ladder = sorted(int(v) for v, n in it.votes.items() for _ in range(n))
+            assert int(it.verdict) == ladder[1]  # median of three
+        else:
+            assert it.votes[it.verdict] == max(it.votes.values())
+    assert ev.score.total == compute_score(CHECKLIST, {i.criterion_id: i.verdict for i in ev.items}).total
+    assert ev.usage.calls == len(raw) == 8 + 1 + 1 and {r.evaluation_id for r in raw} == {ev.id}
+    assert ev.profile == 'ens' and all(it.warnings == [] for it in ev.items)
+
+
+async def test_ensemble_drops_a_dead_member_and_fails_when_all_are_dead(tmp_path):
+    ens = ensemble_profiles(tmp_path, 'dead:single', 'f1:single', 'f2:single')['ens']
+    ev, _ = await evaluate(P1, CHECKLIST, profile=ens, mode='single')
+    assert all(sum(it.votes.values()) == 2 and 'ансамбль без dead' in it.warnings for it in ev.items)
+
+    gone = ensemble_profiles(tmp_path, 'dead:single', 'dead:per_criterion')['ens']
+    with pytest.raises(EvaluationError, match='ни один участник'):
+        await evaluate(P1, CHECKLIST, profile=gone, mode='single')
+
+
+def test_ensemble_config_errors(tmp_path):
+    from server.config import ConfigError
+    with pytest.raises(ConfigError, match='nope'):
+        ensemble_profiles(tmp_path, 'nope:single', 'f1:single')
+    with pytest.raises(ConfigError, match='needs a mode'):
+        ensemble_profiles(tmp_path, 'f1', 'f2:single')

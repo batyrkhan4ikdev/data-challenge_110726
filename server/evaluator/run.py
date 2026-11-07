@@ -36,6 +36,8 @@ async def evaluate(
 ) -> tuple[Evaluation, list[RawCall]]:
     if not record.transcript:
         raise EvaluationError('пустой транскрипт')
+    if profile.provider == 'ensemble':
+        return await _evaluate_ensemble(record, checklist, profile=profile, mode=mode, k=k, group_id=group_id)
     llm = llm or make_client(profile)
     temperature = 0.0 if k == 1 else 0.7
     evaluation_id = f'{record.conversation_id}-{uuid4().hex[:8]}'
@@ -130,6 +132,60 @@ async def evaluate(
             prompt_tokens=sum(c.prompt_tokens for c in completions),
             completion_tokens=sum(c.completion_tokens for c in completions),
             calls=len(raw_calls),
+            seconds=time.perf_counter() - t0,
+        ),
+    )
+    return evaluation, raw_calls
+
+
+async def _evaluate_ensemble(
+    record: Record, checklist: Checklist, *, profile: Profile, mode: Mode, k: int, group_id: str
+) -> tuple[Evaluation, list[RawCall]]:
+    """Every member scores the dialog in its own mode; per criterion the majority wins, scales take the median.
+
+    Ties go to the first member, which also supplies explanation and evidence whenever it agrees with the
+    result. A member that fails is dropped with a warning on every item; if all fail, the dialog fails.
+    """
+    members = profile.member_profiles()
+    t0 = time.perf_counter()
+    results = await asyncio.gather(
+        *(evaluate(record, checklist, profile=p, mode=m, k=k, group_id=group_id) for p, m in members),
+        return_exceptions=True,
+    )
+    done: list[tuple[Evaluation, list[RawCall]]] = []
+    lost: list[str] = []
+    for (p, _), res in zip(members, results):
+        if isinstance(res, BaseException):
+            lost.append(f'{p.name}: {type(res).__name__}: {str(res)[:120]}')
+        else:
+            done.append(res)
+    if not done:
+        raise EvaluationError('ни один участник ансамбля не ответил: ' + ' | '.join(lost))
+
+    all_ids = [c.id for c in checklist.criteria]
+    merged = aggregate([{it.criterion_id: it for it in ev.items} for ev, _ in done], checklist, all_ids)
+    warning = [f'ансамбль без {entry.split(":")[0]}' for entry in lost]
+    items = [merged[cid].model_copy(update={'warnings': [*merged[cid].warnings, *warning]}) for cid in all_ids]
+
+    evaluation_id = f'{record.conversation_id}-{uuid4().hex[:8]}'
+    raw_calls = [rc.model_copy(update={'evaluation_id': evaluation_id}) for _, calls in done for rc in calls]
+    evaluation = Evaluation(
+        id=evaluation_id,
+        conversation_id=record.conversation_id,
+        group_id=group_id,
+        checklist_id=checklist.id,
+        checklist_version=checklist.version,
+        profile=profile.name,
+        model=profile.model,
+        mode=mode,
+        k=k,
+        created_at=datetime.now(UTC),
+        items=items,
+        score=compute_score(checklist, {it.criterion_id: it.verdict for it in items}),
+        usage=Usage(
+            prompt_tokens=sum(ev.usage.prompt_tokens for ev, _ in done),
+            completion_tokens=sum(ev.usage.completion_tokens for ev, _ in done),
+            calls=sum(ev.usage.calls for ev, _ in done),
             seconds=time.perf_counter() - t0,
         ),
     )

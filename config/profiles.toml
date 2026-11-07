@@ -124,3 +124,78 @@ structured = "json_schema"
 max_concurrency = 8
 max_tokens = 4096
 hosting = "external_api"
+
+# Open-weight models on Alem.Cloud / the dmai fleet, reached through aigw (2026-11-07 probe: all honour json_schema).
+# Thinking is switched off where the template allows it; GLM-5.3 ignores enable_thinking=false, so it gets a bigger budget.
+[profiles.alem-deepseek]
+provider = "openai"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "alemai/deepseek-ai/DeepSeek-V4.1-Flash"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 4096
+extra_body = { chat_template_kwargs = { enable_thinking = false } }
+hosting = "external_api"
+
+[profiles.alem-kimi]
+provider = "openai"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "alemai/moonshotai/Kimi-K2.6"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 4096
+extra_body = { chat_template_kwargs = { enable_thinking = false } }
+hosting = "external_api"
+
+[profiles.alem-glm]
+provider = "openai"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "alemai/zai-org/GLM-5.3"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 16384
+hosting = "external_api"
+
+[profiles.alem-qwen27b]
+provider = "openai"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "alemai/Qwen/Qwen3.8-27B"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 4096
+extra_body = { chat_template_kwargs = { enable_thinking = false } }
+hosting = "external_api"
+
+[profiles.aigw-flashnext]
+provider = "openai"
+base_url_env = "AIGW_BASE_URL"
+api_key_env = "AIGW_API_KEY"
+model = "qwen3.8-flash-next"
+structured = "json_schema"
+max_concurrency = 8
+max_tokens = 4096
+extra_body = { chat_template_kwargs = { enable_thinking = false } }
+hosting = "external_api"
+
+# The same Qwen3.8-Flash-Next FP8 MoE self-hosted on 4×H200 (TP4, tunnel hk-big1); thinking off per request.
+[profiles.h200-flashnext]
+provider = "openai"
+base_url_env = "H200_BIG1_BASE_URL"
+api_key_env = "H200_API_KEY"
+model = "qwen3.8-flash-next"
+supports_n = true
+structured = "json_schema"
+max_concurrency = 32
+max_tokens = 4096
+extra_body = { chat_template_kwargs = { enable_thinking = false } }
+cost = { kind = "gpu", usd_per_hour = 21.40, concurrency = 32 }
+
+# Per-criterion vote of three judges (majority; scales take the median; gemma breaks ties and leads the evidence).
+# On the 65-dialog gold: 0.940 against 0.910–0.930 for gemma alone, stable across gemma runs.
+[profiles.ensemble]
+provider = "ensemble"
+members = ["h200-gemma:per_criterion", "alem-qwen27b:single", "aigw-flashnext:single"]
