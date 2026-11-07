@@ -41,27 +41,43 @@ export type Explanation = string;
 export type NaReason = string | null;
 export type Verdict = string;
 export type Warnings = string[];
+export type Available = boolean;
+export type Hosting = "local" | "external_api";
+export type Id2 = string;
+export type Label = string;
+export type Note = string | null;
+export type CerVsApi = number | null;
+export type CerVsFreedomspeech = number | null;
+export type Diarized = boolean | null;
+export type GoldHits = number | null;
+export type GoldTotal = number | null;
+export type Label1 = string | null;
+export type ManualScore = number | null;
+export type Notes = string | null;
+export type SecondsPerMin = number | null;
+export type SpeakerTurns = number | null;
 export type ChecklistId = string | null;
 export type ConversationIds = string[];
 export type GroupId = string;
 export type K = number | null;
 export type Mode = ("single" | "per_criterion") | null;
 export type Profile = string | null;
+export type TranscriptSource = string | null;
 export type Count = number;
 export type Key = string;
 export type MeanTotal = number | null;
 export type ChannelDefault = ("agent chat" | "voice call") | null;
 export type Criteria = Criterion[];
-export type Id2 = string;
-export type Name = string;
-export type Notes = string;
 export type Id3 = string;
+export type Name = string;
+export type Notes1 = string;
+export type Id4 = string;
 export type Title1 = string;
 export type Sections = Section[];
 export type Source = string;
 export type Version = number;
 export type ChannelDefault1 = ("agent chat" | "voice call") | null;
-export type Id4 = string;
+export type Id5 = string;
 export type Name1 = string;
 export type Version1 = number;
 export type Channel = "agent chat" | "voice call";
@@ -72,7 +88,7 @@ export type ChecklistVersion = number;
 export type CreatedAt1 = string;
 export type FinalTotal = number | null;
 export type GrossError = boolean;
-export type Id5 = string;
+export type Id6 = string;
 export type Total = number | null;
 export type Turns = number;
 export type Applicable = number;
@@ -82,6 +98,8 @@ export type Na = number;
 export type No = number;
 export type Title2 = string;
 export type Yes = number;
+export type GroupId1 = string;
+export type Text = string;
 export type Action1 = "confirm" | "change";
 export type NewVerdict1 = string | null;
 export type Reason1 = string;
@@ -105,7 +123,7 @@ export type Sections1 = SectionScore[];
 export type Total2 = number | null;
 export type Idx = number;
 export type OffsetS = number | null;
-export type Text = string;
+export type Text1 = string;
 export type DurationS = number | null;
 export type EscalationIdx = number | null;
 export type Events = DialogEvent[];
@@ -124,13 +142,14 @@ export type ChecklistId2 = string;
 export type ChecklistVersion1 = number;
 export type ConversationId2 = string;
 export type CreatedAt2 = string;
-export type GroupId1 = string;
-export type Id6 = string;
+export type GroupId2 = string;
+export type Id7 = string;
 export type Items2 = Item[];
 export type K1 = number;
 export type Mode1 = "single" | "per_criterion";
 export type Model = string;
 export type Profile1 = string;
+export type TranscriptSource1 = string;
 export type Calls = number;
 export type CompletionTokens = number;
 export type PromptTokens = number;
@@ -143,14 +162,14 @@ export type Dialogs = number;
 export type Evaluated = number;
 export type GrossErrorCount = number;
 export type GrossErrorIds = string[];
-export type GroupId2 = string;
+export type GroupId3 = string;
 export type Count2 = number;
-export type Label = string;
+export type Label2 = string;
 export type Histogram = HistogramBin[];
 export type MeanTotal1 = number | null;
 export type Done = number;
 export type EvaluationIds = string[];
-export type Id7 = string;
+export type Id8 = string;
 export type State = "running" | "finished";
 export type Total3 = number;
 export type CriterionIds = string[];
@@ -169,9 +188,17 @@ export type Language1 = "RU" | "KZ" | "EN";
 export type Idx1 = number;
 export type OffsetS1 = number | null;
 export type Speaker = "client" | "operator" | "bot" | "system";
-export type Text1 = string;
+export type Text2 = string;
 export type Timestamp = string;
 export type Transcript = Turn[];
+export type GroupId4 = string;
+export type Provider = string;
+export type Available1 = boolean;
+export type CreatedAt3 = string | null;
+export type Kind1 = "api" | "asr" | "custom";
+export type Label3 = string;
+export type ProviderHosting = string | null;
+export type Source1 = string;
 
 export interface Schema {
   [k: string]: unknown;
@@ -277,6 +304,40 @@ export interface Votes {
   [k: string]: number;
 }
 /**
+ * A speech-to-text provider from `config/asr.toml`, as offered in the call card (`GET /api/asr/providers`).
+ *
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "AsrProviderInfo".
+ */
+export interface AsrProviderInfo {
+  available: Available;
+  hosting: Hosting;
+  id: Id2;
+  label: Label;
+  note?: Note;
+  quality?: AsrQuality | null;
+  [k: string]: unknown;
+}
+/**
+ * One provider's benchmark row from `data/asr/quality.json`; every field may be absent.
+ *
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "AsrQuality".
+ */
+export interface AsrQuality {
+  cer_vs_api?: CerVsApi;
+  cer_vs_freedomspeech?: CerVsFreedomspeech;
+  diarized?: Diarized;
+  gold_hits?: GoldHits;
+  gold_total?: GoldTotal;
+  label?: Label1;
+  manual_score?: ManualScore;
+  notes?: Notes;
+  seconds_per_min?: SecondsPerMin;
+  speaker_turns?: SpeakerTurns;
+  [k: string]: unknown;
+}
+/**
  * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "BatchRequest".
  */
@@ -287,6 +348,7 @@ export interface BatchRequest {
   k?: K;
   mode?: Mode;
   profile?: Profile;
+  transcript_source?: TranscriptSource;
   [k: string]: unknown;
 }
 /**
@@ -306,9 +368,9 @@ export interface BreakdownRow {
 export interface Checklist {
   channel_default: ChannelDefault;
   criteria: Criteria;
-  id: Id2;
+  id: Id3;
   name: Name;
-  notes: Notes;
+  notes: Notes1;
   sections: Sections;
   source: Source;
   version: Version;
@@ -319,7 +381,7 @@ export interface Checklist {
  * via the `definition` "Section".
  */
 export interface Section {
-  id: Id3;
+  id: Id4;
   title: Title1;
   [k: string]: unknown;
 }
@@ -329,7 +391,7 @@ export interface Section {
  */
 export interface ChecklistSummary {
   channel_default: ChannelDefault1;
-  id: Id4;
+  id: Id5;
   name: Name1;
   version: Version1;
   [k: string]: unknown;
@@ -356,7 +418,7 @@ export interface EvaluationSummary {
   created_at: CreatedAt1;
   final_total: FinalTotal;
   gross_error: GrossError;
-  id: Id5;
+  id: Id6;
   total: Total;
   [k: string]: unknown;
 }
@@ -372,6 +434,15 @@ export interface CriterionStat {
   no: No;
   title: Title2;
   yes: Yes;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "CustomTranscriptRequest".
+ */
+export interface CustomTranscriptRequest {
+  group_id: GroupId1;
+  text: Text;
   [k: string]: unknown;
 }
 /**
@@ -455,7 +526,7 @@ export interface SectionScore {
 export interface DialogEvent {
   idx: Idx;
   offset_s?: OffsetS;
-  text: Text;
+  text: Text1;
   [k: string]: unknown;
 }
 /**
@@ -499,14 +570,15 @@ export interface Evaluation {
   checklist_version: ChecklistVersion1;
   conversation_id: ConversationId2;
   created_at: CreatedAt2;
-  group_id: GroupId1;
-  id: Id6;
+  group_id: GroupId2;
+  id: Id7;
   items: Items2;
   k: K1;
   mode: Mode1;
   model: Model;
   profile: Profile1;
   score: Score;
+  transcript_source?: TranscriptSource1;
   usage: Usage;
   [k: string]: unknown;
 }
@@ -544,7 +616,7 @@ export interface GroupAnalytics {
   evaluated: Evaluated;
   gross_error_count: GrossErrorCount;
   gross_error_ids: GrossErrorIds;
-  group_id: GroupId2;
+  group_id: GroupId3;
   histogram: Histogram;
   mean_total: MeanTotal1;
   [k: string]: unknown;
@@ -555,7 +627,7 @@ export interface GroupAnalytics {
  */
 export interface HistogramBin {
   count: Count2;
-  label: Label;
+  label: Label2;
   [k: string]: unknown;
 }
 /**
@@ -566,7 +638,7 @@ export interface Job {
   done: Done;
   evaluation_ids: EvaluationIds;
   failed: Failed;
-  id: Id7;
+  id: Id8;
   state: State;
   total: Total3;
   [k: string]: unknown;
@@ -608,7 +680,30 @@ export interface Turn {
   idx: Idx1;
   offset_s?: OffsetS1;
   speaker: Speaker;
-  text: Text1;
+  text: Text2;
   timestamp: Timestamp;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "TranscribeRequest".
+ */
+export interface TranscribeRequest {
+  group_id: GroupId4;
+  provider: Provider;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "TranscriptSourceInfo".
+ */
+export interface TranscriptSourceInfo {
+  available: Available1;
+  created_at?: CreatedAt3;
+  kind: Kind1;
+  label: Label3;
+  provider_hosting?: ProviderHosting;
+  quality?: AsrQuality | null;
+  source: Source1;
   [k: string]: unknown;
 }

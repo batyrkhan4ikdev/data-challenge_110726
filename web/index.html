@@ -9,9 +9,15 @@
   </head>
   <body>
     <div id="app"></div>
+    <!-- web/dist is build output (gitignored): a fresh clone must say how to build instead of showing a blank page. -->
     <script type="module">
-      import { mountCqa } from './dist/main.js';
-      mountCqa(document.getElementById('app'), { apiBase: '/api' });
+      const root = document.getElementById('app');
+      import('./dist/main.js').then(
+        ({ mountCqa }) => mountCqa(root, { apiBase: '/api' }),
+        () => {
+          root.innerHTML = '<p style="font:16px system-ui;padding:24px">Интерфейс не собран. Выполните <code>npm ci --prefix web &amp;&amp; npm run build --prefix web</code> и обновите страницу.</p>';
+        },
+      );
     </script>
   </body>
 </html>

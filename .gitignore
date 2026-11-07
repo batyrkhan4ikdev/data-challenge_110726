@@ -11,3 +11,7 @@ bench/results/**
 !bench/results/**/
 !bench/results/**/summary.md
 *.egg-info/
+# Call audio and raw ASR output contain unmasked personal data: never commit
+data/audio/
+data/asr/raw/
+data/asr/*.log

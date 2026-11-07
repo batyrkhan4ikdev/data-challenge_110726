@@ -8,8 +8,10 @@ from server.config import Profile
 from server.evaluator import evaluate
 from server.models import BatchRequest, Checklist, Job, Mode, Record
 from server.store import NotFound, Store
+from server.transcripts import API, TranscriptStore
 
 NOT_IN_GROUP = 'диалог не найден в группе'
+NO_TRANSCRIPT = 'транскрипт «{source}» для этого диалога не найден: распознайте звонок или вставьте текст'
 
 
 def resolve_settings(req: BatchRequest, profiles: dict[str, Profile]) -> tuple[Profile, Mode, int]:
@@ -47,11 +49,17 @@ class JobRunner:
     """
 
     def __init__(
-        self, store: Store, checklists: ChecklistStore, profiles: dict[str, Profile], fallbacks: list[str] | None = None
+        self,
+        store: Store,
+        checklists: ChecklistStore,
+        profiles: dict[str, Profile],
+        fallbacks: list[str] | None = None,
+        transcripts: TranscriptStore | None = None,
     ) -> None:
         self.store = store
         self.checklists = checklists
         self.profiles = profiles
+        self.transcripts = transcripts
         self.fallbacks = fallback_names(','.join(fallbacks or []), profiles)
         self._sem = asyncio.Semaphore(int(os.environ.get('EVAL_CONCURRENCY', 4)))
         self._jobs: dict[str, Job] = {}
@@ -64,6 +72,7 @@ class JobRunner:
         Ids missing from `records` are marked failed right away.
         """
         profile, mode, k = resolve_settings(req, self.profiles)
+        source = req.transcript_source or API
         ids = list(dict.fromkeys(req.conversation_ids))
         explicit = await self.checklists.get(req.checklist_id) if req.checklist_id else None
         by_channel: dict[str, Checklist] = {}
@@ -77,6 +86,17 @@ class JobRunner:
                 job.failed[cid] = NOT_IN_GROUP
                 job.done += 1
                 continue
+            if source != API:
+                try:
+                    record = await self.transcripts.load(cid, source) if self.transcripts else None
+                except Exception as e:
+                    job.failed[cid] = f'транскрипт «{source}» не прочитан: {type(e).__name__}'
+                    job.done += 1
+                    continue
+                if record is None:
+                    job.failed[cid] = NO_TRANSCRIPT.format(source=source)
+                    job.done += 1
+                    continue
             checklist = explicit
             if checklist is None:
                 if record.channel not in by_channel:
@@ -84,11 +104,18 @@ class JobRunner:
                 checklist = by_channel[record.channel]
             plan.append((record, checklist))
         self._jobs[job.id] = job
-        self._tasks[job.id] = asyncio.create_task(self._run(job, plan, req.group_id, profile, mode, k))
+        self._tasks[job.id] = asyncio.create_task(self._run(job, plan, req.group_id, profile, mode, k, source))
         return job
 
     async def _run(
-        self, job: Job, plan: list[tuple[Record, Checklist]], group_id: str, profile: Profile, mode: Mode, k: int
+        self,
+        job: Job,
+        plan: list[tuple[Record, Checklist]],
+        group_id: str,
+        profile: Profile,
+        mode: Mode,
+        k: int,
+        source: str,
     ) -> None:
         chain = [profile, *(self.profiles[n] for n in self.fallbacks if n != profile.name)]
 
@@ -99,6 +126,7 @@ class JobRunner:
                     for p in chain:
                         try:
                             ev, raw = await evaluate(record, checklist, profile=p, mode=mode, k=k, group_id=group_id)
+                            ev.transcript_source = source
                             await self.store.save_evaluation(ev, raw)
                         except Exception as e:
                             # A failed save is a failed attempt too: the dialog must end up in `failed`, never vanish.

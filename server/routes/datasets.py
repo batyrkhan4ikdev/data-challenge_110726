@@ -5,7 +5,7 @@ from server.analytics import group_analytics
 from server.facts import dialog_facts
 from server.models import ConversationSummary, DialogFacts, GroupAnalytics, Record
 from server.routes import Svc
-from server.store import NotFound
+from server.transcripts import API
 
 
 class DatasetsController(Controller):
@@ -34,15 +34,13 @@ class DatasetsController(Controller):
         return await group_analytics(svc, group_id)
 
     @get('/{group_id:str}/conversations/{cid:str}')
-    async def conversation(self, svc: Svc, group_id: FromPath[str], cid: FromPath[str]) -> Record:
-        for r in await svc.records(group_id):
-            if r.conversation_id == cid:
-                return r
-        raise NotFound(f'диалог {cid} не найден в группе {group_id}')
+    async def conversation(
+        self, svc: Svc, group_id: FromPath[str], cid: FromPath[str], source: FromQuery[str] = API
+    ) -> Record:
+        return await svc.record_for(group_id, cid, source)
 
     @get('/{group_id:str}/conversations/{cid:str}/facts')
-    async def facts(self, svc: Svc, group_id: FromPath[str], cid: FromPath[str]) -> DialogFacts:
-        for r in await svc.records(group_id):
-            if r.conversation_id == cid:
-                return dialog_facts(r)
-        raise NotFound(f'диалог {cid} не найден в группе {group_id}')
+    async def facts(
+        self, svc: Svc, group_id: FromPath[str], cid: FromPath[str], source: FromQuery[str] = API
+    ) -> DialogFacts:
+        return dialog_facts(await svc.record_for(group_id, cid, source))

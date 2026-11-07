@@ -1,0 +1,110 @@
+{
+ "aigw-whisper": {
+  "label": "Whisper large-v3 (aigw)",
+  "cer_vs_freedomspeech": 0.2968,
+  "cer_vs_api": 0.3424,
+  "speaker_turns": 22.4,
+  "seconds_per_min": 0.42,
+  "diarized": false,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 25/40. Средние по 5 звонкам.",
+  "gold_hits": 25,
+  "gold_total": 40
+ },
+ "kuspeech": {
+  "label": "KuSpeech multilingual",
+  "cer_vs_freedomspeech": 0.1784,
+  "cer_vs_api": 0.2571,
+  "speaker_turns": 26.4,
+  "seconds_per_min": 0.44,
+  "diarized": false,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 29/40. Средние по 5 звонкам.",
+  "gold_hits": 29,
+  "gold_total": 40
+ },
+ "alem-whisper-turbo": {
+  "label": "Whisper large-v3 turbo (Alem.Cloud)",
+  "cer_vs_freedomspeech": 0.3552,
+  "cer_vs_api": 0.43,
+  "speaker_turns": 16.4,
+  "seconds_per_min": 2.68,
+  "diarized": false,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 27/40. Средние по 5 звонкам.",
+  "gold_hits": 27,
+  "gold_total": 40
+ },
+ "alem-whisper": {
+  "label": "Whisper large-v3 (Alem.Cloud)",
+  "cer_vs_freedomspeech": 0.1773,
+  "cer_vs_api": 0.23,
+  "speaker_turns": 31.6,
+  "seconds_per_min": 0.68,
+  "diarized": false,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 28/40. Средние по 5 звонкам.",
+  "gold_hits": 28,
+  "gold_total": 40
+ },
+ "freedomspeech": {
+  "label": "FreedomSpeech",
+  "cer_vs_freedomspeech": null,
+  "cer_vs_api": 0.1728,
+  "speaker_turns": 38.8,
+  "seconds_per_min": 1.99,
+  "diarized": true,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 27/40. Средние по 5 звонкам.",
+  "gold_hits": 27,
+  "gold_total": 40
+ },
+ "or-gemini-transcribe": {
+  "label": "Gemini 3.5 Transcribe (OpenRouter)",
+  "cer_vs_freedomspeech": 0.1422,
+  "cer_vs_api": 0.1919,
+  "speaker_turns": 39.0,
+  "seconds_per_min": 11.57,
+  "diarized": true,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 28/40. Средние по 5 звонкам.",
+  "gold_hits": 28,
+  "gold_total": 40
+ },
+ "h200-whisperx": {
+  "label": "WhisperX large-v3 + pyannote (H200)",
+  "cer_vs_freedomspeech": 0.2551,
+  "cer_vs_api": 0.3012,
+  "speaker_turns": 11.4,
+  "seconds_per_min": 7.74,
+  "diarized": true,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 25/40. Средние по 5 звонкам.",
+  "gold_hits": 25,
+  "gold_total": 40
+ },
+ "h200-t-one": {
+  "label": "T-one + pyannote (H200)",
+  "cer_vs_freedomspeech": 0.1392,
+  "cer_vs_api": 0.1725,
+  "speaker_turns": 25.0,
+  "seconds_per_min": 4.4,
+  "diarized": true,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 29/40. Средние по 5 звонкам.",
+  "gold_hits": 29,
+  "gold_total": 40
+ },
+ "h200-gigaam-v3": {
+  "label": "GigaAM-v3 + pyannote (H200)",
+  "cer_vs_freedomspeech": 0.1259,
+  "cer_vs_api": 0.1805,
+  "speaker_turns": 30.4,
+  "seconds_per_min": 2.9,
+  "diarized": true,
+  "manual_score": null,
+  "notes": "Автоматически: согласие с эталонами, не точность (эталона нет). Gold-попадания оценщика: 27/40. Средние по 5 звонкам.",
+  "gold_hits": 27,
+  "gold_total": 40
+ }
+}
