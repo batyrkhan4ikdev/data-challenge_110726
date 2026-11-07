@@ -88,12 +88,19 @@ async function auditFrame(frame, profile, width) {
   assert.equal(audit.scrollWidth, width, `scrollWidth ${audit.scrollWidth} != ${width}`);
   assert.equal(audit.listeners, 1, 'exactly one hashchange listener');
   assert(audit.logoCount > 0 && audit.logo, 'logo loaded');
-  assert(audit.fonts.every((f) => f.status === 'loaded'), 'all declared fonts loaded');
+  // strict-no-api has font-src 'self': the embedded data: font must be refused and the fallback stack used, nothing else changes.
+  if (profile === 'strict-no-api') assert(audit.fonts.length > 0 && audit.fonts.every((f) => f.status === 'error'), 'embedded font refused by font-src, fallback in use');
+  else assert(audit.fonts.every((f) => f.status === 'loaded'), 'all declared fonts loaded');
   assert(audit.fetches.length > 0 && audit.fetches.every((f) => f.url.startsWith(`${api}/api/`)), 'API fetches cross-origin to :8806');
   if (profile === 'strict-no-api') {
-    assert(audit.violations.length > 0, 'connect-src blocked API');
-    assert(audit.violations.every((v) => v.directive === 'connect-src' && new URL(v.blocked).origin === api), 'only expected connect-src/API violations');
-    assert.deepEqual([...new Set(audit.violations.map((v) => v.blocked))].sort(), [...new Set(audit.fetches.map((f) => f.url))].sort(), 'every attempted API URL blocked, no unexpected violations');
+    const fontBlocks = audit.violations.filter((v) => v.directive === 'font-src');
+    const connectBlocks = audit.violations.filter((v) => v.directive === 'connect-src');
+    assert.equal(fontBlocks.length, 1, 'exactly one font-src violation (the embedded data: font)');
+    assert.equal(fontBlocks[0].blocked, 'data', 'font-src violation is for data:');
+    assert(connectBlocks.length > 0, 'connect-src blocked API');
+    assert.equal(audit.violations.length, fontBlocks.length + connectBlocks.length, 'no violations besides font-src data: and connect-src');
+    assert(connectBlocks.every((v) => new URL(v.blocked).origin === api), 'connect-src violations are only for the API origin');
+    assert.deepEqual([...new Set(connectBlocks.map((v) => v.blocked))].sort(), [...new Set(audit.fetches.map((f) => f.url))].sort(), 'every attempted API URL blocked, no unexpected violations');
     assert(audit.hint.includes('connect-src') && audit.hint.includes(api), 'readable CSP hint names directive and origin');
   } else {
     assert.deepEqual(audit.violations, [], 'no CSP violations');
@@ -104,7 +111,7 @@ async function auditFrame(frame, profile, width) {
 function problemChecks(problems, profile) {
   assert(!problems.some((p) => /CORS|Access-Control-Allow-Origin/i.test(p)), `No CORS errors: ${problems.join('\n')}`);
   if (profile === 'strict-no-api') {
-    assert(problems.every((p) => p.includes(api) && (p.includes('connect-src') || (p.startsWith('Fetch API cannot load') && p.includes('Content Security Policy')))), `Unexpected console messages: ${problems.join('\n')}`);
+    assert(problems.every((p) => (p.includes(api) && (p.includes('connect-src') || (p.startsWith('Fetch API cannot load') && p.includes('Content Security Policy')))) || p.startsWith("Loading the font 'data:")), `Unexpected console messages: ${problems.join('\n')}`);
   } else {
     assert.deepEqual(problems, [], 'clean iframe console');
   }

@@ -9,7 +9,7 @@
   status.style.minHeight = '0';
   let unmount;
   let generation = 0;
-  let shownPolicy = false;
+  const blocked = new Set();
 
   // Bootstrap messages cannot depend on a module that CSP may prevent loading.
   function banner(target, message) {
@@ -23,14 +23,16 @@
     target.hidden = false;
   }
 
+  // font-src is not reported: the embedded font is optional and the fallback stack takes over. connect-src (API) and
+  // media-src (call audio) break features, so every distinct blocked origin is listed in one banner.
   function onPolicy(event) {
     const directive = event.effectiveDirective;
-    if (shownPolicy || !['connect-src', 'font-src', 'media-src'].includes(directive)) return;
-    shownPolicy = true;
+    if (!['connect-src', 'media-src'].includes(directive)) return;
     let origin = event.blockedURI;
-    status.style.display = 'block';
     try { origin = new URL(origin).origin; } catch { /* CSP also reports data: and inline. */ }
-    banner(status, `Политика CSP блокирует ${directive} для ${origin}. Администратору Dynamics 365 нужно разрешить этот источник в ${directive}.`);
+    blocked.add(`${directive} ${origin}`);
+    status.style.display = 'block';
+    banner(status, `Политика CSP блокирует: ${[...blocked].join('; ')}. Администратору Dynamics 365 нужно разрешить эти источники в соответствующих директивах.`);
   }
 
   function stop() {
@@ -43,7 +45,7 @@
   async function start() {
     stop();
     const current = generation;
-    shownPolicy = false;
+    blocked.clear();
     status.hidden = true;
     status.replaceChildren();
     status.style.display = 'none';
