@@ -70,7 +70,10 @@ class TranscriptsController(Controller):
         judge, _, _ = resolve_settings(BatchRequest(group_id=data.group_id, conversation_ids=[cid]), svc.profiles)
         try:
             raw_audio = await audio.fetch_call_audio(base)
-            result = await providers.transcribe(provider, raw_audio, f'{cid}.mp3')
+            # Only a KZ label forces a language. Forcing `ru` on a mislabelled Kazakh call (record `1234`)
+            # would make the output look Russian and silence the Kazakh re-run, so RU/EN auto-detect instead.
+            hint = 'kk' if (base.language or '').upper() == 'KZ' else None
+            result = await providers.transcribe(provider, raw_audio, f'{cid}.mp3', language=hint)
             record = await to_record.asr_to_record(result, base, judge)
         except AsrError as e:
             message = str(e) or type(e).__name__

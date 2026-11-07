@@ -52,6 +52,9 @@ class AsrProvider(BaseModel):
     timeout_s: float = TIMEOUT_S
     attempts: int = ATTEMPTS
     max_audio_s: float | None = None  # the endpoint rejects longer audio: the call is cut into equal pieces at frame boundaries
+    # The endpoint takes a `language` field: a caller hint overrides `extra_form['language']`, and a Kazakh
+    # re-run becomes possible. Measured on record `1234`: auto-detect lost a third of the words (config/asr.toml).
+    accepts_language: bool = False
 
     def resolved_base_url(self) -> str | None:
         value = (os.environ.get(self.base_url_env) if self.base_url_env else None) or self.base_url
@@ -243,7 +246,7 @@ def _json(resp: Any, provider: AsrProvider) -> dict:
     return data
 
 
-async def _openai_audio(provider: AsrProvider, audio: bytes, filename: str) -> tuple[dict, list[AsrSegment], bool]:
+async def _openai_audio(provider: AsrProvider, audio: bytes, filename: str, language: str | None = None) -> tuple[dict, list[AsrSegment], bool]:
     url = f'{provider.resolved_base_url()}/audio/transcriptions'
     response_format = str(provider.extra.get('response_format', 'verbose_json'))
     headers = dict(HEADERS)
@@ -262,13 +265,15 @@ async def _openai_audio(provider: AsrProvider, audio: bytes, filename: str) -> t
     else:
         form = {'model': provider.model, 'response_format': response_format}
         form.update({k: _form_value(v) for k, v in provider.extra_form.items()})
+        if language:
+            form['language'] = language
         resp = await _post(url, provider, files={'file': (filename, audio, 'audio/mpeg')}, data=form, headers=headers)
     data = _json(resp, provider)
     segments, diarized = parse_openai_audio(data)
     return data, segments, diarized
 
 
-async def _freedomspeech(provider: AsrProvider, audio: bytes, filename: str) -> tuple[dict, list[AsrSegment], bool]:
+async def _freedomspeech(provider: AsrProvider, audio: bytes, filename: str, language: str | None = None) -> tuple[dict, list[AsrSegment], bool]:
     host = (provider.resolved_base_url() or '').removesuffix('/v1')
     form = {'response_format': str(provider.extra.get('response_format', 'diarized_json')), 'prettify': 'false'}
     form.update({k: _form_value(v) for k, v in provider.extra_form.items()})
@@ -281,7 +286,7 @@ async def _freedomspeech(provider: AsrProvider, audio: bytes, filename: str) -> 
     return data, segments, diarized
 
 
-async def _openrouter_audio(provider: AsrProvider, audio: bytes, filename: str) -> tuple[dict, list[AsrSegment], bool]:
+async def _openrouter_audio(provider: AsrProvider, audio: bytes, filename: str, language: str | None = None) -> tuple[dict, list[AsrSegment], bool]:
     fmt = filename.rsplit('.', 1)[-1].lower() if '.' in filename else 'mp3'
     body = {
         'model': provider.model,
@@ -312,7 +317,32 @@ async def _openrouter_audio(provider: AsrProvider, audio: bytes, filename: str) 
 _KINDS = {'openai_audio': _openai_audio, 'freedomspeech': _freedomspeech, 'openrouter_audio': _openrouter_audio}
 
 
-async def transcribe(provider: AsrProvider, audio: bytes, filename: str = 'call.mp3') -> AsrResult:
+KAZAKH_LETTERS = frozenset('әғқңөұүһі')
+KAZAKH_SHARE_MIN = 0.15  # below this a Russian transcript's stray «і»/«қ» would trigger a pointless re-run
+_WORD = re.compile(r'[а-яёәғқңөұүһі]+')
+
+
+def kazakh_share(text: str) -> float:
+    """Share of words carrying a Kazakh-only letter. Russian text scores ~0; Kazakh speech scored 0.71."""
+    words = _WORD.findall(text.lower())
+    return sum(1 for w in words if KAZAKH_LETTERS & set(w)) / len(words) if words else 0.0
+
+
+async def transcribe(provider: AsrProvider, audio: bytes, filename: str = 'call.mp3', language: str | None = None) -> AsrResult:
+    """`language`: ISO code for providers that take one (`accepts_language`); otherwise the provider's own default.
+
+    An auto-detecting provider that comes back with Kazakh speech is re-run with `kk`: on record `1234` that
+    recovered a third of the words. The dataset's `language` label is not trusted, only the audio.
+    """
+    result = await _transcribe_once(provider, audio, filename, language)
+    if provider.accepts_language and (language or '').lower() != 'kk' and kazakh_share(result.text) >= KAZAKH_SHARE_MIN:
+        forced = await _transcribe_once(provider, audio, filename, 'kk')
+        if kazakh_share(forced.text) > kazakh_share(result.text):
+            return forced.model_copy(update={'seconds': result.seconds + forced.seconds})
+    return result
+
+
+async def _transcribe_once(provider: AsrProvider, audio: bytes, filename: str, language: str | None) -> AsrResult:
     # `enabled` only decides what is offered and run by default; an explicitly requested provider is called.
     if not provider.configured():
         raise _not_configured(provider)
@@ -321,10 +351,10 @@ async def transcribe(provider: AsrProvider, audio: bytes, filename: str = 'call.
     segments: list[AsrSegment] = []
     texts: list[str] = []
     diarized = False
-    language: str | None = None
+    detected: str | None = None  # what the endpoint reports; `language` stays the request hint
     reported = 0.0
     for k, (offset, piece) in enumerate(parts):
-        data, part_segments, part_diarized = await _KINDS[provider.kind](provider, piece, filename)
+        data, part_segments, part_diarized = await _KINDS[provider.kind](provider, piece, filename, language)
         for s in part_segments:  # pieces are transcribed separately: put their times back on the whole-call timeline
             segments.append(
                 s.model_copy(
@@ -338,7 +368,7 @@ async def transcribe(provider: AsrProvider, audio: bytes, filename: str = 'call.
             )
         texts.append(str(data.get('text') or '').strip() or '\n'.join(s.text for s in part_segments))
         diarized = diarized or part_diarized
-        language = language or (data.get('language') if isinstance(data.get('language'), str) else None)
+        detected = detected or (data.get('language') if isinstance(data.get('language'), str) else None)
         duration = data.get('duration')
         reported += float(duration) if isinstance(duration, int | float) and duration > 0 else 0.0
     seconds = time.perf_counter() - started
@@ -348,7 +378,7 @@ async def transcribe(provider: AsrProvider, audio: bytes, filename: str = 'call.
     return AsrResult(
         provider=provider.name,
         model=provider.model,
-        language=language,
+        language=detected,
         duration_s=reported or mp3_duration_s(audio),
         seconds=seconds,
         diarized=diarized,

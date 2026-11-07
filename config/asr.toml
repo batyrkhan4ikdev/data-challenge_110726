@@ -87,7 +87,8 @@ enabled = false
 # Self-hosted ASR hub on the H200 (H200_ASR_BASE_URL, https://hk-asr.sek.su/v1): one endpoint, three models. Every one runs
 # pyannote diarization (num_speakers fixed at 2: the threshold is untested on real telephony) and returns segments[] with
 # start/end/text/speaker. Cloudflare cuts a request at ~100 s and the hub serialises GPU jobs: send one request at a time
-# (the benchmark does), 110 s timeout, one retry on a timeout or 524. `language` is not sent: auto-detect.
+# (the benchmark does), 110 s timeout, one retry on a timeout or 524. whisperx takes `language` and re-runs
+# Kazakh-sounding audio as `kk` by itself (see the measurement below); the others are Russian-only.
 [providers.h200-whisperx]
 kind = "openai_audio"
 base_url_env = "H200_ASR_BASE_URL"
@@ -100,6 +101,7 @@ timeout_s = 110
 attempts = 2
 extra = { response_format = "verbose_json" }
 extra_form = { diarize = true, num_speakers = 2 }
+accepts_language = true
 
 # The same WhisperX model with Kazakh forced instead of auto-detect, for Kazakh or code-switched audio.
 # Measured 2026-11-08 on a 180 s Kazakh call (record `1234`, which the dataset labels `language: RU`):
@@ -118,6 +120,7 @@ timeout_s = 110
 attempts = 2
 extra = { response_format = "verbose_json" }
 extra_form = { diarize = true, num_speakers = 2, language = "kk" }
+accepts_language = true
 
 [providers.h200-gigaam-v3]
 kind = "openai_audio"

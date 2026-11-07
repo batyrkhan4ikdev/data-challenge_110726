@@ -512,7 +512,7 @@ async def test_pieces_shift_times_and_prefix_speakers(monkeypatch):
     audio = frame * 1000  # 36 s -> two pieces of 18 s
     calls = []
 
-    async def fake_kind(provider, piece, filename):
+    async def fake_kind(provider, piece, filename, language=None):
         calls.append(len(piece))
         seg = AsrSegment(start=1.0, end=2.0, speaker='SPEAKER_00', text=f'часть {len(calls)}')
         return {'text': seg.text, 'duration': 18.0}, [seg], True
@@ -537,3 +537,42 @@ def test_benchmark_payload_never_carries_the_signed_url():
     out = payload['data']['records'][0]['audio_url']
     assert 'SECRETSIG' not in out and 'sig=REDACTED' in out and out.endswith('&rsct=audio')
     normalize_response(payload, 'DEV')  # still loadable by the app
+
+
+async def test_kazakh_audio_is_re_run_with_kk(monkeypatch):
+    """Auto-detect returning Kazakh must be redone as `kk`: on record 1234 it recovered a third of the words."""
+    from server.asr import providers as P
+
+    calls: list[str | None] = []
+    russian = 'Здравствуйте, чем могу помочь вам сегодня'
+    kazakh = 'Сәлеметсіз бе, қалай көмектесе аламын, брокерлік шотыңыз туралы'
+
+    async def kind(provider, audio, filename, language=None):
+        calls.append(language)
+        # auto-detect keeps a few Kazakh words: enough to flag the audio, far short of the forced run
+        text = kazakh if language == 'kk' else f'{russian} сәлеметсіз қалай'
+        return {'text': text, 'language': language or 'auto'}, [AsrSegment(start=0.0, end=1.0, speaker='A', text=text)], True
+
+    monkeypatch.setitem(P._KINDS, 'openai_audio', kind)
+    auto = P.AsrProvider(name='x', kind='openai_audio', base_url='https://x', model='m', label='X',
+                         hosting='local', accepts_language=True)
+
+    result = await P.transcribe(auto, b'mp3', 'c.mp3')
+    assert calls == [None, 'kk'] and result.language == 'kk' and result.text == kazakh
+
+    # A Russian result is left alone, and so is a provider that takes no language.
+    calls.clear()
+
+    async def ru_kind(provider, audio, filename, language=None):
+        calls.append(language)
+        return {'text': russian, 'language': 'ru'}, [AsrSegment(start=0.0, end=1.0, speaker='A', text=russian)], True
+
+    monkeypatch.setitem(P._KINDS, 'openai_audio', ru_kind)
+    assert (await P.transcribe(auto, b'mp3', 'c.mp3', language='ru')).text == russian
+    assert calls == ['ru']
+
+    calls.clear()
+    monkeypatch.setitem(P._KINDS, 'openai_audio', kind)
+    plain = auto.model_copy(update={'accepts_language': False})
+    await P.transcribe(plain, b'mp3', 'c.mp3')
+    assert calls == [None]  # no second call: the endpoint takes no language

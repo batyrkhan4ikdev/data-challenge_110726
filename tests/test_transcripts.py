@@ -210,7 +210,7 @@ async def test_transcribe_unconfigured_provider_is_400(client: AsyncTestClient, 
     async def fetch(record):
         return b'mp3'
 
-    async def transcribe(provider, data, filename='call.mp3'):
+    async def transcribe(provider, data, filename='call.mp3', language=None):
         raise AsrError('Провайдер aigw-whisper не настроен')
 
     monkeypatch.setattr(audio, 'fetch_call_audio', fetch)
@@ -232,7 +232,7 @@ async def test_transcribe_stores_the_record(client: AsyncTestClient, monkeypatch
         calls.append('fetch')
         return b'mp3'
 
-    async def transcribe(provider, data, filename='call.mp3'):
+    async def transcribe(provider, data, filename='call.mp3', language=None):
         calls.append(f'transcribe:{provider.name}:{filename}')
         return SimpleNamespace(segments=[])
 
@@ -257,3 +257,24 @@ async def test_transcribe_stores_the_record(client: AsyncTestClient, monkeypatch
     monkeypatch.setattr(audio, 'fetch_call_audio', broken)
     r = await client.post(f'/api/conversations/{CALL}/transcribe', json={'group_id': 'DEV', 'provider': 'aigw-whisper'})
     assert r.status_code == 502 and 'сеть недоступна' in r.json()['error']
+
+
+async def test_russian_label_does_not_force_a_language(client: AsyncTestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A mislabelled Kazakh call (record `1234` is tagged RU) must still reach auto-detect, or the kk re-run never fires."""
+    seen: list[str | None] = []
+
+    async def fetch(record):
+        return b'mp3'
+
+    async def transcribe(provider, data, filename='call.mp3', language=None):
+        seen.append(language)
+        return SimpleNamespace(segments=[])
+
+    async def to_rec(result, base, profile):
+        return parse_custom_text('оператор: привет\nклиент: алло', base)
+
+    monkeypatch.setattr(audio, 'fetch_call_audio', fetch)
+    monkeypatch.setattr(providers, 'transcribe', transcribe)
+    monkeypatch.setattr(to_record, 'asr_to_record', to_rec)
+    r = await client.post(f'/api/conversations/{CALL}/transcribe', json={'group_id': 'DEV', 'provider': 'aigw-whisper'})
+    assert r.status_code == 200 and seen == [None]  # the DEV call is labelled RU
