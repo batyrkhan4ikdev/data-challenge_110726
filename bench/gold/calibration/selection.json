@@ -1,0 +1,11 @@
+{
+  "ids": [
+    "p1-ru-007",
+    "p1-ru-017",
+    "p1-en-011",
+    "p1-kz-010",
+    "p4-ru-005"
+  ],
+  "method": "random.Random(2026), excluding dialogues discussed in chat; strata 2 RU chat, 1 EN chat, 1 KZ chat, 1 RU call",
+  "fixture_sha256": "6f461f8b1099281313ef1367286693335eac131c4b7e6e035506cc7f2e48e6bb"
+}

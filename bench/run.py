@@ -244,7 +244,8 @@ def main(argv: list[str] | None = None) -> int:
         except GoldError as e:
             print("\n".join(e.problems), file=sys.stderr)
             return 1
-        ids = [i for i in gold_ids() if i in gold]
+        assigned = gold_ids()
+        ids = [i for i in assigned if i in gold] + [i for i in gold if i not in assigned]
         if not ids:
             print("нет заполненных gold_verdict", file=sys.stderr)
             return 1
