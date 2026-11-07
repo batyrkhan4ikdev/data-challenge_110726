@@ -6,6 +6,7 @@ import type { BatchRequest, Criterion, EvaluationSummary, EvaluationView, RawCal
 import { diffPanel } from '../ui/evalDiff.js';
 import { mountConfirmPanel } from '../ui/confirmPanel.js';
 import { openAppealModal } from '../ui/appealModal.js';
+import { recourseControl } from '../ui/recourse.js';
 import { renderCriteriaTable } from '../ui/criteriaTable.js';
 import { badge, banner, errorDetails, errorMessage, fmt, fmtDate, h, heading, rangeOf } from '../ui/dom.js';
 import { factsCard } from '../ui/facts.js';
@@ -187,6 +188,7 @@ interface ScoreCardOptions {
   view: EvaluationView;
   onJump: (c: Criterion) => void;
   onAppeal: (c: Criterion) => void;
+  recourse?: (c: Criterion) => HTMLElement | null;
 }
 
 function scoreCard(opts: ScoreCardOptions): HTMLElement {
@@ -234,7 +236,7 @@ function scoreCard(opts: ScoreCardOptions): HTMLElement {
         return h(
           'li',
           { class: 'cqa-why-row', 'data-criterion': c.id },
-          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl' }, text)),
+          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl' }, text), opts.recourse?.(c) ?? null),
           h(
             'div',
             { class: 'cqa-why-actions' },
@@ -438,7 +440,7 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   });
 
   const status = h('div', { class: 'cqa-status', role: 'status' });
-  const score = scoreCard({ view, onJump: jump, onAppeal: appeal });
+  const score = scoreCard({ view, onJump: jump, onAppeal: appeal, recourse: (c) => recourseControl(ctx.api, ev.id, c, record) });
   const transcriptLabel = isCall ? sourceLabel(sources, evSource) : null;
   const header = pageHeader(view, ctx, record, status, transcriptLabel);
   if (isCall) {

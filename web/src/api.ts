@@ -156,6 +156,10 @@ export class Api {
     if (!res) throw new ApiFail(0, t.common.networkError);
     if (!res.ok) throw new ApiFail(res.status, `${t.common.error} ${res.status}`);
   }
+  /** Коучинг «как было бы правильно»: правка реплик оператора, проверенная судьёй по одному критерию. */
+  recourse<T>(evaluationId: string, criterionId: string): Promise<T> {
+    return this.request('POST', `/evaluations/${encodeURIComponent(evaluationId)}/recourse`, { criterion_id: criterionId });
+  }
   checklists(): Promise<ChecklistSummary[]> {
     return this.request('GET', '/checklists');
   }

@@ -2378,3 +2378,12 @@
 .cqa-toolbar--uploads { justify-content: flex-start; gap: 12px; align-items: center; }
 .cqa-upload-fields { display: grid; gap: 12px; margin: 12px 0; }
 .cqa-upload-fields[hidden] { display: none; }
+
+/* #46 recourse */
+.cqa-recourse-wrap { margin-top: 8px; display: grid; gap: 8px; }
+.cqa-recourse { border-left: 3px solid var(--cqa-accent, #4f7cff); padding: 8px 12px; display: grid; gap: 6px; }
+.cqa-recourse-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cqa-recourse-del { background: rgba(220, 60, 60, .12); text-decoration: line-through; padding: 4px 8px; border-radius: 4px; }
+.cqa-recourse-add { background: rgba(40, 160, 90, .14); padding: 4px 8px; border-radius: 4px; }
+.cqa-recourse-why { margin: 0; }
+.cqa-recourse-note { margin: 0; font-size: 12px; }

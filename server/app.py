@@ -22,6 +22,7 @@ from server.routes.checklists import ChecklistsController
 from server.routes.datasets import DatasetsController
 from server.routes.evaluations import EvaluationsController
 from server.routes.regpack import RegPackController
+from server.routes.recourse import RecourseController
 from server.routes.transcripts import TranscriptsController
 from server.routes.uploads import UploadsController
 from server.store import NotFound, Store
@@ -116,6 +117,7 @@ def create_app(
             EvaluationsController,
             AppealsController,
             TranscriptsController,
+            RecourseController,
             RegPackController,
             UploadsController,
             ConfirmationsController,
