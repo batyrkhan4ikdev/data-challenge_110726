@@ -593,6 +593,10 @@
 .cqa .cqa-table tbody tr:hover {
   background: var(--cqa-surface-2);
 }
+.cqa .cqa-table tbody tr.cqa-row-empty:hover,
+.cqa .cqa-table tbody tr.cqa-row-placeholder:hover {
+  background: transparent;
+}
 .cqa .cqa-table tbody tr:last-child td {
   border-bottom: none;
 }
@@ -601,21 +605,364 @@
   background: var(--cqa-good-bg);
 }
 .cqa .cqa-check-cell {
-  width: 40px;
+  width: 48px;
 }
 .cqa .cqa-row--gross,
 .cqa .cqa-row--gross:hover {
   background: var(--cqa-bad-bg);
 }
-.cqa .cqa-dialogs th:nth-child(5),
-.cqa .cqa-dialogs th:nth-child(6) {
-  text-align: right;
-}
 .cqa .cqa-chain-arrow {
   color: var(--cqa-muted);
 }
+/* Подписи ячеек нужны только мобильной карточке, где заголовки колонок скрыты. */
+.cqa .cqa-cell-label {
+  display: none;
+}
+.cqa .cqa-table-wrap[aria-busy='true'] {
+  cursor: progress;
+}
+
+/* Таблица диалогов */
+.cqa .cqa-table--dialogs td {
+  vertical-align: middle;
+}
+.cqa .cqa-check-hit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  margin: -7px -6px;
+  cursor: pointer;
+}
+.cqa .cqa-table--dialogs .cqa-cell-id {
+  white-space: nowrap;
+}
+.cqa .cqa-table--dialogs .cqa-cell-gross {
+  white-space: nowrap;
+}
+@media (min-width: 861px) {
+  .cqa .cqa-table--dialogs .cqa-cell-total,
+  .cqa .cqa-table--dialogs .cqa-cell-turns,
+  .cqa .cqa-table--dialogs .cqa-cell-gross,
+  .cqa .cqa-table--checklists .cqa-cell-version {
+    width: 1%;
+  }
+}
+.cqa .cqa-table--dialogs .cqa-empty .cqa-btn {
+  margin-top: 8px;
+}
+
+/* Таблица чек-листов */
+.cqa .cqa-table--checklists td {
+  vertical-align: middle;
+}
+.cqa .cqa-table--checklists .cqa-cell-name a {
+  font-weight: 600;
+}
+.cqa .cqa-table--checklists td.cqa-cell-id {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.cqa .cqa-placeholder {
+  display: block;
+  height: 12px;
+  width: 60%;
+  margin: 4px 0;
+  border-radius: 4px;
+  background: var(--cqa-track);
+}
+.cqa .cqa-placeholder--wide {
+  width: 80%;
+}
+.cqa .cqa-placeholder--short {
+  width: 32px;
+}
+.cqa .cqa-lists-empty .cqa-card-title {
+  margin-bottom: 4px;
+}
+.cqa .cqa-lists-empty .cqa-btn {
+  margin-top: 12px;
+}
+.cqa .cqa-banner-actions {
+  margin-top: 8px;
+}
+
+@media (max-width: 860px) {
+  /* Строка таблицы становится карточкой; явные role в DOM сохраняют таблицу в дереве доступности. */
+  .cqa .cqa-table--dialogs,
+  .cqa .cqa-table--dialogs thead,
+  .cqa .cqa-table--dialogs tbody,
+  .cqa .cqa-table--checklists,
+  .cqa .cqa-table--checklists thead,
+  .cqa .cqa-table--checklists tbody {
+    display: block;
+  }
+  .cqa .cqa-table--dialogs th,
+  .cqa .cqa-table--dialogs td,
+  .cqa .cqa-table--checklists th,
+  .cqa .cqa-table--checklists td {
+    display: block;
+    padding: 0;
+    border-bottom: none;
+    width: auto;
+  }
+  .cqa .cqa-table--dialogs thead th:not(.cqa-check-cell),
+  .cqa .cqa-table--checklists thead th {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .cqa .cqa-cell-label {
+    display: inline;
+  }
+  .cqa .cqa-table--dialogs tr,
+  .cqa .cqa-table--checklists tr {
+    border-bottom: 1px solid var(--cqa-border);
+  }
+  .cqa .cqa-table--dialogs tbody tr:last-child,
+  .cqa .cqa-table--checklists tbody tr:last-child {
+    border-bottom: none;
+  }
+  .cqa .cqa-table--checklists thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .cqa .cqa-table--dialogs thead tr {
+    display: flex;
+    align-items: center;
+    background: var(--cqa-surface-2);
+    padding-right: 12px;
+  }
+  .cqa .cqa-table--dialogs thead th.cqa-check-cell {
+    background: transparent;
+  }
+  .cqa .cqa-table--dialogs thead .cqa-check-hit {
+    justify-content: flex-start;
+    gap: 8px;
+    padding-left: 13px;
+    font-size: 14px;
+    color: var(--cqa-text);
+  }
+  .cqa .cqa-check-hit {
+    min-width: 44px;
+    min-height: 44px;
+    margin: 0;
+  }
+  .cqa .cqa-table--dialogs tbody tr:not(.cqa-row-empty) {
+    display: grid;
+    grid-template-columns: 44px auto auto auto minmax(0, 1fr);
+    grid-template-areas:
+      'check id id id total'
+      'check channel lang turns gross';
+    align-items: center;
+    column-gap: 6px;
+    row-gap: 2px;
+    padding: 6px 12px 8px 0;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-check-cell {
+    grid-area: check;
+    align-self: start;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-id {
+    grid-area: id;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    font-weight: 600;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-id .cqa-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-total {
+    grid-area: total;
+    justify-self: end;
+    font-weight: 600;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-total .cqa-cell-label {
+    font-weight: 400;
+    color: var(--cqa-muted);
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-channel {
+    grid-area: channel;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-lang {
+    grid-area: lang;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-turns {
+    grid-area: turns;
+    text-align: left !important;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-channel,
+  .cqa .cqa-table--dialogs tbody .cqa-cell-lang,
+  .cqa .cqa-table--dialogs tbody .cqa-cell-turns {
+    font-size: 13px;
+    color: var(--cqa-muted);
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-lang::before,
+  .cqa .cqa-table--dialogs tbody .cqa-cell-turns::before {
+    content: '·' / '';
+    margin-right: 6px;
+  }
+  .cqa .cqa-table--dialogs tbody .cqa-cell-gross {
+    grid-area: gross;
+    justify-self: end;
+  }
+  .cqa .cqa-table--dialogs .cqa-row-empty td {
+    padding: 24px 12px;
+  }
+
+  .cqa .cqa-table--checklists tbody tr:not(.cqa-row-empty) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'name version'
+      'meta meta';
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 4px;
+    padding: 12px;
+  }
+  .cqa .cqa-table--checklists .cqa-cell-name {
+    grid-area: name;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .cqa .cqa-table--checklists .cqa-cell-name a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+  .cqa .cqa-table--checklists .cqa-cell-version {
+    grid-area: version;
+    justify-self: end;
+  }
+  .cqa .cqa-table--checklists .cqa-cell-channel,
+  .cqa .cqa-table--checklists .cqa-cell-id {
+    grid-row: 2;
+    font-size: 13px;
+    color: var(--cqa-muted);
+  }
+  .cqa .cqa-table--checklists .cqa-cell-channel {
+    grid-column: 1;
+  }
+  .cqa .cqa-table--checklists .cqa-cell-id {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
 
 /* ---- 6. Dialogs list ---- */
+.cqa .cqa-toolbar--filters .cqa-filter-count {
+  margin-left: auto;
+}
+.cqa .cqa-filter-gross {
+  min-height: 40px;
+  cursor: pointer;
+}
+.cqa .cqa-toolbar--batch {
+  gap: 12px 16px;
+}
+.cqa .cqa-batch-params {
+  margin-left: auto;
+}
+.cqa .cqa-batch-params[open] {
+  flex-basis: 100%;
+  margin-left: 0;
+}
+.cqa .cqa-batch-params > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 8px;
+  border-radius: var(--cqa-radius);
+  color: var(--cqa-text);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.cqa .cqa-batch-params > summary::-webkit-details-marker {
+  display: none;
+}
+.cqa .cqa-batch-params > summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+}
+.cqa .cqa-batch-params[open] > summary::before {
+  transform: rotate(45deg);
+}
+.cqa .cqa-batch-params > summary:hover {
+  background: var(--cqa-surface-2);
+}
+.cqa .cqa-batch-params-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid var(--cqa-border);
+}
+@media (max-width: 860px) {
+  .cqa .cqa-toolbar--filters,
+  .cqa .cqa-toolbar--batch {
+    gap: 8px;
+  }
+  .cqa .cqa-toolbar--filters select {
+    flex: 1 1 140px;
+  }
+  .cqa .cqa-filter-group {
+    flex: 1 1 160px;
+  }
+  .cqa .cqa-filter-group .cqa-input {
+    flex: 1;
+    width: 0;
+  }
+  .cqa .cqa-filter-gross {
+    min-height: 44px;
+  }
+  .cqa .cqa-toolbar--filters .cqa-filter-count {
+    margin-left: 0;
+  }
+  .cqa .cqa-toolbar--batch {
+    padding: 12px;
+  }
+  .cqa .cqa-batch-checklist {
+    flex: 1 1 100%;
+  }
+  .cqa .cqa-batch-checklist .cqa-input {
+    flex: 1;
+    width: 0;
+  }
+  .cqa .cqa-batch-params,
+  .cqa .cqa-batch-params[open] {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+  .cqa .cqa-batch-params > summary {
+    min-height: 44px;
+  }
+  .cqa .cqa-batch-params-body .cqa-inline {
+    flex: 1 1 100%;
+  }
+  .cqa .cqa-batch-params-body select {
+    flex: 1;
+    width: 0;
+  }
+}
 
 /* ---- 7. Result ---- */
 .cqa .cqa-split {
