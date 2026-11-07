@@ -148,6 +148,33 @@ async def test_put_bumps_version_and_keeps_old_view(client: AsyncTestClient) -> 
     assert [h['checklist_version'] for h in history] == [2, 1]
 
 
+async def test_added_criterion_is_scored_and_weighted(client: AsyncTestClient) -> None:
+    """The organizers' live-demo ask (#2991): add a criterion, re-evaluate, see it scored and counted in the total."""
+    chat = (await client.get('/api/checklists/chat')).json()
+    gross = chat['criteria'][-1]
+    chat['criteria'] = chat['criteria'][:-1] + [{
+        'id': 'c09', 'section_id': chat['criteria'][6]['section_id'], 'title': 'Предупреждение об ожидании',
+        'description': 'Да — предупредил клиента об ожидании.', 'answer_type': 'yes_no', 'weight': 5,
+        'steps': None, 'na_allowed': False, 'na_condition': None, 'kind': 'scored',
+    }, gross]
+    r = await client.put('/api/checklists/chat', json=chat)
+    assert r.status_code == 200 and r.json()['version'] == 2
+
+    view = await evaluate_one(client, CHATS[0])
+    ev = view['evaluation']
+    assert ev['checklist_version'] == 2
+    item = next(i for i in ev['items'] if i['criterion_id'] == 'c09')
+    assert item['verdict'] in ('yes', 'no')
+    scored = {s['criterion_id']: s for s in ev['score']['items']}
+    assert scored['c09']['applicable'] is True
+    weights = {c['id']: c['weight'] for c in chat['criteria'] if c['kind'] == 'scored'}
+    applicable = [c for c, s in scored.items() if c in weights and s['applicable']]
+    # c09's weight joins the redistribution base: 105 raw points, still a 0..100 total.
+    assert ev['score']['applicable_weight'] == sum(weights[c] for c in applicable)
+    assert scored['c09']['max_points'] == 5
+    assert ev['score']['total'] == pytest.approx(sum(scored[c]['effective_points'] for c in applicable), abs=0.01)
+
+
 async def test_put_invalid_weight(client: AsyncTestClient) -> None:
     chat = (await client.get('/api/checklists/chat')).json()
     chat['criteria'][0]['weight'] = -5
