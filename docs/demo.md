@@ -58,3 +58,9 @@ Open the call **p4-ru-003**. The organizers' transcript is unusable for QA («и
 ## If they ask for laptop access
 
 Hand over the dialogs tab. Everything above is safe to click; live evaluation of any DEV dialog takes about 30 s.
+
+## If they ask
+
+- **C7 «Завершение».** We read the checklist literally: a summary or an offer of further help, **and** a goodbye. A goodbye alone («Пожалуйста. Хорошего дня!») is «Нет»; the organizers answered exactly this case with «перечитайте чек-лист» (#2814). Teams split on it: in 35 of 60 DEV chats our total loses points only on C7. If the reference reads it more softly, the gap is up to ~39 of 480 cells, all on C7. The rule lives in the checklist's notes and can be edited in the UI in a minute; the prompt and the scoring do not change.
+- **Why not a fine-tuned model.** 65 DEV dialogs, model-made labels, no held-out set; most remaining misses are gold ties. A judge tuned to 8 fixed criteria would handle «add a criterion» worse.
+- **Calls accuracy.** Not claimed: external call labels agree 69–79% and CER is agreement with FreedomSpeech, not accuracy.
