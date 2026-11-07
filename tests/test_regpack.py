@@ -33,7 +33,11 @@ async def test_regpack_selfcheck_after_decision(client: AsyncTestClient) -> None
             'final.json', 'calls.json'} <= set(files)
     manifest = json.loads(files['manifest.json'])
     stored = (await client.get(f'/api/evaluations/{ev["id"]}')).json()['final']['score']['total']
-    assert manifest['selfcheck'] == {'recomputed_total': stored, 'stored_total': stored, 'ok': True}
+    judge = (await client.get(f'/api/evaluations/{ev["id"]}')).json()['evaluation']['score']['total']
+    assert manifest['selfcheck'] == {
+        'recomputed_total': stored, 'stored_total': stored, 'judge_total': judge, 'judge_total_recomputed': judge, 'ok': True,
+    }
+    assert judge != stored  # the decision moved the final total, the judge's own total is checked separately
     assert json.loads(files['appeals.json'])[0]['decision']['reason'] == 'проверка'
     assert json.loads(files['record.json'])['audio_url'] is None
     assert verify_regpack(resp.content)['ok']

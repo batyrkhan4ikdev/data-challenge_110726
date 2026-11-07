@@ -74,15 +74,16 @@ async def test_analytics_drift_between_groups_and_halves(tmp_path: Path, monkeyp
         d = r.json()['drift']
         assert d['mode'] == 'groups' and d['baseline_label'] == 'BASE' and d['window_label'] == 'DEV'
         assert d['enough_data'] is False and d['min_n'] == 30  # n=6 per side is too small to conclude
-        assert d['total']['verdict'] == 'drift' and d['total']['ks'] == 1.0
+        # the numbers are computed, but no stable/watch/drift label is given on 6 dialogs a side
+        assert d['total']['verdict'] is None and d['total']['psi'] > 0.25 and d['total']['ks'] == 1.0
         assert d['total']['n_baseline'] == 6 and d['total']['n_window'] == 6
         assert {c['criterion_id'] for c in d['criteria']} == {f'c0{i}' for i in range(1, 8)}
-        assert all(c['metric']['verdict'] == 'drift' for c in d['criteria'])
+        assert all(c['metric']['verdict'] is None for c in d['criteria'])
 
         # no baseline: halves of the group's own evaluations by time; identical halves -> stable
         d = (await client.get('/api/datasets/DEV/analytics')).json()['drift']
         assert d['mode'] == 'halves' and d['total']['n_baseline'] == 3 and d['total']['n_window'] == 3
-        assert d['total']['psi'] == pytest.approx(0.0) and d['total']['verdict'] == 'stable' and d['total']['ks'] == 0.0
+        assert d['total']['psi'] == pytest.approx(0.0) and d['total']['verdict'] is None and d['total']['ks'] == 0.0
 
 
 def _flip_to_drop(path: Path, out: Path, drop: float) -> None:

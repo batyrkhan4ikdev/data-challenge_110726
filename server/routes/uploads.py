@@ -72,7 +72,6 @@ class UploadsController(Controller):
                 base = base.model_copy(update={'language': language_from_asr(result.language, result.text)})
             record = await to_record.asr_to_record(result, base, judge)
         except AsrError as e:
-            await svc.uploads.delete_reserved(cid)
             message = str(e) or type(e).__name__
             if _unconfigured(message):
                 raise HTTPException(status_code=400, detail=f'Провайдер «{provider.label}» не настроен: {message}') from None
@@ -88,11 +87,7 @@ class UploadsController(Controller):
         """Pasted chat (`оператор:` / `клиент:` / `бот:` lines) -> a new chat in `UPLOADS`."""
         cid = await svc.uploads.new_id('chat')
         base = Record(conversation_id=cid, channel='agent chat', language=data.language, transcript=[], audio_url=None)
-        try:
-            record = parse_custom_text(data.text, base)
-        except ValueError:
-            await svc.uploads.delete_reserved(cid)
-            raise
+        record = parse_custom_text(data.text, base)  # ValueError -> 400; a skipped id is harmless
         await svc.uploads.save(record)
         return record
 

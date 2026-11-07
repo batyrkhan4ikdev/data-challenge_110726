@@ -6,9 +6,9 @@ gitignored): call audio is personal data.
 """
 
 import asyncio
+import logging
 import re
 import shutil
-from datetime import UTC, datetime
 from pathlib import Path
 
 from server.models import Record
@@ -24,6 +24,8 @@ AUDIO_TYPES = {
     '.flac': 'audio/flac',
 }
 MAX_AUDIO_BYTES = 50 * 1024 * 1024
+FFMPEG_TIMEOUT_S = 120
+log = logging.getLogger(__name__)
 _ID = re.compile(r'^up-(call|chat)-\d{3,}$')
 
 
@@ -42,13 +44,19 @@ async def to_mp3(data: bytes, ext: str) -> tuple[bytes, str]:
     if ext == '.mp3' or not ffmpeg:
         return data, ext
     proc = await asyncio.create_subprocess_exec(
-        ffmpeg, '-hide_banner', '-loglevel', 'error', '-i', 'pipe:0', '-ac', '1', '-ar', '16000', '-b:a', '48k',
-        '-f', 'mp3', 'pipe:1',
+        # pipe only: a crafted playlist-like upload must not make ffmpeg open local files or URLs
+        ffmpeg, '-hide_banner', '-loglevel', 'error', '-protocol_whitelist', 'pipe', '-i', 'pipe:0',
+        '-ac', '1', '-ar', '16000', '-b:a', '48k', '-f', 'mp3', 'pipe:1',
         stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
     )
-    out, err = await proc.communicate(data)
+    try:
+        out, err = await asyncio.wait_for(proc.communicate(data), FFMPEG_TIMEOUT_S)
+    except TimeoutError:
+        proc.kill()
+        raise ValueError('Аудиофайл слишком долго конвертируется: сохраните его как MP3 и загрузите снова') from None
     if proc.returncode != 0 or not out:
-        raise ValueError(f'Не удалось прочитать аудиофайл: {err.decode(errors="replace").strip()[:200] or "ffmpeg"}')
+        log.info('ffmpeg rejected an upload: %s', err.decode(errors='replace').strip()[:300])
+        raise ValueError('Не удалось прочитать аудиофайл: формат не распознан или файл повреждён')
     return out, '.mp3'
 
 
@@ -66,21 +74,25 @@ class UploadStore:
         return self.root / 'audio'
 
     def _record_path(self, cid: str) -> Path:
-        if not _ID.match(cid):
+        if not _ID.fullmatch(cid):
             raise NotFound(f'диалог {cid} не найден в группе {UPLOADS}')
         return self._records / f'{cid}.json'
 
     async def new_id(self, kind: str) -> str:
-        """`up-call-001`, `up-chat-002`, ...: one counter for both kinds, never reused while the files exist."""
+        """`up-call-001`, `up-chat-002`, ...: one counter for both kinds that only grows. A deleted upload's id is
+        never reused: its evaluations and transcript sources stay in the store and would attach to the new dialog."""
         async with self._lock:
-            taken = await asyncio.to_thread(
-                lambda: [int(p.stem.rsplit('-', 1)[1]) for p in self._records.glob('up-*-*.json') if _ID.match(p.stem)]
-                + [int(p.stem.rsplit('-', 1)[1]) for p in self._audio.glob('up-*-*.*') if _ID.match(p.stem)]
-            )
-            cid = f'up-{kind}-{max(taken, default=0) + 1:03d}'
-            # Reserve the id right away so a second upload in flight does not take it.
-            await asyncio.to_thread(atomic_write, self._audio / f'{cid}.reserved', datetime.now(UTC).isoformat())
-            return cid
+            counter = self.root / 'last_id'
+
+            def take() -> int:
+                last = int(counter.read_text(encoding='utf-8')) if counter.exists() else 0
+                seen = [int(p.stem.rsplit('-', 1)[1]) for d in (self._records, self._audio)
+                        for p in d.glob('up-*-*.*') if _ID.fullmatch(p.stem)]
+                n = max([last, *seen]) + 1
+                atomic_write(counter, str(n))
+                return n
+
+            return f'up-{kind}-{await asyncio.to_thread(take):03d}'
 
     async def records(self) -> list[Record]:
         def read() -> list[Record]:
@@ -94,7 +106,6 @@ class UploadStore:
     async def save(self, record: Record) -> None:
         path = self._record_path(record.conversation_id)
         await asyncio.to_thread(atomic_write, path, record.model_dump_json(indent=2))
-        await asyncio.to_thread(lambda: (self._audio / f'{record.conversation_id}.reserved').unlink(missing_ok=True))
 
     async def save_audio(self, cid: str, data: bytes, ext: str) -> None:
         def write() -> None:
@@ -104,10 +115,6 @@ class UploadStore:
             tmp.replace(self._audio / f'{cid}{ext}')
 
         await asyncio.to_thread(write)
-
-    async def delete_reserved(self, cid: str) -> None:
-        """Frees an id taken by `new_id` when the upload failed before anything was saved."""
-        await asyncio.to_thread(lambda: (self._audio / f'{cid}.reserved').unlink(missing_ok=True))
 
     def _audio_file(self, cid: str) -> Path | None:
         self._record_path(cid)  # validates the id

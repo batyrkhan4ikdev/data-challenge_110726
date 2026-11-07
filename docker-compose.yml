@@ -2,7 +2,7 @@ services:
   cqa:
     build: .
     ports:
-      - "8787:8787"
+      - "127.0.0.1:8787:8787"  # no auth: keep it on this machine
     env_file:
       - path: .env
         required: false

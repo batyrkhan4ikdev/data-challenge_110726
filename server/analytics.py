@@ -106,13 +106,18 @@ def _metric(base: list[_Sample], win: list[_Sample], cid: str | None) -> DriftMe
         value = psi(Counter(total_bin(x) for x in b), Counter(total_bin(x) for x in w))
         d = ks_statistic(b, w)
         return DriftMetric(
-            psi=value, verdict=psi_verdict(value), ks=d, ks_p=ks_pvalue(d, len(b), len(w)) if d is not None else None,
+            psi=value, verdict=_judged(value, b, w), ks=d, ks_p=ks_pvalue(d, len(b), len(w)) if d is not None else None,
             n_baseline=len(b), n_window=len(w),
         )
     b = [s.cats[cid] for s in base if cid in s.cats]
     w = [s.cats[cid] for s in win if cid in s.cats]
     value = psi(Counter(b), Counter(w))
-    return DriftMetric(psi=value, verdict=psi_verdict(value), ks=None, ks_p=None, n_baseline=len(b), n_window=len(w))
+    return DriftMetric(psi=value, verdict=_judged(value, b, w), ks=None, ks_p=None, n_baseline=len(b), n_window=len(w))
+
+
+def _judged(value: float | None, base: list, win: list) -> str | None:
+    """No stable/watch/drift label below `DRIFT_MIN_N` on either side: PSI on a few dialogs is noise."""
+    return psi_verdict(value) if min(len(base), len(win)) >= DRIFT_MIN_N else None
 
 
 def drift_report(

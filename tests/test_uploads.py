@@ -98,10 +98,19 @@ async def test_failed_asr_leaves_nothing_behind_and_ids_do_not_collide(client, m
     assert (await client.get('/api/datasets/UPLOADS/conversations')).json() == []
 
     chat = (await client.post('/api/uploads/chat', json={'text': CHAT, 'language': 'RU'})).json()
-    assert chat['conversation_id'] == 'up-chat-001' and chat['channel'] == 'agent chat' and len(chat['transcript']) == 3
+    # the failed call burnt id 001: ids only grow, so nothing stale can attach to a later dialog
+    assert chat['conversation_id'] == 'up-chat-002' and chat['channel'] == 'agent chat' and len(chat['transcript']) == 3
     assert (await upload(client, name='notes.txt')).status_code == 400
 
-    assert (await client.delete('/api/uploads/up-chat-001')).status_code == 204
+    assert (await client.delete('/api/uploads/up-chat-002')).status_code == 204
     assert (await client.get('/api/datasets/UPLOADS/conversations')).json() == []
-    assert (await client.delete('/api/uploads/up-chat-001')).status_code == 404
+    assert (await client.delete('/api/uploads/up-chat-002')).status_code == 404
     assert (await client.get('/api/uploads/..%2F..%2Fsecret/audio')).status_code == 404
+
+
+async def test_deleted_upload_id_is_not_reused(client, monkeypatch) -> None:
+    """The deleted dialog's evaluations stay in the store; a reused id would show them on the next upload."""
+    a = (await client.post('/api/uploads/chat', json={'text': CHAT, 'language': 'RU'})).json()['conversation_id']
+    assert (await client.delete(f'/api/uploads/{a}')).status_code == 204
+    b = (await client.post('/api/uploads/chat', json={'text': CHAT, 'language': 'RU'})).json()['conversation_id']
+    assert (a, b) == ('up-chat-001', 'up-chat-002')

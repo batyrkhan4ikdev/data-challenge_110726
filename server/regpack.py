@@ -38,18 +38,23 @@ def _dump(obj: Any) -> bytes:
 
 
 def selfcheck(checklist: dict, evaluation: dict, appeals: list[dict], stored_final: dict) -> dict:
-    """Recompute the final total from packaged pieces and compare it with the stored final."""
-    recomputed = final_result(
-        Checklist.model_validate(checklist),
-        Evaluation.model_validate(evaluation),
-        [Appeal.model_validate(a) for a in appeals],
-    )
+    """Recompute from the packaged pieces: the judge's own total (no appeals) against `evaluation.json`, and the final
+    total (with decisions) against `final.json`. Hashes prove the files were not edited after export, not who made them."""
+    cl = Checklist.model_validate(checklist)
+    ev = Evaluation.model_validate(evaluation)
+    recomputed = final_result(cl, ev, [Appeal.model_validate(a) for a in appeals])
+    raw = final_result(cl, ev, [])
     stored = FinalResult.model_validate(stored_final)
     rt, st = recomputed.score.total, stored.score.total
     same_verdicts = [(i.criterion_id, i.final_verdict) for i in recomputed.items] == [
         (i.criterion_id, i.final_verdict) for i in stored.items
     ]
-    return {'recomputed_total': rt, 'stored_total': st, 'ok': rt == st and same_verdicts}
+    raw_ok = raw.score.total == ev.score.total
+    return {
+        'recomputed_total': rt, 'stored_total': st,
+        'judge_total': ev.score.total, 'judge_total_recomputed': raw.score.total,
+        'ok': rt == st and same_verdicts and raw_ok,
+    }
 
 
 def _sha(data: bytes) -> str:
