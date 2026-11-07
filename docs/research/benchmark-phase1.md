@@ -101,3 +101,33 @@ There were two independent full DEV runs with `h200-gemma · per_criterion · k=
 
   vLLM at temperature 0 is not bit-exact under batching, so this residual is expected. It is small next to the disagreement with gold.
 - **Real run times:** 420 s and 507 s of wall time for 65 dialogs at `EVAL_CONCURRENCY=4`, i.e. about 6.5–8 s per dialog. The «1 min per dialog» above is the per-dialog latency measured without parallelism.
+
+## Phase 2 on the full consensus gold (65 DEV dialogs, 2026-11-07 20:00)
+
+The gold is `bench/gold/labels.consensus.csv`, rounds 1 and 2 by Batyrkhantzy111 (65ecd9d, e955e19). Each dialog has 4 blind LLM labelings: GPT-6 Astra and Claude Opus 5.5 at xhigh, in batches of 10 and one at a time. All 4 agree on 422 of 480 verdicts. Ties go to the lower median of the scale, or to the checklist text; the 16 disputed verdicts are listed in `bench/gold/calibration/round2/README.md`. **There are no human rows yet**, so `--gold human` is empty.
+
+Results are on the 60 chats, because the control set is chats only (#2978). All runs use the same final notes: the C8 rule (#3106) and the C7 rule below.
+
+| run | weighted agreement | total MAE | bias | c01 | c02 | c03 | c04 | c05 | c06 | c07 | c08 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| **h200-gemma · per_criterion** | **0.918** | **4.83** | −1.77 | 60 | 56 | 57 | 52 | 57 | 50 | 56 | 60 |
+| aigw-luna · single | 0.884 | 6.48 | −2.74 | 60 | 48 | 59 | 50 | 54 | 47 | 56 | 60 |
+| h200-glimmer · single | 0.845 | 8.18 | −2.89 | 58 | 46 | 59 | 45 | 54 | 45 | 45 | 60 |
+| h200-gptoss · single | 0.832 | 9.21 | −5.24 | 60 | 44 | 53 | 44 | 54 | 49 | 47 | 59 |
+
+Criterion columns are matches out of 60. Summaries: gemma in `bench/results/20261107-195213/summary.md`, the other three in `bench/results/20261107-195213-alt/summary.md`.
+
+**B6 decision:** keep `h200-gemma · per_criterion · k=1`. It leads on every aggregate. The best cloud model (Luna) is 3.4 pp lower, so the «self-hosted unless cloud is more than 5 pp better» rule holds. The fallback chain stays `aigw-sonnet,aigw-luna,h200-glimmer`.
+
+**B7 prompt iterations** (general rules in the checklist `notes`, not per-dialog fixes):
+
+| change | c07 | c04 | c06 | weighted agreement | MAE | kept? |
+|---|---|---|---|---|---|---|
+| baseline (C8 rule only) | 47 | 51 | 49 | 0.900 | 6.12 | — |
+| **C7: a short recap of the result or next step plus a goodbye is «Да»; courtesy alone («Рад был помочь») is not** | **56** | 52 | 50 | **0.918** | **4.83** | **yes**: 9 fixed, 0 broken |
+| C6/C4: «0 only if the dialog is incoherent / no answer at all», partial answers get 5–15 | 55 | 52 | 48 | 0.916 | 4.90 | **no**: 3 fixed, 5 broken, c06 drifted lenient (4→10 ×3); reverted |
+
+**Caveats:**
+- **These numbers are in-sample.** The same 65 DEV dialogs shaped the C7 rule and scored it, and the gold is LLM-made. Two of the labelers (Opus, Astra) belong to the same families as our cloud fallbacks. Don't read 0.918 as the expected accuracy on the control set. What carries over is the ranking, and that the C7 rule is general: it fixed 9 dialogs across RU and KZ and broke none.
+- The run-to-run noise is about 1% of verdicts (507/512 above), so differences of 1–2 verdicts per criterion are inside it.
+- c04 and c06 remain the main gap: 8 and 10 misses. Most of them are 2:2 ties in the gold (see the notes column in `labels.consensus.csv`), so they need a human decision rather than another rule.
