@@ -1,0 +1,13 @@
+{
+  "name": "cqa-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "^15",
+    "typescript": "^5"
+  }
+}

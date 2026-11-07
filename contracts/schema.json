@@ -1,0 +1,1225 @@
+{
+  "$defs": {
+    "ApiError": {
+      "properties": {
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Details"
+        },
+        "error": {
+          "title": "Error",
+          "type": "string"
+        }
+      },
+      "required": [
+        "error",
+        "details"
+      ],
+      "title": "ApiError",
+      "type": "object"
+    },
+    "Appeal": {
+      "properties": {
+        "comment": {
+          "title": "Comment",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Decision"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evaluation_id": {
+          "title": "Evaluation Id",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "evaluation_id",
+        "criterion_id",
+        "comment",
+        "created_at",
+        "status",
+        "decision"
+      ],
+      "title": "Appeal",
+      "type": "object"
+    },
+    "AppealCreate": {
+      "properties": {
+        "comment": {
+          "title": "Comment",
+          "type": "string"
+        },
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "evaluation_id": {
+          "title": "Evaluation Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evaluation_id",
+        "criterion_id",
+        "comment"
+      ],
+      "title": "AppealCreate",
+      "type": "object"
+    },
+    "AppealQueueItem": {
+      "properties": {
+        "appeal": {
+          "$ref": "#/$defs/Appeal"
+        },
+        "conversation_id": {
+          "title": "Conversation Id",
+          "type": "string"
+        },
+        "criterion": {
+          "$ref": "#/$defs/Criterion"
+        },
+        "evaluation_id": {
+          "title": "Evaluation Id",
+          "type": "string"
+        },
+        "item": {
+          "$ref": "#/$defs/Item"
+        }
+      },
+      "required": [
+        "appeal",
+        "evaluation_id",
+        "conversation_id",
+        "item",
+        "criterion"
+      ],
+      "title": "AppealQueueItem",
+      "type": "object"
+    },
+    "BatchRequest": {
+      "properties": {
+        "checklist_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checklist Id"
+        },
+        "conversation_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conversation Ids",
+          "type": "array"
+        },
+        "group_id": {
+          "title": "Group Id",
+          "type": "string"
+        },
+        "k": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "K"
+        },
+        "mode": {
+          "anyOf": [
+            {
+              "enum": [
+                "single",
+                "per_criterion"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mode"
+        },
+        "profile": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Profile"
+        }
+      },
+      "required": [
+        "group_id",
+        "conversation_ids"
+      ],
+      "title": "BatchRequest",
+      "type": "object"
+    },
+    "Checklist": {
+      "properties": {
+        "channel_default": {
+          "anyOf": [
+            {
+              "enum": [
+                "agent chat",
+                "voice call"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Channel Default"
+        },
+        "criteria": {
+          "items": {
+            "$ref": "#/$defs/Criterion"
+          },
+          "title": "Criteria",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "notes": {
+          "title": "Notes",
+          "type": "string"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/Section"
+          },
+          "title": "Sections",
+          "type": "array"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "channel_default",
+        "version",
+        "sections",
+        "criteria",
+        "notes",
+        "source"
+      ],
+      "title": "Checklist",
+      "type": "object"
+    },
+    "ChecklistSummary": {
+      "properties": {
+        "channel_default": {
+          "anyOf": [
+            {
+              "enum": [
+                "agent chat",
+                "voice call"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Channel Default"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "channel_default",
+        "version"
+      ],
+      "title": "ChecklistSummary",
+      "type": "object"
+    },
+    "ConversationSummary": {
+      "properties": {
+        "channel": {
+          "enum": [
+            "agent chat",
+            "voice call"
+          ],
+          "title": "Channel",
+          "type": "string"
+        },
+        "conversation_id": {
+          "title": "Conversation Id",
+          "type": "string"
+        },
+        "language": {
+          "enum": [
+            "RU",
+            "KZ",
+            "EN"
+          ],
+          "title": "Language",
+          "type": "string"
+        },
+        "latest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EvaluationSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "turns": {
+          "title": "Turns",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "conversation_id",
+        "channel",
+        "language",
+        "turns",
+        "latest"
+      ],
+      "title": "ConversationSummary",
+      "type": "object"
+    },
+    "Criterion": {
+      "properties": {
+        "answer_type": {
+          "enum": [
+            "yes_no",
+            "scale"
+          ],
+          "title": "Answer Type",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "default": "scored",
+          "enum": [
+            "scored",
+            "gross_error"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "na_allowed": {
+          "title": "Na Allowed",
+          "type": "boolean"
+        },
+        "na_condition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Na Condition"
+        },
+        "section_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Section Id"
+        },
+        "steps": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/ScaleStep"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Steps"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "weight": {
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "section_id",
+        "title",
+        "description",
+        "answer_type",
+        "weight",
+        "steps",
+        "na_allowed",
+        "na_condition"
+      ],
+      "title": "Criterion",
+      "type": "object"
+    },
+    "Decision": {
+      "properties": {
+        "action": {
+          "enum": [
+            "confirm",
+            "change"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "decided_at": {
+          "format": "date-time",
+          "title": "Decided At",
+          "type": "string"
+        },
+        "new_verdict": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "New Verdict"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "new_verdict",
+        "reason",
+        "decided_at"
+      ],
+      "title": "Decision",
+      "type": "object"
+    },
+    "DecisionCreate": {
+      "properties": {
+        "action": {
+          "enum": [
+            "confirm",
+            "change"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "new_verdict": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "New Verdict"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "reason"
+      ],
+      "title": "DecisionCreate",
+      "type": "object"
+    },
+    "DecisionResult": {
+      "properties": {
+        "appeal": {
+          "$ref": "#/$defs/Appeal"
+        },
+        "final": {
+          "$ref": "#/$defs/FinalResult"
+        }
+      },
+      "required": [
+        "appeal",
+        "final"
+      ],
+      "title": "DecisionResult",
+      "type": "object"
+    },
+    "Evaluation": {
+      "properties": {
+        "checklist_id": {
+          "title": "Checklist Id",
+          "type": "string"
+        },
+        "checklist_version": {
+          "title": "Checklist Version",
+          "type": "integer"
+        },
+        "conversation_id": {
+          "title": "Conversation Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "group_id": {
+          "title": "Group Id",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/Item"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "k": {
+          "title": "K",
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "single",
+            "per_criterion"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "profile": {
+          "title": "Profile",
+          "type": "string"
+        },
+        "score": {
+          "$ref": "#/$defs/Score"
+        },
+        "usage": {
+          "$ref": "#/$defs/Usage"
+        }
+      },
+      "required": [
+        "id",
+        "conversation_id",
+        "group_id",
+        "checklist_id",
+        "checklist_version",
+        "profile",
+        "model",
+        "mode",
+        "k",
+        "created_at",
+        "items",
+        "score",
+        "usage"
+      ],
+      "title": "Evaluation",
+      "type": "object"
+    },
+    "EvaluationSummary": {
+      "properties": {
+        "checklist_id": {
+          "title": "Checklist Id",
+          "type": "string"
+        },
+        "checklist_version": {
+          "title": "Checklist Version",
+          "type": "integer"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "final_total": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Final Total"
+        },
+        "gross_error": {
+          "title": "Gross Error",
+          "type": "boolean"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "total": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total"
+        }
+      },
+      "required": [
+        "id",
+        "checklist_id",
+        "checklist_version",
+        "total",
+        "final_total",
+        "gross_error",
+        "created_at"
+      ],
+      "title": "EvaluationSummary",
+      "type": "object"
+    },
+    "EvaluationView": {
+      "properties": {
+        "appeals": {
+          "items": {
+            "$ref": "#/$defs/Appeal"
+          },
+          "title": "Appeals",
+          "type": "array"
+        },
+        "checklist": {
+          "$ref": "#/$defs/Checklist"
+        },
+        "evaluation": {
+          "$ref": "#/$defs/Evaluation"
+        },
+        "final": {
+          "$ref": "#/$defs/FinalResult"
+        }
+      },
+      "required": [
+        "evaluation",
+        "checklist",
+        "appeals",
+        "final"
+      ],
+      "title": "EvaluationView",
+      "type": "object"
+    },
+    "FinalItem": {
+      "properties": {
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Decision"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "final_verdict": {
+          "title": "Final Verdict",
+          "type": "string"
+        },
+        "original_verdict": {
+          "title": "Original Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "original_verdict",
+        "decision",
+        "final_verdict"
+      ],
+      "title": "FinalItem",
+      "type": "object"
+    },
+    "FinalResult": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/$defs/FinalItem"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "score": {
+          "$ref": "#/$defs/Score"
+        }
+      },
+      "required": [
+        "items",
+        "score"
+      ],
+      "title": "FinalResult",
+      "type": "object"
+    },
+    "Item": {
+      "properties": {
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "evidence_idx": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Evidence Idx",
+          "type": "array"
+        },
+        "expected_range": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Range"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "na_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Na Reason"
+        },
+        "verdict": {
+          "title": "Verdict",
+          "type": "string"
+        },
+        "votes": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "default": {},
+          "title": "Votes",
+          "type": "object"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "verdict",
+        "explanation",
+        "evidence_idx"
+      ],
+      "title": "Item",
+      "type": "object"
+    },
+    "Job": {
+      "properties": {
+        "done": {
+          "title": "Done",
+          "type": "integer"
+        },
+        "evaluation_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evaluation Ids",
+          "type": "array"
+        },
+        "failed": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Failed",
+          "type": "object"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "running",
+            "finished"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "state",
+        "total",
+        "done",
+        "failed",
+        "evaluation_ids"
+      ],
+      "title": "Job",
+      "type": "object"
+    },
+    "RawCall": {
+      "properties": {
+        "criterion_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Criterion Ids",
+          "type": "array"
+        },
+        "evaluation_id": {
+          "title": "Evaluation Id",
+          "type": "string"
+        },
+        "messages": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Messages",
+          "type": "array"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "response_text": {
+          "title": "Response Text",
+          "type": "string"
+        },
+        "seconds": {
+          "title": "Seconds",
+          "type": "number"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evaluation_id",
+        "criterion_ids",
+        "messages",
+        "response_text",
+        "model",
+        "started_at",
+        "seconds"
+      ],
+      "title": "RawCall",
+      "type": "object"
+    },
+    "Record": {
+      "properties": {
+        "audio_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Audio Url"
+        },
+        "channel": {
+          "enum": [
+            "agent chat",
+            "voice call"
+          ],
+          "title": "Channel",
+          "type": "string"
+        },
+        "conversation_id": {
+          "title": "Conversation Id",
+          "type": "string"
+        },
+        "language": {
+          "enum": [
+            "RU",
+            "KZ",
+            "EN"
+          ],
+          "title": "Language",
+          "type": "string"
+        },
+        "transcript": {
+          "items": {
+            "$ref": "#/$defs/Turn"
+          },
+          "title": "Transcript",
+          "type": "array"
+        }
+      },
+      "required": [
+        "conversation_id",
+        "channel",
+        "language",
+        "transcript",
+        "audio_url"
+      ],
+      "title": "Record",
+      "type": "object"
+    },
+    "ScaleStep": {
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "value",
+        "description"
+      ],
+      "title": "ScaleStep",
+      "type": "object"
+    },
+    "Score": {
+      "properties": {
+        "applicable_weight": {
+          "title": "Applicable Weight",
+          "type": "number"
+        },
+        "gross_error": {
+          "title": "Gross Error",
+          "type": "boolean"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/ScoreItem"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/SectionScore"
+          },
+          "title": "Sections",
+          "type": "array"
+        },
+        "total": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total"
+        }
+      },
+      "required": [
+        "total",
+        "sections",
+        "gross_error",
+        "applicable_weight",
+        "items"
+      ],
+      "title": "Score",
+      "type": "object"
+    },
+    "ScoreItem": {
+      "properties": {
+        "applicable": {
+          "title": "Applicable",
+          "type": "boolean"
+        },
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "effective_points": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Effective Points"
+        },
+        "max_points": {
+          "title": "Max Points",
+          "type": "number"
+        },
+        "points": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Points"
+        },
+        "verdict": {
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "verdict",
+        "applicable",
+        "points",
+        "max_points",
+        "effective_points"
+      ],
+      "title": "ScoreItem",
+      "type": "object"
+    },
+    "Section": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ],
+      "title": "Section",
+      "type": "object"
+    },
+    "SectionScore": {
+      "properties": {
+        "section_id": {
+          "title": "Section Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "total": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total"
+        }
+      },
+      "required": [
+        "section_id",
+        "title",
+        "total"
+      ],
+      "title": "SectionScore",
+      "type": "object"
+    },
+    "Turn": {
+      "properties": {
+        "idx": {
+          "title": "Idx",
+          "type": "integer"
+        },
+        "offset_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Offset S"
+        },
+        "speaker": {
+          "enum": [
+            "client",
+            "operator",
+            "bot",
+            "system"
+          ],
+          "title": "Speaker",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "timestamp": {
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "idx",
+        "timestamp",
+        "speaker",
+        "text"
+      ],
+      "title": "Turn",
+      "type": "object"
+    },
+    "Usage": {
+      "properties": {
+        "calls": {
+          "title": "Calls",
+          "type": "integer"
+        },
+        "completion_tokens": {
+          "title": "Completion Tokens",
+          "type": "integer"
+        },
+        "prompt_tokens": {
+          "title": "Prompt Tokens",
+          "type": "integer"
+        },
+        "seconds": {
+          "title": "Seconds",
+          "type": "number"
+        }
+      },
+      "required": [
+        "prompt_tokens",
+        "completion_tokens",
+        "calls",
+        "seconds"
+      ],
+      "title": "Usage",
+      "type": "object"
+    }
+  }
+}

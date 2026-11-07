@@ -1,0 +1,10 @@
+{
+  "id": "job-0001",
+  "state": "running",
+  "total": 2,
+  "done": 1,
+  "failed": {},
+  "evaluation_ids": [
+    "ev-0001"
+  ]
+}

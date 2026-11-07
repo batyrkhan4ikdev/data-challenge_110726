@@ -1,0 +1,29 @@
+[
+  {
+    "evaluation_id": "ev-0001",
+    "criterion_ids": [
+      "c01",
+      "c02",
+      "c03",
+      "c04",
+      "c05",
+      "c06",
+      "c07",
+      "c08"
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "Ты оцениваешь работу оператора по чек-листу."
+      },
+      {
+        "role": "user",
+        "content": "[0] client: Где посмотреть мой тариф? ..."
+      }
+    ],
+    "response_text": "{\"items\": [{\"criterion_id\": \"c01\", \"verdict\": \"yes\"}]}",
+    "model": "fake",
+    "started_at": "2026-11-07T14:29:57+05:00",
+    "seconds": 2.4
+  }
+]

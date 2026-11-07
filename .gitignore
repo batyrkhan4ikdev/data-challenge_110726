@@ -10,3 +10,4 @@ node_modules/
 bench/results/**
 !bench/results/**/
 !bench/results/**/summary.md
+*.egg-info/

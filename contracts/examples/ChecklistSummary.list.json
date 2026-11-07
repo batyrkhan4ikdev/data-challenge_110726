@@ -1,0 +1,14 @@
+[
+  {
+    "id": "chat",
+    "name": "Чат (по умолчанию)",
+    "channel_default": "agent chat",
+    "version": 1
+  },
+  {
+    "id": "call",
+    "name": "Звонок (по умолчанию)",
+    "channel_default": "voice call",
+    "version": 1
+  }
+]

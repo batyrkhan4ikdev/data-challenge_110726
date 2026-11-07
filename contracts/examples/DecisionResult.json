@@ -1,0 +1,166 @@
+{
+  "appeal": {
+    "id": "ap-0001",
+    "evaluation_id": "ev-0001",
+    "criterion_id": "c06",
+    "comment": "Предупреждение об ожидании было.",
+    "created_at": "2026-11-07T15:00:00+05:00",
+    "status": "resolved",
+    "decision": {
+      "action": "change",
+      "new_verdict": "10",
+      "reason": "Оператор предупредил об ожидании в реплике 6.",
+      "decided_at": "2026-11-07T15:10:00+05:00"
+    }
+  },
+  "final": {
+    "items": [
+      {
+        "criterion_id": "c01",
+        "original_verdict": "yes",
+        "decision": null,
+        "final_verdict": "yes"
+      },
+      {
+        "criterion_id": "c02",
+        "original_verdict": "yes",
+        "decision": null,
+        "final_verdict": "yes"
+      },
+      {
+        "criterion_id": "c03",
+        "original_verdict": "na",
+        "decision": null,
+        "final_verdict": "na"
+      },
+      {
+        "criterion_id": "c04",
+        "original_verdict": "15",
+        "decision": null,
+        "final_verdict": "15"
+      },
+      {
+        "criterion_id": "c05",
+        "original_verdict": "yes",
+        "decision": null,
+        "final_verdict": "yes"
+      },
+      {
+        "criterion_id": "c06",
+        "original_verdict": "7",
+        "decision": {
+          "action": "change",
+          "new_verdict": "10",
+          "reason": "Оператор предупредил об ожидании в реплике 6.",
+          "decided_at": "2026-11-07T15:10:00+05:00"
+        },
+        "final_verdict": "10"
+      },
+      {
+        "criterion_id": "c07",
+        "original_verdict": "no",
+        "decision": null,
+        "final_verdict": "no"
+      },
+      {
+        "criterion_id": "c08",
+        "original_verdict": "no",
+        "decision": null,
+        "final_verdict": "no"
+      }
+    ],
+    "score": {
+      "total": 87.5,
+      "sections": [
+        {
+          "section_id": "s1",
+          "title": "Начало и понимание запроса",
+          "total": 100.0
+        },
+        {
+          "section_id": "s2",
+          "title": "Безопасность и решение",
+          "total": 75.0
+        },
+        {
+          "section_id": "s3",
+          "title": "Ведение и завершение диалога",
+          "total": 85.71
+        },
+        {
+          "section_id": "s4",
+          "title": "Грубые нарушения",
+          "total": null
+        }
+      ],
+      "gross_error": false,
+      "applicable_weight": 80.0,
+      "items": [
+        {
+          "criterion_id": "c01",
+          "verdict": "yes",
+          "applicable": true,
+          "points": 10.0,
+          "max_points": 10.0,
+          "effective_points": 12.5
+        },
+        {
+          "criterion_id": "c02",
+          "verdict": "yes",
+          "applicable": true,
+          "points": 15.0,
+          "max_points": 15.0,
+          "effective_points": 18.75
+        },
+        {
+          "criterion_id": "c03",
+          "verdict": "na",
+          "applicable": false,
+          "points": null,
+          "max_points": 20.0,
+          "effective_points": null
+        },
+        {
+          "criterion_id": "c04",
+          "verdict": "15",
+          "applicable": true,
+          "points": 15.0,
+          "max_points": 20.0,
+          "effective_points": 18.75
+        },
+        {
+          "criterion_id": "c05",
+          "verdict": "yes",
+          "applicable": true,
+          "points": 15.0,
+          "max_points": 15.0,
+          "effective_points": 18.75
+        },
+        {
+          "criterion_id": "c06",
+          "verdict": "10",
+          "applicable": true,
+          "points": 15.0,
+          "max_points": 15.0,
+          "effective_points": 18.75
+        },
+        {
+          "criterion_id": "c07",
+          "verdict": "no",
+          "applicable": true,
+          "points": 0.0,
+          "max_points": 5.0,
+          "effective_points": 0.0
+        },
+        {
+          "criterion_id": "c08",
+          "verdict": "no",
+          "applicable": false,
+          "points": null,
+          "max_points": 0.0,
+          "effective_points": null
+        }
+      ]
+    }
+  }
+}

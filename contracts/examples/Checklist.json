@@ -1,0 +1,162 @@
+{
+  "id": "chat",
+  "name": "Чат (по умолчанию)",
+  "channel_default": "agent chat",
+  "version": 1,
+  "sections": [
+    {
+      "id": "s1",
+      "title": "Начало и понимание запроса"
+    },
+    {
+      "id": "s2",
+      "title": "Безопасность и решение"
+    },
+    {
+      "id": "s3",
+      "title": "Ведение и завершение диалога"
+    },
+    {
+      "id": "s4",
+      "title": "Грубые нарушения"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "c01",
+      "section_id": "s1",
+      "title": "Установление контакта",
+      "description": "Кратко: установление контакта.",
+      "answer_type": "yes_no",
+      "weight": 10.0,
+      "steps": null,
+      "na_allowed": false,
+      "na_condition": null,
+      "kind": "scored"
+    },
+    {
+      "id": "c02",
+      "section_id": "s1",
+      "title": "Выявление потребности",
+      "description": "Кратко: выявление потребности.",
+      "answer_type": "yes_no",
+      "weight": 15.0,
+      "steps": null,
+      "na_allowed": true,
+      "na_condition": "данных для ответа хватало с самого начала",
+      "kind": "scored"
+    },
+    {
+      "id": "c03",
+      "section_id": "s2",
+      "title": "Идентификация",
+      "description": "Кратко: идентификация.",
+      "answer_type": "yes_no",
+      "weight": 20.0,
+      "steps": null,
+      "na_allowed": true,
+      "na_condition": "запрос не требовал идентификации",
+      "kind": "scored"
+    },
+    {
+      "id": "c04",
+      "section_id": "s2",
+      "title": "Корректная и полная консультация",
+      "description": "Кратко: корректная и полная консультация.",
+      "answer_type": "scale",
+      "weight": 20.0,
+      "steps": [
+        {
+          "value": 0,
+          "description": "0 баллов"
+        },
+        {
+          "value": 5,
+          "description": "5 баллов"
+        },
+        {
+          "value": 10,
+          "description": "10 баллов"
+        },
+        {
+          "value": 15,
+          "description": "15 баллов"
+        },
+        {
+          "value": 20,
+          "description": "20 баллов"
+        }
+      ],
+      "na_allowed": true,
+      "na_condition": "чат закончился до того, как клиент сформулировал запрос",
+      "kind": "scored"
+    },
+    {
+      "id": "c05",
+      "section_id": "s3",
+      "title": "Эмпатия и клиентоориентированность",
+      "description": "Кратко: эмпатия и клиентоориентированность.",
+      "answer_type": "yes_no",
+      "weight": 15.0,
+      "steps": null,
+      "na_allowed": false,
+      "na_condition": null,
+      "kind": "scored"
+    },
+    {
+      "id": "c06",
+      "section_id": "s3",
+      "title": "Управление диалогом, скорость и грамотность",
+      "description": "Кратко: управление диалогом, скорость и грамотность.",
+      "answer_type": "scale",
+      "weight": 15.0,
+      "steps": [
+        {
+          "value": 0,
+          "description": "0 баллов"
+        },
+        {
+          "value": 4,
+          "description": "4 баллов"
+        },
+        {
+          "value": 7,
+          "description": "7 баллов"
+        },
+        {
+          "value": 10,
+          "description": "10 баллов"
+        }
+      ],
+      "na_allowed": false,
+      "na_condition": null,
+      "kind": "scored"
+    },
+    {
+      "id": "c07",
+      "section_id": "s3",
+      "title": "Завершение",
+      "description": "Кратко: завершение.",
+      "answer_type": "yes_no",
+      "weight": 5.0,
+      "steps": null,
+      "na_allowed": true,
+      "na_condition": "чат оборвался до возможности его завершить",
+      "kind": "scored"
+    },
+    {
+      "id": "c08",
+      "section_id": "s4",
+      "title": "Грубые ошибки",
+      "description": "Кратко: грубые ошибки.",
+      "answer_type": "yes_no",
+      "weight": 0.0,
+      "steps": null,
+      "na_allowed": false,
+      "na_condition": null,
+      "kind": "gross_error"
+    }
+  ],
+  "notes": "Сокращённый пример.",
+  "source": "docs/CQA_Chat_Quality_Checklist.pdf"
+}

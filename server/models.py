@@ -1,0 +1,241 @@
+from datetime import datetime
+from typing import Any, Literal
+
+from pydantic import BaseModel
+
+Channel = Literal['agent chat', 'voice call']
+Speaker = Literal['client', 'operator', 'bot', 'system']
+Mode = Literal['single', 'per_criterion']
+
+
+class Turn(BaseModel):
+    idx: int
+    timestamp: str
+    offset_s: float | None = None
+    speaker: Speaker
+    text: str
+
+
+class Record(BaseModel):
+    conversation_id: str
+    channel: Channel
+    language: Literal['RU', 'KZ', 'EN']
+    transcript: list[Turn]
+    audio_url: str | None
+
+
+class Usage(BaseModel):
+    prompt_tokens: int
+    completion_tokens: int
+    calls: int
+    seconds: float
+
+
+class EvaluationSummary(BaseModel):
+    id: str
+    checklist_id: str
+    checklist_version: int
+    total: float | None
+    final_total: float | None
+    gross_error: bool
+    created_at: datetime
+
+
+class ConversationSummary(BaseModel):
+    conversation_id: str
+    channel: Channel
+    language: Literal['RU', 'KZ', 'EN']
+    turns: int
+    latest: EvaluationSummary | None
+
+
+class ScaleStep(BaseModel):
+    value: int
+    description: str
+
+
+class Section(BaseModel):
+    id: str
+    title: str
+
+
+class Criterion(BaseModel):
+    id: str
+    section_id: str | None
+    title: str
+    description: str
+    answer_type: Literal['yes_no', 'scale']
+    weight: float
+    steps: list[ScaleStep] | None
+    na_allowed: bool
+    na_condition: str | None
+    kind: Literal['scored', 'gross_error'] = 'scored'
+
+
+class Checklist(BaseModel):
+    id: str
+    name: str
+    channel_default: Channel | None
+    version: int
+    sections: list[Section]
+    criteria: list[Criterion]
+    notes: str
+    source: str
+
+
+class ChecklistSummary(BaseModel):
+    id: str
+    name: str
+    channel_default: Channel | None
+    version: int
+
+
+class Item(BaseModel):
+    criterion_id: str
+    verdict: str
+    explanation: str
+    evidence_idx: list[int]
+    expected_range: tuple[int, int] | None = None
+    na_reason: str | None = None
+    votes: dict[str, int] = {}
+
+
+class ScoreItem(BaseModel):
+    criterion_id: str
+    verdict: str
+    applicable: bool
+    points: float | None
+    max_points: float
+    effective_points: float | None
+
+
+class SectionScore(BaseModel):
+    section_id: str
+    title: str
+    total: float | None
+
+
+class Score(BaseModel):
+    total: float | None
+    sections: list[SectionScore]
+    gross_error: bool
+    applicable_weight: float
+    items: list[ScoreItem]
+
+
+class Evaluation(BaseModel):
+    id: str
+    conversation_id: str
+    group_id: str
+    checklist_id: str
+    checklist_version: int
+    profile: str
+    model: str
+    mode: Mode
+    k: int
+    created_at: datetime
+    items: list[Item]
+    score: Score
+    usage: Usage
+
+
+class RawCall(BaseModel):
+    evaluation_id: str
+    criterion_ids: list[str]
+    messages: list[dict[str, Any]]
+    response_text: str
+    model: str
+    started_at: datetime
+    seconds: float
+
+
+class Decision(BaseModel):
+    action: Literal['confirm', 'change']
+    new_verdict: str | None
+    reason: str
+    decided_at: datetime
+
+
+class Appeal(BaseModel):
+    id: str
+    evaluation_id: str
+    criterion_id: str
+    comment: str
+    created_at: datetime
+    status: Literal['open', 'resolved']
+    decision: Decision | None
+
+
+class FinalItem(BaseModel):
+    criterion_id: str
+    original_verdict: str
+    decision: Decision | None
+    final_verdict: str
+
+
+class FinalResult(BaseModel):
+    items: list[FinalItem]
+    score: Score
+
+
+class EvaluationView(BaseModel):
+    evaluation: Evaluation
+    checklist: Checklist
+    appeals: list[Appeal]
+    final: FinalResult
+
+
+class Job(BaseModel):
+    id: str
+    state: Literal['running', 'finished']
+    total: int
+    done: int
+    failed: dict[str, str]
+    evaluation_ids: list[str]
+
+
+class ApiError(BaseModel):
+    error: str
+    details: list[str] | None
+
+
+class BatchRequest(BaseModel):
+    group_id: str
+    conversation_ids: list[str]
+    checklist_id: str | None = None
+    profile: str | None = None
+    mode: Mode | None = None
+    k: int | None = None
+
+
+class AppealCreate(BaseModel):
+    evaluation_id: str
+    criterion_id: str
+    comment: str
+
+
+class DecisionCreate(BaseModel):
+    action: Literal['confirm', 'change']
+    new_verdict: str | None = None
+    reason: str
+
+
+class AppealQueueItem(BaseModel):
+    appeal: Appeal
+    evaluation_id: str
+    conversation_id: str
+    item: Item
+    criterion: Criterion
+
+
+class DecisionResult(BaseModel):
+    appeal: Appeal
+    final: FinalResult
+
+
+ALL_MODELS: list[type[BaseModel]] = [
+    Turn, Record, Usage, EvaluationSummary, ConversationSummary, ScaleStep, Section, Criterion,
+    Checklist, ChecklistSummary, Item, ScoreItem, SectionScore, Score, Evaluation, RawCall,
+    Decision, Appeal, FinalItem, FinalResult, EvaluationView, Job, ApiError, BatchRequest,
+    AppealCreate, DecisionCreate, AppealQueueItem, DecisionResult,
+]

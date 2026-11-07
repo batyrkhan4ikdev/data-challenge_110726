@@ -1,0 +1,12 @@
+{
+  "id": "job-0001",
+  "state": "finished",
+  "total": 2,
+  "done": 2,
+  "failed": {
+    "p4-ru-003": "пустой транскрипт"
+  },
+  "evaluation_ids": [
+    "ev-0001"
+  ]
+}

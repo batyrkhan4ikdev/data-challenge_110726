@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: pip install -e .[dev]
+      - run: pytest -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: if [ -f web/package-lock.json ]; then npm ci --prefix web; else npm install --prefix web; fi
+      - run: python scripts/gen_types.py
+      - run: git diff --exit-code contracts web/src/types.gen.ts
+      - run: npm run typecheck --prefix web
