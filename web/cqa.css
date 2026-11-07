@@ -59,7 +59,8 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: 208px minmax(0, 1fr);
-  background: var(--cqa-bg);
+  /* The nav column is painted on the grid, so it spans the full page height; the sticky sidebar sits on top of it. */
+  background: linear-gradient(to right, var(--cqa-surface) 0 207px, var(--cqa-border) 207px 208px, var(--cqa-bg) 208px);
   color: var(--cqa-text);
   font-family: var(--cqa-font);
   font-size: var(--cqa-fs);
@@ -164,7 +165,7 @@
   gap: 24px;
   padding: 20px 12px;
   background: var(--cqa-surface);
-  border-right: 1px solid var(--cqa-border);
+  box-shadow: inset -1px 0 0 var(--cqa-border);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -1810,9 +1811,6 @@
 .cqa .cqa-span-3 {
   grid-column: span 3;
 }
-.cqa .cqa-span-4 {
-  grid-column: span 4;
-}
 .cqa .cqa-editor .cqa-sections {
   margin-bottom: 24px;
 }
@@ -2227,8 +2225,7 @@
   .cqa .cqa-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .cqa .cqa-span-3,
-  .cqa .cqa-span-4 {
+  .cqa .cqa-span-3 {
     grid-column: span 2;
   }
   .cqa .cqa-appeal-cols,
@@ -2250,6 +2247,7 @@
   .cqa {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
+    background: var(--cqa-bg);
   }
   .cqa .cqa-sidebar {
     position: static;
@@ -2261,7 +2259,7 @@
     align-items: center;
     gap: 8px 12px;
     padding: 12px 12px 8px;
-    border-right: none;
+    box-shadow: none;
     border-bottom: 1px solid var(--cqa-border);
   }
   .cqa .cqa-brand {
