@@ -52,9 +52,13 @@ class Services:
 
     async def records(self, group_id: str, refresh: bool = False) -> list[Record]:
         """Dataset records, cached in memory per group; `refresh` reloads. A failed load keeps the cache.
-        `UPLOADS` is read from the store every time: it changes with each upload."""
+        `UPLOADS` is read from the store every time: it changes with each upload.
+        A plain read returns the cached list at once, even while a refresh is fetching from the organizers' API
+        (that took 40+ s on this network and froze every page of the group)."""
         if group_id == UPLOADS:
             return await self.uploads.records()
+        if not refresh and group_id in self._datasets:
+            return self._datasets[group_id]
         async with self._dataset_locks[group_id]:
             if refresh or group_id not in self._datasets:
                 self._datasets[group_id] = await self.dataset_loader(group_id, refresh)

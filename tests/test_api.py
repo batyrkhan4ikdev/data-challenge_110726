@@ -419,3 +419,21 @@ async def test_group_analytics(tmp_path: Path):
     c03 = next(x for x in d['criteria'] if x['criterion_id'] == 'c03')
     assert (c03['na'], c03['applicable']) == (2, 1)
     assert all(x['criterion_id'] != 'c08' for x in d['criteria'])
+
+
+async def test_slow_refresh_does_not_block_reads(tmp_path: Path) -> None:
+    """«Обновить» refetches from the organizers' API; other pages of the group must keep answering from the cache."""
+    gate = asyncio.Event()
+
+    async def slow(group_id: str, refresh: bool) -> list[Record]:
+        if refresh:
+            await gate.wait()
+        return RECORDS
+
+    svc = create_app(tmp_path, slow, DEFAULTS).state.services
+    await svc.records('DEV')
+    refreshing = asyncio.create_task(svc.records('DEV', refresh=True))
+    await asyncio.sleep(0)
+    assert await asyncio.wait_for(svc.records('DEV'), 1) == RECORDS and not refreshing.done()
+    gate.set()
+    assert await refreshing == RECORDS
