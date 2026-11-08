@@ -195,6 +195,6 @@ CI (`.github/workflows/ci.yml`) гоняет тесты, проверяет, ч�
 |---|---|
 | Batyrkhan Sydyk | [@Batyrkhantzy111](https://github.com/Batyrkhantzy111) |
 | Aryn Yklas | [@arynyklas](https://github.com/arynyklas) |
-| Aidyn Rymbekov | |
+| Aidyn Rymbekov | [@kakhotitee](https://github.com/kakhotitee) |
 
 Над кодом вместе с нами работали ИИ-агенты. Как команда договаривалась с ними, описано в [`docs/internal/agents/`](docs/internal/agents/).
