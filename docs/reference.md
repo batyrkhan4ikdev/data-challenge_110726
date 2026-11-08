@@ -129,7 +129,7 @@ python scripts/run_batch.py <CONTROL_GROUP> --refresh --submit prod   # → resu
 
 | Профиль | Модель | Где |
 |---|---|---|
-| `h200-gemma` | Gemma 4 31B | свой vLLM, 4 реплики × 1 H200 |
+| `h200-gemma` | Gemma 4 31B | свой vLLM, 4 экземпляра сервера × 1 H200 |
 | `h200-kz` | ISSAI Qwen3.5-35B-A3B-Kazakh | свой vLLM, 1× H200 |
 | `h200-glimmer` | Muse-Glimmer-30B | свой vLLM, 1× H200 |
 | `aigw-sonnet` / `aigw-luna` / `aigw-alemllm` | Claude Sonnet 5.5 / GPT-6 Luna / AlemLLM | облачный API |
