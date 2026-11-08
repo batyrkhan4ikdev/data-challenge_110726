@@ -68,15 +68,13 @@ const sleep = (ms: number, signal?: AbortSignal) =>
 export class Api {
   constructor(private readonly base: string) {}
 
-  private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
+  /** fetch + единый разбор ошибки (ApiError → ApiFail). Прерывание по `signal` пробрасывается как AbortError. */
+  private async send(path: string, init: RequestInit = {}): Promise<Response> {
     let res: Response;
     try {
-      res = await fetch(this.base + path, {
-        method,
-        headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
-        body: body === undefined ? undefined : JSON.stringify(body),
-      });
-    } catch {
+      res = await fetch(this.base + path, init);
+    } catch (e) {
+      if (init.signal?.aborted) throw e;
       throw new ApiFail(0, t.common.networkError);
     }
     if (!res.ok) {
@@ -88,6 +86,15 @@ export class Api {
       }
       throw new ApiFail(res.status, err.error || `${t.common.error} ${res.status}`, err.details ?? null);
     }
+    return res;
+  }
+
+  private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
+    const res = await this.send(path, {
+      method,
+      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
     return (await res.json()) as T;
   }
 
@@ -123,26 +130,12 @@ export class Api {
     return this.request('PUT', `/conversations/${encodeURIComponent(cid)}/transcripts/custom`, body);
   }
   /** Новый звонок в группе UPLOADS: файл → распознавание → роли и маскирование (долго, до пары минут). */
-  async uploadCall(file: File, language: UploadLanguage, provider: string): Promise<DialogRecord> {
+  async uploadCall(file: File, language: UploadLanguage, provider: string, signal?: AbortSignal): Promise<DialogRecord> {
     const form = new FormData();
     form.append('file', file, file.name);
     form.append('language', language);
     form.append('provider', provider);
-    let res: Response;
-    try {
-      res = await fetch(`${this.base}/uploads/call`, { method: 'POST', body: form });
-    } catch {
-      throw new ApiFail(0, t.common.networkError);
-    }
-    if (!res.ok) {
-      let err: Partial<ApiError> = {};
-      try {
-        err = (await res.json()) as Partial<ApiError>;
-      } catch {
-        /* тело не JSON */
-      }
-      throw new ApiFail(res.status, err.error || `${t.common.error} ${res.status}`, err.details ?? null);
-    }
+    const res = await this.send('/uploads/call', { method: 'POST', body: form, signal });
     return (await res.json()) as DialogRecord;
   }
   asrProviders(): Promise<AsrProviderInfo[]> {
@@ -152,9 +145,7 @@ export class Api {
     return this.request('POST', '/uploads/chat', body);
   }
   async deleteUpload(cid: string): Promise<void> {
-    const res = await fetch(`${this.base}/uploads/${encodeURIComponent(cid)}`, { method: 'DELETE' }).catch(() => null);
-    if (!res) throw new ApiFail(0, t.common.networkError);
-    if (!res.ok) throw new ApiFail(res.status, `${t.common.error} ${res.status}`);
+    await this.send(`/uploads/${encodeURIComponent(cid)}`, { method: 'DELETE' });
   }
   /** Коучинг «как было бы правильно»: правка реплик оператора, проверенная судьёй по одному критерию. */
   recourse<T>(evaluationId: string, criterionId: string): Promise<T> {
@@ -191,21 +182,7 @@ export class Api {
   /** ZIP «дела» по оценке (RegPack); ошибки — как у остальных запросов. */
   async regpack(group: string, cid: string, evaluationId: string): Promise<{ blob: Blob; name: string; selfcheckOk: boolean }> {
     const q = `?group_id=${encodeURIComponent(group)}&evaluation_id=${encodeURIComponent(evaluationId)}`;
-    let res: Response;
-    try {
-      res = await fetch(`${this.base}/conversations/${encodeURIComponent(cid)}/regpack${q}`);
-    } catch {
-      throw new ApiFail(0, t.common.networkError);
-    }
-    if (!res.ok) {
-      let err: Partial<ApiError> = {};
-      try {
-        err = (await res.json()) as Partial<ApiError>;
-      } catch {
-        /* тело не JSON */
-      }
-      throw new ApiFail(res.status, err.error || `${t.common.error} ${res.status}`, err.details ?? null);
-    }
+    const res = await this.send(`/conversations/${encodeURIComponent(cid)}/regpack${q}`);
     const m = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '');
     return { blob: await res.blob(), name: m?.[1] ?? `regpack-${cid}.zip`, selfcheckOk: res.headers.get('X-Regpack-Selfcheck') === 'ok' };
   }

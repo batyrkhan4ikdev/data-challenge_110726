@@ -280,7 +280,14 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   const onKey = (e: KeyboardEvent) => {
     const el = e.target as HTMLElement | null;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))) return;
+    if (el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))) {
+      // Esc возвращает к навигации j/k из поля решения (после «o»).
+      if (e.key === 'Escape' && el.closest('.cqa-appeals')) {
+        el.blur();
+        e.preventDefault();
+      }
+      return;
+    }
     if (e.key === 'j') focus(focused + 1);
     else if (e.key === 'k') focus(focused < 0 ? 0 : focused - 1);
     else if (e.key === 'a' && focused >= 0) accepts[focused].run();

@@ -26,7 +26,7 @@ flowchart LR
 
 ## Quick start
 
-You need Python 3.14 and Node 20+.
+You need Python 3.14 and Node 24 (the version CI and the Dockerfile use).
 
 ```bash
 python -m venv .venv && .venv/Scripts/activate        # Linux/macOS: source .venv/bin/activate
@@ -57,9 +57,10 @@ The interface follows the Freedom Broker visual language: a light shell (page `#
 | **Диалоги** (`#/dialogs/DEV`) | Load a dataset group, filter by channel / language / gross errors, select dialogs, pick a checklist (by default chosen by channel), and click **Оценить выбранные**. Mode and k are under «Параметры оценки». Progress and per-dialog errors are shown live. A scored dialog opens its latest result. «Порядок: требует внимания» sorts by a review priority (gross error, open appeals, warnings, N/A, criteria the judge often disagrees on, verdicts that contradict the dialog facts); the reasons are in the chip's tooltip, and it is a priority, not a probability of error. On a phone each row is a card with the ID, the total and the gross-error badge. |
 | **Загрузить звонок или чат** (on «Диалоги») | Adds a new dialog to the group `UPLOADS`: an audio file (mp3/wav/ogg/m4a/webm/flac, up to 50 MB, converted to MP3 with ffmpeg when needed) goes through ASR, speaker roles and masking; a pasted chat (`оператор:` / `клиент:` / `бот:` lines) is taken as is. The language is detected from the audio by default (Kazakh audio is re-run as `kk`). Uploaded dialogs then go through the same cycle: evaluation, result, appeal, re-evaluation, analytics. Records and audio stay under `data/store/uploads/` (gitignored). API: `POST /api/uploads/call` (multipart), `POST /api/uploads/chat`, `GET /api/uploads/{id}/audio`, `DELETE /api/uploads/{id}`. |
 | **Анализ разговора** (result card) | The score ring and per-criterion points come first, then «Почему снижена оценка»; the transcript sits beside them on a wide screen and below them on a narrow one. The audio player for calls is a native `<audio>`, and turns are numbered from 1. «Почему снижена оценка» lists every criterion that lost points with its full reason, **Перейти к фрагменту** (scrolls to the turn; for calls, seeks the audio) and **Оспорить оценку** (files an appeal). «Подробности оценки» holds the full criteria table (each criterion with its measured agreement with the DEV labels, and «часто спорный» below 85%), votes, warnings, model/mode, the raw model calls, the history by checklist version and **Сравнение оценок**: any two evaluations side by side, only changed criteria expanded. **Переоценить по текущему чек-листу** re-applies an edited checklist. **Выгрузить дело** downloads a ZIP with the transcript, evaluation, exact checklist version, appeals, final result and raw model calls, with SHA-256 hashes and a self-check of the recomputed total (`scripts/verify_regpack.py <zip>` repeats it offline). «Подтверждения проверяющего» accepts undisputed criteria in one batch (with an auto-generated «принято пакетом без раскрытия доказательств» line) or one by one; confirmations are stored apart from appeals and never change a total. The facts panel adds a «Бот / оператор» lane: what the client told the bot before the handoff and whether the operator asked again. |
+| **Как было бы правильно** (result card, per lost criterion) | For a criterion that lost points, the judge proposes a minimal edit of at most 2 operator turns, and the edited dialog is judged again on that criterion alone; the card shows the edit, the rationale and whether the new verdict is verified. It is coaching only: never stored as an evaluation, and totals and appeals are untouched. Not offered for the gross-error criterion. API: `POST /api/evaluations/{id}/recourse`. |
 | **Апелляции** (`#/review`) | The queue of open appeals: the criterion, the disputed verdict, the model's reason, the operator's comment and the dialog fragment, then the decision. **Подтвердить** or **Изменить** (the reason is required) recomputes the final total; the card shows the new total and a link back to the dialog, and the result card shows the original → decision → final chain. Keyboard: `j`/`k` next/previous card, `a` accept undisputed, `o` open the decision form. |
 | **Чек-листы** (`#/checklists`) | Create or edit checklists: criteria, wording, weight, answer type (yes/no or scale with steps), N/A on or off and its condition, sections, and gross-error criteria. Every save creates a new version (the button locks while a save is running), and old evaluations keep the version they were scored with. |
-| **Аналитика** (`#/analytics/DEV`) | Per group: dialogs evaluated, mean total, gross errors as real links, N/A share, the pass rate per criterion, breakdowns by channel and language, and the score distribution with its four ranges labelled. «Дрейф оценок» compares the score distribution against a baseline group (or the first half of the group's evaluations): PSI with the usual 0.1 / 0.25 thresholds and the two-sample KS test, in total and per criterion, and says so when n < 30 is too small to conclude. |
+| **Аналитика** (`#/analytics/DEV`) | Per group: dialogs evaluated, mean total, gross errors as real links, N/A share, the pass rate per criterion, breakdowns by channel and language, and the score distribution with its four ranges labelled. «Дрейф оценок» compares the score distribution against a baseline group (or the first half of the group's evaluations): PSI with the usual 0.1 / 0.25 thresholds for the total and for each criterion, plus the two-sample KS test on the total only, and says so when n < 30 is too small to conclude. |
 
 ![Result card](docs/screenshots/result-evidence.png)
 
@@ -86,7 +87,7 @@ This prints a table and the token, time and cost totals. It writes `out/<GROUP_I
 - criterion codes `contact … critical`, with `true`/`false`/`null` or raw scale points;
 - `evidence_turns` numbered from 1 over the raw transcript;
 - a failed dialog becomes a `status: "error"` entry;
-- `model.mode` is `local`, or `hybrid` if the cloud fallback scored any dialog.
+- `model.mode` is the hosting of the profile that scored the dialogs (`local` or `external_api`) when they all share one, and `hybrid` when profiles with different hosting scored them (for example, a cloud fallback took some dialogs).
 
 `team_name` comes from `--team-name` or env `TEAM_NAME`. Commit and push both files before stop-code.
 
@@ -137,7 +138,7 @@ An `ensemble` profile (`provider = "ensemble"`, `members = ["profile:mode", …]
 
 The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). The gold is an **LLM consensus**: 4 blind labelings per dialog by GPT-6 Astra and Claude Opus 5.5. On top of it sit **20 human rows** (`bench/gold/labels.Batyrkhantzy111.arbitration.csv`), which settle the disputed verdicts and override the consensus. `--gold human` ranks models on the human rows only. We prefer a self-hosted model unless a cloud model is more than 5 pp better.
 
-**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats and matches 16 of the 20 human rows. 99.6% of its verdicts are identical between runs. It was compared against about 15 other models and setups:
+**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats (two runs) and matches 16 of the 20 human rows. Per language, RU is 0.870–0.921, KZ 0.957 and EN 0.947–0.957 in those two runs (`docs/research/benchmark-phase1.md`; `bench/results/20261107-213204`, `-213616`). In an earlier round (before the final C7/C4 and courtesy rules) 99.6% of its verdicts were identical between runs (see Reproducibility). It was compared against roughly 15 other models and setups:
 - open-weight models: Qwen3.8-27B 0.92, Qwen3.8-Flash-Next 0.91, DeepSeek-V4.1-Flash 0.90, Kimi-K2.6 0.85;
 - frontier models via OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): each scored 1–3 pp below gemma on the same dialogs;
 - a three-judge ensemble, which tied gemma.
@@ -147,15 +148,15 @@ These numbers are in-sample: the same dialogs were used to tune the checklist no
 **Cost of one evaluation** (all calls included):
 - **Self-hosted:** an H200 costs $5.35/GPU-hour (median on-demand price of Vast, RunPod, Nebius and CoreWeave, 2026-11; see `docs/research/llm-candidates.md`). The cost per evaluation is `$/h × GPU-seconds ÷ concurrency ÷ 3600`.
   - **Single mode:** ≈ $0.001.
-  - **Per-criterion mode:** ≈ $0.003. The full DEV run (65 dialogs) cost $0.18 and took 7–8.5 minutes of wall time (420 s and 507 s) at 4 dialogs in parallel. Per dialog, per-criterion latency averages 27.7–31.8 s (p90 66–80 s) at 8 in parallel (`bench/results/20261107-213204`, `-213616`).
-- **Cloud:** in single mode, Claude Sonnet 5.5 at $2 / $10 per 1M tokens is **≈ $0.024** and GPT-6 Luna at $0.10 / $0.50 is **≈ $0.001**. Sonnet in per-criterion mode is ≈ $0.07.
+  - **Per-criterion mode:** ≈ $0.003 per evaluation (`bench/results/20261107-213204/summary.md`, `-213616`), so about $0.2 for the 65 DEV dialogs. The full DEV run took 7–8.5 minutes of wall time (420 s and 507 s) at 4 dialogs in parallel. Per dialog, per-criterion latency averages 27.7–31.8 s (p90 66–80 s) at 8 in parallel (`bench/results/20261107-213204`, `-213616`).
+- **Cloud:** in single mode, Claude Sonnet 5.5 at $2 / $10 per 1M tokens is **≈ $0.024** and GPT-6 Luna at $0.10 / $0.50 is **≈ $0.001** (`bench/results/20261107-162940`). Per-criterion mode was not run on cloud models.
 
-Single-mode figures were measured on the 12-dialog smoke set (about 7k input and 0.5–1k output tokens per dialog). Per-criterion figures come from the full DEV run (about 21k input tokens per dialog).
+Single mode: self-hosted gemma uses about 4.2k input and 0.54k output tokens per dialog (`bench/results/20261108-030915`); Sonnet about 7.1k in and 1.0k out on the 12-dialog smoke set (`20261107-162940`). Per-criterion mode on the full DEV run uses about 25k input and 0.66k output tokens per dialog (`20261107-213204`, `-213616`).
 
-**Reproducibility.** Two independent DEV runs with the control settings agreed on 507 of 512 criterion verdicts (99.0%), across 64 dialogs. This is an earlier, pre-freeze run; the final control settings reach 99.6% (see above).
+**Reproducibility.** Two independent DEV runs with the control settings agreed on 507 of 512 criterion verdicts (99.0%), across 64 dialogs. This is an earlier, pre-freeze run. The 99.6% figure (477–479 of 480 verdicts) was measured in round 3, before the final notes; the final notes were not re-measured for run-to-run stability, and their only measurement is the two-run range 0.931–0.939 above.
 - 59 dialogs were identical, and no gross-error flag changed.
 - The mean change in total was 0.73 points.
-- The 5 changes were borderline calls: c06 7↔10 and 4↔7, and one N/A↔«Нет» each on c02 and c03.
+- The 5 changes were borderline calls: p1-ru-026 c06 4→7, p4-ru-004 c06 7→10, p1-ru-003 c02 N/A→«Нет», p1-kz-012 c03 «Нет»→N/A, and p4-ru-005 c01 «Да»→«Нет» (the one that moved a total, by 18.75; `docs/research/benchmark-phase1.md`).
 
 ## Benchmark and gold labels
 
@@ -170,7 +171,7 @@ A run writes JSONL rows and a `summary.md` under `bench/results/<timestamp>/`. T
 - on `--set gold`: weighted per-criterion agreement, total MAE and bias, kappa, the N/A confusion matrix, gross-error precision and recall, and agreement by language and channel.
 
 Gates and queues on top of the bench runs:
-- `scripts/regress_gate.py --baseline <run> --candidate <run> [--max-drop 0.03]`: paired comparison against gold with a bootstrap CI; exits 1 when the candidate loses more than `max-drop`. CI runs it on the two runs in `bench/baselines/`.
+- `scripts/regress_gate.py --baseline <run> --candidate <run> [--max-drop 0.03]`: paired comparison against gold with a bootstrap CI; exits 1 when the candidate loses more than `max-drop`. Run it on a fresh `bench.run` result before changing the model, prompt or notes. CI only smoke-tests the script on the two committed runs in `bench/baselines/`; it does not call the judge.
 - `scripts/holdout_gate.py`: a fixed, language-stratified 45/15 tune/holdout split of the 60 DEV chats (`bench/gold/holdout.json`); flags a notes change as overfit when tune improves and holdout does not. Results on our past notes changes: `bench/holdout.md`.
 - `bench/arbitration_queue.py`: which (dialog, criterion) cells a human should arbitrate next, by committee disagreement × weight × scale distance → `bench/gold/arbitration_queue.csv`.
 - `bench/asr_noise_floor.py`: the 5 DEV calls scored on each transcript source; verdict flips and total MAE against the FreedomSpeech reference → `bench/asr/noise-floor.md`.
@@ -200,9 +201,9 @@ The organizers' call transcripts are poor ASR (e.g. «идентификацию
 | Whisper large-v3 turbo (Alem.Cloud) | aigw | no | 2.7 | 0.370 | 27/40 |
 | organizer API transcript | — | — | — | — | 26/40 |
 
-Gold hits move by ±2 between runs of the same transcript, so they rank no provider above another; they only show that no transcript hurt scoring. CER is agreement with another ASR, not accuracy. The manual quality comparison is Batyrkhantzy111's (`bench/asr/transcripts/<provider>/<cid>.md`); his scores go into `manual_score` in `data/asr/quality.json` and replace the automatic badge. Model research: `docs/research/asr-models.md` and `docs/research/asr-hosted.md`. Calls are evaluated with the same checklist; organizers said calls are mainly for the interface (#3075).
+Gold hits are out of 40 cells per provider, and a re-run of FreedomSpeech through our pipeline gives 27/40 both times, with one verdict flip in `bench/asr/noise-floor.md`. A one- or two-cell gap is therefore not a ranking; the hits only show that no transcript hurt scoring. CER is agreement with another ASR, not accuracy. The manual quality comparison is Batyrkhantzy111's (`bench/asr/transcripts/<provider>/<cid>.md`); his scores go into `manual_score` in `data/asr/quality.json` and replace the automatic badge. Model research: `docs/research/asr-models.md` and `docs/research/asr-hosted.md`. Calls are evaluated with the same checklist; organizers said calls are mainly for the interface (#3075).
 
-For Kazakh audio see `bench/asr/kazakh.md`: WhisperX with `language=kk` is the only provider that produces Kazakh script with speaker labels; the share of Kazakh letters there is a proxy, not accuracy.
+For Kazakh audio see `bench/asr/kazakh.md`: WhisperX (`language=kk`) and FreedomSpeech are the two candidates that produce Kazakh script with speaker labels. On the one 180 s Kazakh call, FreedomSpeech has 272 words and no loop, while WhisperX looped on 108 words (removed by `collapse_repeats`). The reference there is not independent (Alem Whisper with listener corrections, partly quoting KuSpeech and FreedomSpeech), so its CER table is diagnostic, not a ranking, and the share of Kazakh letters is a proxy, not accuracy.
 
 ### Running the ASR benchmark
 
@@ -255,4 +256,4 @@ docker compose up -d      # http://localhost:8787
 docker compose down
 ```
 
-Secrets are read from `.env` at run time (never baked into the image). Store data persists in the `cqa-store` volume; to play call audio, uncomment the `data/audio` bind in `docker-compose.yml`.
+Secrets are read from `.env` at run time (never baked into the image). Store data persists in the `cqa-store` volume; to play call audio, uncomment the `data/audio` bind in `docker-compose.yml`. The image runs as a non-root user and includes ffmpeg for audio uploads. The app has no authentication, so compose publishes the port on `127.0.0.1` only.

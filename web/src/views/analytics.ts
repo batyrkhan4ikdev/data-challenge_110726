@@ -76,7 +76,8 @@ function driftRow(label: string, m: DriftMetric, withKs: boolean): HTMLElement {
   );
 }
 
-function driftCard(drift: DriftReport, group: string, baseline: string, onBaseline: (b: string) => void): HTMLElement {
+/** `failure` — база не загрузилась: вместо таблицы ошибка, выбор базы остаётся, чтобы вернуться. */
+function driftCard(drift: DriftReport, group: string, baseline: string, onBaseline: (b: string) => void, failure: unknown = null): HTMLElement {
   const d = t.analytics.drift;
   const select = h(
     'select',
@@ -92,23 +93,27 @@ function driftCard(drift: DriftReport, group: string, baseline: string, onBaseli
     h('h2', { class: 'cqa-card-title' }, d.title),
     h('p', { class: 'cqa-muted' }, d.intro),
     h('div', { class: 'cqa-drift-controls' }, h('label', { for: 'cqa-drift-baseline' }, `${d.baselineLabel}: `), select),
-    h('p', { class: 'cqa-muted' }, drift.mode === 'groups' ? d.modeGroups(drift.baseline_label, drift.window_label) : d.modeHalves),
-    h('p', { class: 'cqa-muted' }, d.thresholds),
-    drift.enough_data ? null : banner(d.tooFew(drift.min_n, drift.total.n_baseline, drift.total.n_window), null, 'info'),
-    h(
-      'div',
-      { class: 'cqa-table-wrap', tabindex: '0', role: 'region', 'aria-label': d.title },
-      h(
-        'table',
-        { class: 'cqa-table' },
-        h('thead', null, h('tr', null, [d.colWhat, d.colN, d.colPsi, d.colKs, d.colKsP, d.colVerdict].map((x, i) => h('th', { scope: 'col', class: i && i < 5 ? 'cqa-num' : '' }, x)))),
-        h('tbody', null, rows),
-      ),
-    ),
+    failure
+      ? banner(d.baselineFailed(baseline), [errorMessage(failure), ...(errorDetails(failure) ?? [])], 'error', true)
+      : [
+          h('p', { class: 'cqa-muted' }, drift.mode === 'groups' ? d.modeGroups(drift.baseline_label, drift.window_label) : d.modeHalves),
+          h('p', { class: 'cqa-muted' }, d.thresholds),
+          drift.enough_data ? null : banner(d.tooFew(drift.min_n, drift.total.n_baseline, drift.total.n_window), null, 'info'),
+          h(
+            'div',
+            { class: 'cqa-table-wrap', tabindex: '0', role: 'region', 'aria-label': d.title },
+            h(
+              'table',
+              { class: 'cqa-table' },
+              h('thead', null, h('tr', null, [d.colWhat, d.colN, d.colPsi, d.colKs, d.colKsP, d.colVerdict].map((x, i) => h('th', { scope: 'col', class: i && i < 5 ? 'cqa-num' : '' }, x)))),
+              h('tbody', null, rows),
+            ),
+          ),
+        ],
   );
 }
 
-function content(data: GroupAnalytics, group: string, baseline: string, onBaseline: (b: string) => void): HTMLElement[] {
+function content(data: GroupAnalytics, group: string, baseline: string, onBaseline: (b: string) => void, driftFailure: unknown = null): HTMLElement[] {
   const slots = data.criteria.reduce((n, c) => n + c.applicable + c.na, 0);
   const naTotal = data.criteria.reduce((n, c) => n + c.na, 0);
   const naShare = slots ? (naTotal / slots) * 100 : 0;
@@ -183,7 +188,7 @@ function content(data: GroupAnalytics, group: string, baseline: string, onBaseli
     kpis,
     h('div', { class: 'cqa-analytics-grid' }, criteria, h('div', null, hist, breakdown(t.analytics.byChannel, data.by_channel, (k) => t.channel[k] ?? k), breakdown(t.analytics.byLanguage, data.by_language, (k) => k))),
     grossList,
-    ...(data.drift ? [driftCard(data.drift, group, baseline, onBaseline)] : []),
+    ...(data.drift ? [driftCard(data.drift, group, baseline, onBaseline, driftFailure)] : []),
   ];
 }
 
@@ -196,19 +201,31 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
   );
 
   let baseline = '';
+  // Последние успешно загруженные данные: если не загрузилась только база дрейфа, остальное остаётся на экране.
+  let last: GroupAnalytics | null = null;
+  const onBaseline = (b: string) => {
+    baseline = b;
+    void load();
+  };
+  let seq = 0;
   const load = async (): Promise<void> => {
-    root.replaceChildren(head, ...skeleton());
+    const mine = ++seq;
+    if (!last) root.replaceChildren(head, ...skeleton());
     let data: GroupAnalytics;
     try {
       data = await ctx.api.analytics(group, baseline || undefined);
     } catch (e) {
-      if (ctx.signal.aborted) return;
+      if (ctx.signal.aborted || mine !== seq) return;
+      if (baseline && last) {
+        root.replaceChildren(head, ...content(last, group, baseline, onBaseline, e));
+        return;
+      }
       const alert = banner(errorMessage(e), errorDetails(e));
       alert.append(h('div', { class: 'cqa-analytics-retry' }, h('button', { type: 'button', class: 'cqa-btn', onclick: () => void load() }, t.analytics.retry)));
       root.replaceChildren(head, alert);
       return;
     }
-    if (ctx.signal.aborted) return;
+    if (ctx.signal.aborted || mine !== seq) return;
     if (data.evaluated === 0) {
       root.replaceChildren(
         head,
@@ -216,13 +233,8 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
       );
       return;
     }
-    root.replaceChildren(
-      head,
-      ...content(data, group, baseline, (b) => {
-        baseline = b;
-        void load();
-      }),
-    );
+    last = data;
+    root.replaceChildren(head, ...content(data, group, baseline, onBaseline));
   };
   await load();
 }

@@ -46,12 +46,14 @@ export function badge(text: string, tone: 'good' | 'bad' | 'warn' | 'neutral' | 
   return h('span', { class: `cqa-badge cqa-badge--${tone}`, title }, text);
 }
 
-export function banner(text: string, details?: string[] | null, tone: 'error' | 'ok' | 'info' = 'error'): HTMLElement {
+/** `collapsed` — подробности (например, сырой ответ сервера) свёрнуты под «Подробнее». */
+export function banner(text: string, details?: string[] | null, tone: 'error' | 'ok' | 'info' = 'error', collapsed = false): HTMLElement {
+  const list = details && details.length ? h('ul', null, details.map((d) => h('li', null, d))) : null;
   return h(
     'div',
     { class: `cqa-banner cqa-banner--${tone}`, role: tone === 'error' ? 'alert' : 'status' },
     h('strong', null, text),
-    details && details.length ? h('ul', null, details.map((d) => h('li', null, d))) : null,
+    list && collapsed ? h('details', { class: 'cqa-banner-details' }, h('summary', null, t.common.moreDetails), list) : list,
   );
 }
 

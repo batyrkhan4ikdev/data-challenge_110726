@@ -254,7 +254,7 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     [t.dialogs.colLang, 'cqa-cell-lang'],
     [t.dialogs.colTurns, 'cqa-num cqa-cell-turns'],
     [t.dialogs.colTotal, 'cqa-num cqa-cell-total'],
-    [t.dialogs.colAttention, 'cqa-cell-gross'],
+    [t.dialogs.colGrossAttention, 'cqa-cell-gross'],
   ];
   // Явные role сохраняют семантику таблицы, когда на узком экране строки становятся карточками (display:grid).
   tableWrap.appendChild(

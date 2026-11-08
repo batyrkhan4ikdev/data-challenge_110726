@@ -1,4 +1,5 @@
 import type { Api } from '../api.js';
+import { t } from '../i18n.js';
 import type { Criterion, Record as DialogRecord } from '../types.gen.js';
 import { badge, banner, errorDetails, errorMessage, h } from './dom.js';
 
@@ -62,7 +63,7 @@ export function recourseControl(api: Api, evaluationId: string, c: Criterion, re
     try {
       slot.replaceChildren(renderResult(await api.recourse<RecourseResult>(evaluationId, c.id), record));
     } catch (e) {
-      slot.replaceChildren(banner(errorMessage(e), errorDetails(e)));
+      slot.replaceChildren(banner(t.caseTools.recourseFail, [errorMessage(e), ...(errorDetails(e) ?? [])], 'error', true));
       button.disabled = false;
     }
   });

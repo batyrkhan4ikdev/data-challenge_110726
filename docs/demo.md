@@ -6,13 +6,13 @@ The organizers want the live product to be the presentation, with the full cycle
 
 1. Start the app: `.venv/Scripts/python.exe -m uvicorn server.app:app --port 8787`, then open `http://localhost:8787/#/dialogs/DEV`.
 2. Check that `data/store` holds the DEV results: the list should show totals for all 65 dialogs. If it doesn't, run `python scripts/run_batch.py DEV`, which takes 7–8.5 min on the 4-replica gemma (420 s and 507 s measured).
-3. Check the model with `python scripts/preflight.py`. hk-gemma and the ASR hub stay up until 17:00. If gemma goes down, each dialog falls back along `FALLBACK_PROFILE`, and the card shows which model scored it.
+3. Check the model with `python scripts/preflight.py`. If gemma goes down, each dialog falls back along `FALLBACK_PROFILE`, and the card shows which model scored it.
 4. Open a spare tab on the control group, `#/dialogs/<CONTROL_GROUP>`: «this is our raw control output, with no manual edits».
 5. The checklist edit in step 1 creates a new version of `chat`. That is fine after the control run. Before any further `--submit` run, restore the default with `--reset-defaults`.
 
 ## 0. Frame (30 s, slide 1)
 
-One sentence: we score every operator chat and call against a versioned checklist, with a reason and the exact turn for each verdict, on our own GPU by default, in about 30 s per dialog (per-criterion mode). Accuracy is about 0.93 against labels that match five other teams' published DEV labels at 94.6–99.3% (the one fully blind manual set, 14 dialogs, is lower at 84%; `bench/gold/README.md`).
+One sentence: we score every operator chat and call against a versioned checklist, with a reason and the exact turn for each verdict, on our own GPU by default, in about 30 s per dialog (per-criterion mode). Accuracy is about 0.93 on DEV (0.931–0.939 in two runs), and we expect ≈ 0.91–0.93 on unseen chats. Our labels match five other teams' published DEV labels at 94.6–99.3%; a sixth, manual set agrees 86.7% (it reads C7 «прощание без итога» as «Да»), and the one fully blind manual set (14 dialogs) is lower, at 84% (`bench/gold/README.md`).
 
 ## 1. Checklist setup (60 s): «добавить критерий, изменить, поменять вес»
 
@@ -25,7 +25,7 @@ Save. A new version is created, and the previous one stays readable. Rules and e
 
 ## 2. Getting dialogs (30 s)
 
-**Диалоги** → group DEV, loaded from the organizers' API. Filters: channel, language (RU/KZ/EN) and «Грубые ошибки». Point out the 8 gross-error dialogs, including the KZ chat p1-kz-015, where an account restriction was revealed before identification (#3106).
+**Диалоги** → group DEV, loaded from the organizers' API. Filters: channel, language (RU/KZ/EN) and «Только с грубыми ошибками». Point out the 8 gross-error dialogs, including the KZ chat p1-kz-015, where an account restriction was revealed before identification (#3106).
 
 ## 3. Evaluation (45 s)
 
@@ -34,7 +34,7 @@ Select 2–3 dialogs → **Оценить выбранные**: progress is live
 ## 4. Viewing results (90 s): «результаты конкретного диалога, почему ошибка»
 
 1. **p1-ru-022**, gross error: the operator offers to take the money personally, «в обход компании». Open the c08 row and its evidence: the highlighted turn. The flag is reported separately and does not zero the total (31.25).
-2. **p1-ru-029**: the score ring, points as `x / weight`, and «Почему снижена оценка» with «Перейти к фрагменту». Two N/A: c02 «Выявление потребности» (the client gave everything up front) and c03 «Идентификация» (no account data was disclosed); each reason is shown, and the weight is redistributed.
+2. **p1-ru-029**: the score ring, points as `x / weight`, and «Почему снижена оценка» with «Перейти к фрагменту». Two N/A: c02 «Выявление потребности» (the client gave everything up front) and c03 «Идентификация» (no account data was disclosed); each reason is shown, and the weight is redistributed. Mention that this dialog also carries the gross-error flag (total 46.15), so the badge on the card is expected; it is one of the 8.
 3. «Факты диалога»: first operator response against the 3-minute SLA, the longest client wait, masked data. It is computed from the transcript without an LLM.
 4. **Аналитика** (10 s): mean total, pass rate per criterion, by language and channel.
 
@@ -51,7 +51,7 @@ Open the call **p4-ru-003**. The organizers' transcript is unusable for QA («и
 - 8 benchmarked models, each with a quality badge;
 - «Вставить свой транскрипт».
 
-«Распознать заново» on T-one or GigaAM-v3 runs on our H200 in seconds (about 40 s). Do not re-transcribe live with Gemini or WhisperX: they take 110–163 s per call (`bench/asr/summary.md`). Roles are assigned and personal data masked by our own model by default, so customer data stays on our GPU. Click an evidence turn and the audio seeks to that moment.
+«Распознать заново» on T-one or GigaAM-v3 runs on our H200: ASR alone takes 19–30 s on average, 7–57 s per call (`bench/asr/summary.md`), plus role assignment and masking by the LLM. Do not re-transcribe live with Gemini or WhisperX: their slowest calls took 110 s and 163 s (per-call maxima; means 71 s and 60 s). Roles are assigned and personal data masked by our own model by default, so customer data stays on our GPU. Click an evidence turn and the audio seeks to that moment.
 
 **Your own recording.** «Диалоги» → **Загрузить звонок или чат** → pick an audio file (e.g. the Kazakh call `1234`, which the dataset labels RU), language «определить автоматически», model WhisperX (H200) → «Распознать и добавить». It takes about 1–1.5 min on WhisperX for 3 minutes of audio: the language comes out KZ, roles are assigned, personal data masked. Then «Оценить по этому транскрипту» → the usual result card, appeal and «Выгрузить дело». A pasted chat goes the same way in seconds. Everything lands in the group `UPLOADS`.
 
@@ -61,6 +61,6 @@ Hand over the dialogs tab. Everything above is safe to click; live evaluation of
 
 ## If they ask
 
-- **C7 «Завершение».** We read the checklist literally: a summary or an offer of further help, **and** a goodbye. A goodbye alone («Пожалуйста. Хорошего дня!») is «Нет»; the organizers answered exactly this case with «перечитайте чек-лист» (#2814). Teams split on it: in 35 of 60 DEV chats our total loses points only on C7. If the reference reads it more softly, the gap is up to ~39 of 480 cells, all on C7. The rule lives in the checklist's notes and can be edited in the UI in a minute; the prompt and the scoring do not change.
+- **C7 «Завершение».** We read the checklist literally: a summary or an offer of further help, **and** a goodbye. A goodbye alone («Пожалуйста. Хорошего дня!») is «Нет»; the organizers' reply «Внимательно перечитайте чеклист по данному пункту» (#2814) most likely answers this very question (#2686, see `docs/organizer-answers.md`). Teams split on it. In our submitted DEV output C7 is «Нет» in 50 of 60 chats, and in 32 of them it is the only criterion that loses points (`results/dev/results.json`). If the reference reads it more softly, we lose up to most of one criterion out of eight. The rule lives in the checklist's notes and can be edited in the UI in a minute; the prompt and the scoring do not change.
 - **Why not a fine-tuned model.** 65 DEV dialogs, model-made labels, no held-out set; most remaining misses are gold ties. A judge tuned to 8 fixed criteria would handle «add a criterion» worse.
 - **Calls accuracy.** Not claimed: external call labels agree 69–79% and CER is agreement with FreedomSpeech, not accuracy.

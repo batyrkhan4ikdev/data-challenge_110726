@@ -101,7 +101,7 @@ Screenshots and detailed evidence are outside the repository at `C:/Users/sydyk/
 
 - **[INFERENCE]** ES-module loading and JavaScript MIME in an actual D365 organization remain untested. The local rig sends the required MIME explicitly; it cannot establish what Dataverse sends.
 - **[INFERENCE]** The tenant must allow the HTTPS API origin in `connect-src`, and the API must allow the exact organization origin through `CQA_ALLOWED_ORIGINS`. This rig uses HTTP loopback and proves neither TLS deployment nor tenant configuration.
-- **[INFERENCE]** `font-src 'self' data:` is configured in the strict-api profile but embedded fonts in a real strict-CSP tenant remain untested. The current UI uses system fonts, so there is no web-font payload to load.
+- **[INFERENCE]** `font-src 'self' data:` is configured in the strict-api profile, but embedded fonts in a real strict-CSP tenant remain untested. The UI embeds an Onest woff2 subset as a base64 `data:` URL in `web/cqa.css` (about 45 KB of CSS), so a strict tenant CSP must allow `data:` in `font-src`.
 - **[INFERENCE]** `audio_url` is a signed Dynamics link. Strict CSP needs `media-src` for that link's origin. The local fixture has no audio file and cannot prove playback, seeking or signed-link expiry handling under strict CSP. A proxy `GET /api/conversations/{cid}/audio` is the proposed fix, tracked in #39/#40; this change does not implement it.
 - A real organization still needs an upload/form smoke test, including record parameters, tab recreation and the tenant's CSP. No D365 trial was registered.
 

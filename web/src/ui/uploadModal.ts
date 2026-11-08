@@ -74,10 +74,16 @@ export function openUploadModal(host: HTMLElement, opts: UploadModalOptions): vo
   }
 
   const dialog = h('dialog', { class: 'cqa-modal cqa-modal--wide', 'aria-label': u.title });
+  // Пока идёт загрузка, окно не закрывается: «Отмена» превращается в «Прервать» (AbortController), Esc игнорируется.
+  let running: AbortController | null = null;
+  const openedAt = location.hash;
   const close = () => {
+    running?.abort();
     dialog.close();
     dialog.remove();
   };
+  const cancelBtn = h('button', { type: 'button', class: 'cqa-btn' }, t.common.cancel);
+  cancelBtn.addEventListener('click', () => (running ? running.abort() : close()));
 
   const form = h(
     'form',
@@ -97,18 +103,34 @@ export function openUploadModal(host: HTMLElement, opts: UploadModalOptions): vo
           return;
         }
         submit.disabled = true;
-        status.textContent = kind === 'call' ? u.working : '';
+        const controller = new AbortController();
+        running = controller;
+        cancelBtn.textContent = u.abort;
+        const started = Date.now();
+        const tick = () => {
+          if (kind === 'call') status.textContent = `${u.working} ${u.elapsed(Math.round((Date.now() - started) / 1000))}`;
+        };
+        tick();
+        const timer = setInterval(tick, 1000);
         try {
           const record =
             kind === 'call'
-              ? await opts.api.uploadCall(file.files![0]!, callLanguage.value as UploadLanguage, provider.value)
+              ? await opts.api.uploadCall(file.files![0]!, callLanguage.value as UploadLanguage, provider.value, controller.signal)
               : await opts.api.uploadChat({ text: chatText.value, language: chatLanguage.value as 'RU' | 'KZ' | 'EN' });
+          // Окно закрыли или пользователь ушёл на другую страницу — не уводим его.
+          if (controller.signal.aborted || !dialog.isConnected || location.hash !== openedAt) return;
           opts.onAdded(record);
           close();
         } catch (e) {
           status.textContent = '';
-          errors.appendChild(banner(errorMessage(e), errorDetails(e)));
+          errors.appendChild(
+            controller.signal.aborted ? banner(u.aborted, null, 'info') : banner(errorMessage(e), errorDetails(e), 'error', true),
+          );
+        } finally {
+          clearInterval(timer);
+          running = null;
           submit.disabled = false;
+          cancelBtn.textContent = t.common.cancel;
         }
       },
     },
@@ -119,10 +141,17 @@ export function openUploadModal(host: HTMLElement, opts: UploadModalOptions): vo
     chatFields,
     errors,
     status,
-    h('div', { class: 'cqa-form-actions' }, submit, h('button', { type: 'button', class: 'cqa-btn', onclick: close }, t.common.cancel)),
+    h('div', { class: 'cqa-form-actions' }, submit, cancelBtn),
   );
   dialog.appendChild(form);
-  dialog.addEventListener('cancel', () => dialog.remove());
+  dialog.addEventListener('cancel', (e) => {
+    if (running) {
+      e.preventDefault();
+      status.textContent = u.busyClose;
+      return;
+    }
+    dialog.remove();
+  });
   host.appendChild(dialog);
   dialog.showModal();
   select('call');
