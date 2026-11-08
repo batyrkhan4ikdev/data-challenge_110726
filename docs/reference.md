@@ -1,17 +1,17 @@
-# CQA: technical reference (English)
+# CQA: техническая справка
 
-The full technical reference: configuration, batch run and submission, evaluation internals, models and cost, benchmark, ASR, D365, Docker. The Russian overview is the [README](../README.md). Paths below are relative to the repository root.
+Полная техническая справка: настройка, пакетный прогон и файлы для сдачи, устройство оценки, модели и стоимость, бенчмарк, ASR, D365, Docker. Обзор — в [README](../README.md). Пути ниже указаны от корня репозитория.
 
-A prototype that scores contact-center operator **chats and calls** (RU / KZ / EN) against a configurable checklist with an LLM judge.
+Прототип, который оценивает **чаты и звонки** операторов контакт-центра (RU / KZ / EN) по настраиваемому чек-листу с помощью LLM-судьи.
 
-For every criterion it shows:
-- the verdict and points;
-- an explanation in Russian;
-- the evidence turns: a click jumps to the message, and for calls the player seeks to that fragment;
-- the turns where a missed action was expected;
-- the N/A reason.
+По каждому критерию он показывает:
+- вердикт и баллы;
+- объяснение на русском;
+- реплики-доказательства: клик переходит к сообщению, а для звонков плеер перематывается к нужному фрагменту;
+- реплики, где ожидалось пропущенное действие;
+- причину N/A.
 
-The total is weighted, and the weight of N/A criteria is redistributed. Gross errors are flagged separately. Operators file appeals, and a reviewer confirms or changes the verdict; the card keeps the original, the decision and the final result. Checklists are named and versioned, and editing one and re-applying it takes one click.
+Итог взвешенный, вес критериев N/A перераспределяется. Грубые ошибки отмечаются отдельно. Операторы подают апелляции, ревьюер подтверждает или меняет вердикт; в карточке сохраняются исходная оценка, решение и итоговый результат. Чек-листы именованные и версионируются; правка и повторное применение — один клик.
 
 ```mermaid
 flowchart LR
@@ -26,9 +26,9 @@ flowchart LR
   UI -->|appeals / decisions / checklist edits| ST
 ```
 
-## Quick start
+## Быстрый старт
 
-You need Python 3.14 and Node 24 (the version CI and the Dockerfile use).
+Нужны Python 3.14 и Node 24 (версии, которые используют CI и Dockerfile).
 
 ```bash
 python -m venv .venv && .venv/Scripts/activate        # Linux/macOS: source .venv/bin/activate
@@ -40,124 +40,124 @@ uvicorn server.app:app --port 8787                     # open http://localhost:8
 
 ### `.env`
 
-| Variable | Meaning |
+| Переменная | Назначение |
 |---|---|
-| `DATASET_URL` | The organizers' GET URL for the dataset ("Открыть GET для DEV" in the guide). The server swaps in the `group_id` it needs. The URL is signed, so never commit it. |
-| `LLM_PROFILE` | Default model profile from `config/profiles.toml`. `fake` runs offline and deterministically, for demos without a GPU. |
-| `EVAL_MODE` / `EVAL_K` | `single` makes one call for all criteria; `per_criterion` makes one call per criterion. `K` is the number of samples for majority voting. |
-| `H200_*` | Base URLs and the key of the self-hosted vLLM endpoints. |
-| `AIGW_*` | Optional: an OpenAI-compatible endpoint for the cloud API models (Claude, GPT, AlemLLM). |
+| `DATASET_URL` | GET-адрес датасета от организаторов («Открыть GET для DEV» в руководстве). Сервер подставляет нужный `group_id`. Адрес подписан, поэтому никогда не коммитьте его. |
+| `LLM_PROFILE` | Профиль модели по умолчанию из `config/profiles.toml`. `fake` работает офлайн и детерминированно, для демо без GPU. |
+| `EVAL_MODE` / `EVAL_K` | `single` делает один вызов на все критерии; `per_criterion` — один вызов на критерий. `K` — число сэмплов для голосования большинством. |
+| `H200_*` | Базовые URL и ключ собственных эндпоинтов vLLM. |
+| `AIGW_*` | Опционально: OpenAI-совместимый эндпоинт для облачных API-моделей (Claude, GPT, AlemLLM). |
 
-All outbound HTTP uses `server/http.py`. It trusts both the OS certificate store and certifi, because some networks fail with only one of them.
+Весь исходящий HTTP идёт через `server/http.py`. Он доверяет и хранилищу сертификатов ОС, и certifi, потому что в некоторых сетях работает только одно из них.
 
-## Using it
+## Как пользоваться
 
-The interface follows the Freedom Broker visual language: a light shell (page `#F5F6F7`, white cards with a 1px border), the green accent `#007A43`, the Freedom Broker | CQA logo and the Onest typeface embedded in the CSS as a 45 KB subset (Cyrillic with the Kazakh letters, no font files and no CDN). The brand gradient appears only on the one primary button of a screen, always with dark text. Colour pairs are contrast-checked against WCAG 2.2 AA. On screens up to 860 px wide the sidebar becomes a top bar with four labelled items, tables scroll inside their own region, and the page itself never scrolls sideways. A skip link and visible focus work on every screen, and `prefers-reduced-motion` turns off smooth scrolling and the evidence flash.
+Интерфейс следует визуальному языку Freedom Broker: светлая оболочка (страница `#F5F6F7`, белые карточки с рамкой 1px), зелёный акцент `#007A43`, логотип Freedom Broker | CQA и шрифт Onest, встроенный в CSS как подмножество на 45 КБ (кириллица с казахскими буквами, без файлов шрифтов и без CDN). Фирменный градиент есть только на одной главной кнопке экрана, всегда с тёмным текстом. Цветовые пары проверены на контраст по WCAG 2.2 AA. На экранах шириной до 860 px боковая панель превращается в верхнюю с четырьмя подписанными пунктами, таблицы прокручиваются внутри своей области, а сама страница никогда не прокручивается вбок. Ссылка пропуска навигации и видимый фокус работают на каждом экране, а `prefers-reduced-motion` отключает плавную прокрутку и подсветку доказательств.
 
-| Screen | What you do |
+| Экран | Что делаете |
 |---|---|
-| **Диалоги** (`#/dialogs/DEV`) | Load a dataset group, filter by channel / language / gross errors, select dialogs, pick a checklist (by default chosen by channel), and click **Оценить выбранные**. Mode and k are under «Параметры оценки». Progress and per-dialog errors are shown live. A scored dialog opens its latest result. «Порядок: требует внимания» sorts by a review priority (gross error, open appeals, warnings, N/A, criteria the judge often disagrees on, verdicts that contradict the dialog facts); the reasons are in the chip's tooltip, and it is a priority, not a probability of error. On a phone each row is a card with the ID, the total and the gross-error badge. |
-| **Загрузить звонок или чат** (on «Диалоги») | Adds a new dialog to the group `UPLOADS`: an audio file (mp3/wav/ogg/m4a/webm/flac, up to 50 MB, converted to MP3 with ffmpeg when needed) goes through ASR, speaker roles and masking; a pasted chat (`оператор:` / `клиент:` / `бот:` lines) is taken as is. The language is detected from the audio by default (Kazakh audio is re-run as `kk`). Uploaded dialogs then go through the same cycle: evaluation, result, appeal, re-evaluation, analytics. Records and audio stay under `data/store/uploads/` (gitignored). API: `POST /api/uploads/call` (multipart), `POST /api/uploads/chat`, `GET /api/uploads/{id}/audio`, `DELETE /api/uploads/{id}`. |
-| **Анализ разговора** (result card) | The score ring and per-criterion points come first, then «Почему снижена оценка»; the transcript sits beside them on a wide screen and below them on a narrow one. The audio player for calls is a native `<audio>`, and turns are numbered from 1. «Почему снижена оценка» lists every criterion that lost points with its full reason, **Перейти к фрагменту** (scrolls to the turn; for calls, seeks the audio) and **Оспорить оценку** (files an appeal). «Подробности оценки» holds the full criteria table (each criterion with its measured agreement with the DEV labels, and «часто спорный» below 85%), votes, warnings, model/mode, the raw model calls, the history by checklist version and **Сравнение оценок**: any two evaluations side by side, only changed criteria expanded. **Переоценить по текущему чек-листу** re-applies an edited checklist. **Выгрузить дело** downloads a ZIP with the transcript, evaluation, exact checklist version, appeals, final result and raw model calls, with SHA-256 hashes and a self-check of the recomputed total (`scripts/verify_regpack.py <zip>` repeats it offline). «Подтверждения проверяющего» accepts undisputed criteria in one batch (with an auto-generated «принято пакетом без раскрытия доказательств» line) or one by one; confirmations are stored apart from appeals and never change a total. The facts panel adds a «Бот / оператор» lane: what the client told the bot before the handoff and whether the operator asked again. |
-| **Как было бы правильно** (result card, per lost criterion) | For a criterion that lost points, the judge proposes a minimal edit of at most 2 operator turns, and the edited dialog is judged again on that criterion alone; the card shows the edit, the rationale and whether the new verdict is verified. It is coaching only: never stored as an evaluation, and totals and appeals are untouched. Not offered for the gross-error criterion. API: `POST /api/evaluations/{id}/recourse`. |
-| **Апелляции** (`#/review`) | The queue of open appeals: the criterion, the disputed verdict, the model's reason, the operator's comment and the dialog fragment, then the decision. **Подтвердить** or **Изменить** (the reason is required) recomputes the final total; the card shows the new total and a link back to the dialog, and the result card shows the original → decision → final chain. Keyboard: `j`/`k` next/previous card, `a` accept undisputed, `o` open the decision form. |
-| **Чек-листы** (`#/checklists`) | Create or edit checklists: criteria, wording, weight, answer type (yes/no or scale with steps), N/A on or off and its condition, sections, and gross-error criteria. Every save creates a new version (the button locks while a save is running), and old evaluations keep the version they were scored with. |
-| **Аналитика** (`#/analytics/DEV`) | Per group: dialogs evaluated, mean total, gross errors as real links, N/A share, the pass rate per criterion, breakdowns by channel and language, and the score distribution with its four ranges labelled. «Дрейф оценок» compares the score distribution against a baseline group (or the first half of the group's evaluations): PSI with the usual 0.1 / 0.25 thresholds for the total and for each criterion, plus the two-sample KS test on the total only, and says so when n < 30 is too small to conclude. |
+| **Диалоги** (`#/dialogs/DEV`) | Загружаете группу датасета, фильтруете по каналу / языку / грубым ошибкам, выбираете диалоги, выбираете чек-лист (по умолчанию подбирается по каналу) и нажимаете **Оценить выбранные**. Режим и k — в «Параметры оценки». Прогресс и ошибки по диалогам показываются вживую. Оценённый диалог открывается на последнем результате. «Порядок: требует внимания» сортирует по приоритету проверки (грубая ошибка, открытые апелляции, предупреждения, N/A, критерии, по которым судья часто расходится, вердикты, противоречащие фактам диалога); причины — во всплывающей подсказке чипа, и это приоритет, а не вероятность ошибки. На телефоне каждая строка — карточка с ID, итогом и значком грубой ошибки. |
+| **Загрузить звонок или чат** (на «Диалоги») | Добавляет новый диалог в группу `UPLOADS`: аудиофайл (mp3/wav/ogg/m4a/webm/flac, до 50 МБ, при необходимости конвертируется в MP3 через ffmpeg) проходит ASR, определение ролей говорящих и маскирование; вставленный чат (строки `оператор:` / `клиент:` / `бот:`) принимается как есть. Язык по умолчанию определяется по аудио (казахское аудио перезапускается как `kk`). Загруженные диалоги дальше проходят тот же цикл: оценка, результат, апелляция, переоценка, аналитика. Записи и аудио остаются в `data/store/uploads/` (в gitignore). API: `POST /api/uploads/call` (multipart), `POST /api/uploads/chat`, `GET /api/uploads/{id}/audio`, `DELETE /api/uploads/{id}`. |
+| **Анализ разговора** (карточка результата) | Сначала кольцо итога и баллы по критериям, затем «Почему снижена оценка»; транскрипт стоит рядом на широком экране и ниже на узком. Аудиоплеер для звонков — нативный `<audio>`, реплики нумеруются с 1. «Почему снижена оценка» перечисляет каждый критерий, потерявший баллы, с полной причиной, **Перейти к фрагменту** (прокручивает к реплике; для звонков перематывает аудио) и **Оспорить оценку** (подаёт апелляцию). «Подробности оценки» содержит полную таблицу критериев (каждый критерий с измеренным совпадением с разметкой DEV и «часто спорный» ниже 85%), голоса, предупреждения, модель/режим, сырые вызовы модели, историю по версиям чек-листа и **Сравнение оценок**: любые две оценки рядом, раскрыты только изменённые критерии. **Переоценить по текущему чек-листу** заново применяет отредактированный чек-лист. **Выгрузить дело** скачивает ZIP с транскриптом, оценкой, точной версией чек-листа, апелляциями, итоговым результатом и сырыми вызовами модели, с хешами SHA-256 и самопроверкой пересчитанного итога (`scripts/verify_regpack.py <zip>` повторяет её офлайн). «Подтверждения проверяющего» принимает неоспоренные критерии одним пакетом (с автоматически созданной строкой «принято пакетом без раскрытия доказательств») или по одному; подтверждения хранятся отдельно от апелляций и никогда не меняют итог. Панель фактов добавляет дорожку «Бот / оператор»: что клиент сказал боту до передачи и спросил ли оператор повторно. |
+| **Как было бы правильно** (карточка результата, по каждому потерянному критерию) | Для критерия, потерявшего баллы, судья предлагает минимальную правку не более чем в 2 репликах оператора, и отредактированный диалог оценивается заново только по этому критерию; карточка показывает правку, обоснование и подтверждён ли новый вердикт. Это только разбор: он никогда не сохраняется как оценка, итоги и апелляции не затрагиваются. Для критерия грубой ошибки не предлагается. API: `POST /api/evaluations/{id}/recourse`. |
+| **Апелляции** (`#/review`) | Очередь открытых апелляций: критерий, оспариваемый вердикт, причина модели, комментарий оператора и фрагмент диалога, затем решение. **Подтвердить** или **Изменить** (причина обязательна) пересчитывает итоговый балл; карточка показывает новый итог и ссылку обратно на диалог, а карточка результата — цепочку исходная оценка → решение → итог. Клавиатура: `j`/`k` — следующая/предыдущая карточка, `a` — принять неоспоренные, `o` — открыть форму решения. |
+| **Чек-листы** (`#/checklists`) | Создание и правка чек-листов: критерии, формулировки, вес, тип ответа (да/нет или шкала с шагами), N/A вкл/выкл и его условие, разделы и критерии грубых ошибок. Каждое сохранение создаёт новую версию (кнопка блокируется на время сохранения), а старые оценки сохраняют версию, по которой были оценены. |
+| **Аналитика** (`#/analytics/DEV`) | По группе: оценено диалогов, средний итог, грубые ошибки как настоящие ссылки, доля N/A, доля прохождения по каждому критерию, разрезы по каналу и языку, а также распределение итогов с четырьмя подписанными диапазонами. «Дрейф оценок» сравнивает распределение баллов с базовой группой (или с первой половиной оценок группы): PSI с обычными порогами 0.1 / 0.25 для итога и для каждого критерия, плюс двухвыборочный критерий KS только для итога; при n < 30 сообщает, что выборка слишком мала для выводов. |
 
-![Result card](screenshots/result-evidence.png)
+![Карточка результата](screenshots/result-evidence.png)
 
-More screenshots are in `docs/screenshots/` (`dialogs`, `review`, `checklists`, `checklist-editor`, `analytics`, `facts`, `transcripts`). They show the committed gemma-4 DEV output (`results/dev/results.json`) loaded into a scratch store; the `review` image has one appeal added on that scratch copy. Before and after images of all seven screens at 1440 and 390 px, taken from the same data, are in `docs/redesign/before/` and `docs/redesign/after/`. The live demo script is in `docs/demo.md`.
+Другие скриншоты лежат в `docs/screenshots/` (`dialogs`, `review`, `checklists`, `checklist-editor`, `analytics`, `facts`, `transcripts`). Они показывают закоммиченный результат gemma-4 на DEV (`results/dev/results.json`), загруженный во временное хранилище; на скриншоте `review` в эту временную копию добавлена одна апелляция. Сценарий живой демонстрации — в `docs/demo.md`.
 
-The call card's «Транскрипт» switch (`web/src/ui/transcriptPanel.ts`, see «Call transcripts and ASR» below) picks the transcript a call is scored on. The options are the organizer API transcript, FreedomSpeech, our ASR models with quality badges, and a pasted transcript. «Распознать заново» runs a provider live.
+Переключатель «Транскрипт» в карточке звонка (`web/src/ui/transcriptPanel.ts`, см. «Транскрипты звонков и ASR» ниже) выбирает транскрипт, по которому оценивается звонок. Варианты: транскрипт из API организаторов, FreedomSpeech, наши ASR-модели с бейджами качества и вставленный транскрипт. «Распознать заново» запускает провайдера вживую.
 
-The default checklists are in `data/checklists/`:
-- `chat.default.json`: the organizers' 8 criteria, verbatim from `docs/CQA_Chat_Quality_Checklist.pdf`.
-- `call.default.json`: the same criteria adapted to speech, following the organizers' clarification #2343 (see `docs/organizer-answers.md`).
+Чек-листы по умолчанию лежат в `data/checklists/`:
+- `chat.default.json`: 8 критериев организаторов дословно из `docs/CQA_Chat_Quality_Checklist.md`.
+- `call.default.json`: те же критерии, адаптированные к речи по разъяснению организаторов #2343 (см. `docs/internal/organizer-answers.md`).
 
-Organizer clarifications and the team's rules for borderline cases are in each checklist's `notes`, which the model reads.
+Разъяснения организаторов и правила команды для спорных случаев находятся в `notes` каждого чек-листа, которые читает модель.
 
-### Batch run and submission files
+### Пакетный прогон и файлы для сдачи
 
 ```bash
 python scripts/run_batch.py DEV --refresh --submit dev                # → results/dev/results.json
 python scripts/run_batch.py <CONTROL_GROUP> --refresh --submit prod   # → results/prod/results.json (10 control chats)
 ```
 
-This prints a table and the token, time and cost totals. It writes `out/<GROUP_ID>.results.json` and `.csv` with the per-criterion verdicts and the profile used per dialog, and stores the evaluations so they appear in the UI. The control-set results are raw system output, with no manual edits.
+Скрипт печатает таблицу и итоги по токенам, времени и стоимости. Он пишет `out/<GROUP_ID>.results.json` и `.csv` с вердиктами по критериям и профилем, использованным для каждого диалога, и сохраняет оценки, чтобы они появились в интерфейсе. Результаты контрольной группы — сырой вывод системы, без ручных правок.
 
-`--submit dev|prod` also writes the organizers' file in the appendix format 1.0 (`server/submission.py`) and validates it. The rules it follows:
-- criterion codes `contact … critical`, with `true`/`false`/`null` or raw scale points;
-- `evidence_turns` numbered from 1 over the raw transcript;
-- a failed dialog becomes a `status: "error"` entry;
-- `model.mode` is the hosting of the profile that scored the dialogs (`local` or `external_api`) when they all share one, and `hybrid` when profiles with different hosting scored them (for example, a cloud fallback took some dialogs).
+`--submit dev|prod` также пишет файл организаторов в формате приложения 1.0 (`server/submission.py`) и проверяет его. Правила, которым он следует:
+- коды критериев `contact … critical`, со значениями `true`/`false`/`null` или сырыми баллами шкалы;
+- `evidence_turns` нумеруются с 1 по сырому транскрипту;
+- диалог с ошибкой становится записью `status: "error"`;
+- `model.mode` — размещение профиля, оценившего диалоги (`local` или `external_api`), если оно у всех одно, и `hybrid`, если диалоги оценивали профили с разным размещением (например, облачный запасной профиль взял часть диалогов).
 
-`team_name` comes from `--team-name` or env `TEAM_NAME`. Commit and push both files before stop-code.
+`team_name` берётся из `--team-name` или переменной окружения `TEAM_NAME`. Закоммитьте и запушьте оба файла до stop-code.
 
-A dialog that fails on the primary profile (for example, the self-hosted endpoint is unreachable) is re-run on each profile in `--fallback-profile`, in order. The chain lives in the job runner, so live evaluations from the UI fall back the same way. That is a comma-separated list, defaulting to env `FALLBACK_PROFILE` (`aigw-sonnet,aigw-luna,h200-glimmer`). The two cloud models come first; the last one is self-hosted, so neither a cloud API outage nor a rate limit leaves dialogs unscored. Costs are reported per profile.
+Диалог, не прошедший на основном профиле (например, недоступен собственный эндпоинт), перезапускается на каждом профиле из `--fallback-profile` по порядку. Цепочка живёт в исполнителе заданий, поэтому оценки из интерфейса переключаются так же. Это список через запятую, по умолчанию из переменной окружения `FALLBACK_PROFILE` (`aigw-sonnet,aigw-luna,h200-glimmer`). Первыми идут две облачные модели; последняя — собственная, поэтому ни сбой облачного API, ни лимит запросов не оставляют диалоги неоценёнными. Стоимость считается по профилям.
 
-`--submit` scores with the organizers' checklist. If the default `chat`/`call` checklist was edited in the UI (for example, during a demo), the run aborts before evaluating. Re-run it with `--reset-defaults`, which saves `data/checklists/*.default.json` back as a new version and keeps the history.
+`--submit` оценивает по чек-листу организаторов. Если чек-лист `chat`/`call` по умолчанию был изменён в интерфейсе (например, во время демо), прогон прерывается до оценки. Запустите его заново с `--reset-defaults`: он сохраняет `data/checklists/*.default.json` обратно как новую версию и сохраняет историю.
 
-Before the control run, `python scripts/preflight.py [--group <CONTROL_GROUP>]` checks everything the run needs in about 30 s:
-- the `.env` keys;
-- git: on `main`, clean, in sync with `origin`;
-- the default checklists;
-- the dataset API (DEV, plus the control group, which must return 10 records);
-- one real completion from the primary model and from each fallback.
+Перед контрольным прогоном `python scripts/preflight.py [--group <CONTROL_GROUP>]` за около 30 с проверяет всё, что нужно прогону:
+- ключи `.env`;
+- git: ветка `main`, чистое дерево, синхронизация с `origin`;
+- чек-листы по умолчанию;
+- API датасета (DEV и контрольная группа, которая должна вернуть 10 записей);
+- один реальный вызов основной модели и каждой запасной.
 
-## How the evaluation works
+## Как работает оценка
 
-1. **Prompt.** The prompt is generic and in Russian, so no criterion text is hard-coded. It carries:
-   - each criterion's wording, its allowed verdicts and the step descriptions;
-   - the N/A condition;
-   - the checklist notes (calculation rules, organizer clarifications, team rules).
+1. **Промпт.** Промпт общий и на русском, поэтому текст критериев в нём не зашит. Он содержит:
+   - формулировку каждого критерия, допустимые вердикты и описания шагов;
+   - условие N/A;
+   - заметки чек-листа (правила расчёта, разъяснения организаторов, правила команды).
 
-   The transcript goes in as `[idx] (timestamp) speaker: text`. Only `operator` turns are judged; `bot` and `system` turns are context.
-2. **Strict JSON schema.** On vLLM this is xgrammar `json_schema`; for gateway models that ignore `response_format`, the schema goes into the prompt. The model writes `explanation` and `evidence_idx` **before** `verdict`.
-3. **Validation.** Verdicts must be allowed for the criterion (for example, no N/A where it is not allowed). Turn indices must be in range. A «Да» or a step needs evidence; a «Нет» needs evidence or the range where the action was expected; N/A needs a reason.
-4. **Retry.** Invalid criteria are retried once, alone, with the error text. If only the evidence is still missing, the verdict is kept with a warning (⚠ in the UI), so one soft criterion cannot drop the whole dialog.
-5. **Optional voting.** With k samples, yes/no/N/A take the mode and scales take the median. The vote counts are shown.
-6. **Scoring.** `server/scoring.py` uses `Decimal`:
-   - «Да» gives the full weight; a scale step gives `step/max_step × weight`;
-   - N/A criteria are excluded and their weight is redistributed;
-   - the total is out of 100, rounded half-up to 2 decimals, and is empty when no weighted criterion applies;
-   - gross errors are flagged and do not change the total.
-7. **Audit.** Every model call (messages, response, model, timing) is stored with the evaluation and shown in the UI under «Вызовы модели». That is the proof that results are computed, not replayed.
+   Транскрипт подаётся как `[idx] (timestamp) speaker: text`. Оцениваются только реплики `operator`; реплики `bot` и `system` — контекст.
+2. **Строгая JSON-схема.** На vLLM это xgrammar `json_schema`; для моделей через шлюз, игнорирующих `response_format`, схема попадает в промпт. Модель пишет `explanation` и `evidence_idx` **до** `verdict`.
+3. **Валидация.** Вердикты должны быть допустимы для критерия (например, нет N/A там, где он не разрешён). Индексы реплик должны быть в диапазоне. Для «Да» или шага нужны доказательства; для «Нет» — доказательства или диапазон, где ожидалось действие; для N/A — причина.
+4. **Повтор.** Некорректные критерии повторяются один раз, отдельно, с текстом ошибки. Если по-прежнему не хватает только доказательств, вердикт сохраняется с предупреждением (⚠ в интерфейсе), чтобы один мягкий критерий не обрушил весь диалог.
+5. **Необязательное голосование.** При k сэмплах да/нет/N/A берут моду, а шкалы — медиану. Показываются счётчики голосов.
+6. **Подсчёт.** `server/scoring.py` использует `Decimal`:
+   - «Да» даёт полный вес; шаг шкалы даёт `step/max_step × weight`;
+   - критерии N/A исключаются, а их вес перераспределяется;
+   - итог из 100, округлён half-up до 2 знаков, и пуст, если ни один взвешенный критерий не применим;
+   - грубые ошибки отмечаются и не меняют итог.
+7. **Аудит.** Каждый вызов модели (сообщения, ответ, модель, тайминги) сохраняется вместе с оценкой и показывается в интерфейсе в «Вызовы модели». Это доказательство того, что результаты вычисляются, а не воспроизводятся из записи.
 
-## Models and cost
+## Модели и стоимость
 
-Models are named profiles in `config/profiles.toml`.
+Модели — именованные профили в `config/profiles.toml`.
 
-| Profile | Model | Where |
+| Профиль | Модель | Где |
 |---|---|---|
-| `h200-gemma` | Gemma 4 31B | self-hosted vLLM, 4 replicas × 1 H200 |
-| `h200-kz` | ISSAI Qwen3.5-35B-A3B-Kazakh | self-hosted vLLM, 1× H200 |
-| `h200-glimmer` | Muse-Glimmer-30B | self-hosted vLLM, 1× H200 |
-| `aigw-sonnet` / `aigw-luna` / `aigw-alemllm` | Claude Sonnet 5.5 / GPT-6 Luna / AlemLLM | cloud API |
-| `alem-deepseek` / `alem-kimi` / `alem-glm` / `alem-qwen27b` / `aigw-flashnext` | DeepSeek-V4.1-Flash / Kimi-K2.6 / GLM-5.3 / Qwen3.8-27B / Qwen3.8-Flash-Next | open weights, H200 |
-| `ensemble` | per-criterion vote of `h200-gemma` (per criterion) + `alem-qwen27b` + `aigw-flashnext` (single) | hybrid |
+| `h200-gemma` | Gemma 4 31B | свой vLLM, 4 реплики × 1 H200 |
+| `h200-kz` | ISSAI Qwen3.5-35B-A3B-Kazakh | свой vLLM, 1× H200 |
+| `h200-glimmer` | Muse-Glimmer-30B | свой vLLM, 1× H200 |
+| `aigw-sonnet` / `aigw-luna` / `aigw-alemllm` | Claude Sonnet 5.5 / GPT-6 Luna / AlemLLM | облачный API |
+| `alem-deepseek` / `alem-kimi` / `alem-glm` / `alem-qwen27b` / `aigw-flashnext` | DeepSeek-V4.1-Flash / Kimi-K2.6 / GLM-5.3 / Qwen3.8-27B / Qwen3.8-Flash-Next | открытые веса, H200 |
+| `ensemble` | голосование по критериям: `h200-gemma` (per criterion) + `alem-qwen27b` + `aigw-flashnext` (single) | гибрид |
 
-An `ensemble` profile (`provider = "ensemble"`, `members = ["profile:mode", …]`) runs every member on the dialog and takes, per criterion, the majority verdict; on scales it takes the median. The first member breaks ties and supplies the explanation and evidence when it agrees. A member that fails is dropped with a warning on the items; the dialog fails only if all members fail.
+Профиль `ensemble` (`provider = "ensemble"`, `members = ["profile:mode", …]`) запускает каждого участника на диалоге и берёт по каждому критерию вердикт большинства; для шкал берёт медиану. Первый участник разрешает ничьи и даёт объяснение и доказательства, когда согласен с итогом. Упавший участник отбрасывается с предупреждением в элементах; диалог падает, только если упали все участники.
 
-The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). The gold is an **LLM consensus**: 4 blind labelings per dialog by GPT-6 Astra and Claude Opus 5.5. On top of it sit **20 human rows** (`bench/gold/labels.Batyrkhantzy111.arbitration.csv`), which settle the disputed verdicts and override the consensus. `--gold human` ranks models on the human rows only. We prefer a self-hosted model unless a cloud model is more than 5 pp better.
+Модель выбрана бенчмарком на размеченных диалогах DEV (`bench/`, `docs/internal/research/benchmark-phase1.md`). Эталонная разметка — **консенсус LLM**: 4 слепые разметки каждого диалога от GPT-6 Astra и Claude Opus 5.5. Поверх неё лежат **20 строк ручной разметки** (`bench/gold/labels.Batyrkhantzy111.arbitration.csv`), которые разрешают спорные вердикты и перекрывают консенсус. `--gold human` ранжирует модели только по ручным строкам. Мы предпочитаем собственную модель, если облачная не лучше более чем на 5 п.п.
 
-**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain Claude Sonnet 5.5 → GPT-6 Luna → h200-glimmer (`aigw-sonnet,aigw-luna,h200-glimmer`). With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats (two runs) and matches 16 of the 20 human rows. Per language, RU is 0.870–0.921, KZ 0.957 and EN 0.947–0.957 in those two runs (`docs/research/benchmark-phase1.md`; `bench/results/20261107-213204`, `-213616`). 98.8% of its verdicts are identical between two runs on the final notes (see Reproducibility). It was compared against roughly 15 other models and setups:
-- open-weight models: Qwen3.8-27B 0.92, Qwen3.8-Flash-Next 0.91, DeepSeek-V4.1-Flash 0.90, Kimi-K2.6 0.85;
-- frontier models via OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): each scored 1–3 pp below gemma on the same dialogs;
-- a three-judge ensemble, which tied gemma.
+**Текущий выбор для контрольного прогона:** `h200-gemma`, `per_criterion` (один вызов на критерий), `k=1`, температура 0, с цепочкой запасных профилей Claude Sonnet 5.5 → GPT-6 Luna → h200-glimmer (`aigw-sonnet,aigw-luna,h200-glimmer`). С текущими заметками она даёт **0.931–0.939 взвешенного совпадения** на 60 чатах (два прогона) и совпадает с 16 из 20 ручных строк. По языкам в этих двух прогонах: RU 0.870–0.921, KZ 0.957 и EN 0.947–0.957 (`docs/internal/research/benchmark-phase1.md`; `bench/results/20261107-213204`, `-213616`). 98.8% её вердиктов совпадают между двумя прогонами на финальных заметках (см. «Воспроизводимость»). Её сравнили примерно с 15 другими моделями и конфигурациями:
+- модели с открытыми весами: Qwen3.8-27B 0.92, Qwen3.8-Flash-Next 0.91, DeepSeek-V4.1-Flash 0.90, Kimi-K2.6 0.85;
+- передовые модели через OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): каждая на тех же диалогах набрала на 1–3 п.п. ниже gemma;
+- ансамбль из трёх судей, который сравнялся с gemma.
 
-These numbers are in-sample: the same dialogs were used to tune the checklist notes, and the agreement is with other models' labels plus 20 human rows, not with the organizers' expert labels. Expect roughly **0.91–0.93 on unseen chats**. The details are in `docs/research/benchmark-phase1.md`.
+На новых чатах значения могут быть ниже: правила в заметках чек-листа подбирались на DEV-диалогах. Для звонков точность не заявляем.
 
-**Cost of one evaluation** (all calls included):
-- **Self-hosted:** an H200 costs $5.35/GPU-hour (median on-demand price of Vast, RunPod, Nebius and CoreWeave, 2026-11; see `docs/research/llm-candidates.md`). The cost per evaluation is `$/h × GPU-seconds ÷ concurrency ÷ 3600`.
-  - **Single mode:** ≈ $0.001.
-  - **Per-criterion mode:** ≈ $0.003 per evaluation (`bench/results/20261107-213204/summary.md`, `-213616`), so about $0.2 for the 65 DEV dialogs. The full DEV run took 7–8.5 minutes of wall time (420 s and 507 s) at 4 dialogs in parallel. Per dialog, per-criterion latency averages 27.7–31.8 s (p90 66–80 s) at 8 in parallel (`bench/results/20261107-213204`, `-213616`).
-- **Cloud:** in single mode, Claude Sonnet 5.5 at $2 / $10 per 1M tokens is **≈ $0.024** and GPT-6 Luna at $0.10 / $0.50 is **≈ $0.001** (`bench/results/20261107-162940`). Per-criterion mode was not run on cloud models.
+**Стоимость одной оценки** (включая все вызовы):
+- **Свой H200:** H200 стоит $5.35 за GPU-час (медианная on-demand цена Vast, RunPod, Nebius и CoreWeave, 2026-11; см. `docs/internal/research/llm-candidates.md`). Стоимость оценки — `$/h × GPU-секунды ÷ параллелизм ÷ 3600`.
+  - **Режим `single`:** ≈ $0.001.
+  - **Режим «по критерию» (`per_criterion`):** ≈ $0.003 за оценку (`bench/results/20261107-213204/summary.md`, `-213616`), то есть около $0.2 на 65 диалогов DEV. Полный прогон DEV занял 7–8.5 минут реального времени (420 с и 507 с) при 4 диалогах параллельно. На диалог задержка в режиме по критерию в среднем 27.7–31.8 с (p90 66–80 с) при 8 параллельно (`bench/results/20261107-213204`, `-213616`).
+- **Облако:** в режиме `single` Claude Sonnet 5.5 по $2 / $10 за 1M токенов — **≈ $0.024**, а GPT-6 Luna по $0.10 / $0.50 — **≈ $0.001** (`bench/results/20261107-162940`). Режим по критерию на облачных моделях не запускали.
 
-Single mode: self-hosted gemma uses about 4.2k input and 0.54k output tokens per dialog (`bench/results/20261108-030915`); Sonnet about 7.1k in and 1.0k out on the 12-dialog smoke set (`20261107-162940`). Per-criterion mode on the full DEV run uses about 25k input and 0.66k output tokens per dialog (`20261107-213204`, `-213616`).
+Режим `single`: собственная gemma использует около 4.2k входных и 0.54k выходных токенов на диалог (`bench/results/20261108-030915`); Sonnet — около 7.1k входных и 1.0k выходных на смоук-наборе из 12 диалогов (`20261107-162940`). Режим по критерию на полном прогоне DEV использует около 25k входных и 0.66k выходных токенов на диалог (`20261107-213204`, `-213616`).
 
-**Reproducibility.** On the final notes and control settings, the submitted DEV run (`results/dev/results.json`) and a fresh full DEV run made on 2026-11-08 at 04:10 agree on **514 of 520 criterion verdicts (98.8%)**: 475/480 on chats, 39/40 on calls. Gross-error flags are identical (8 and 8). The 6 changes are borderline calls: p1-ru-012 c07 N/A→«Нет», p1-ru-015 c05 «Да»→«Нет», p1-kz-006 c07 and p1-kz-012 c07 «Нет»→«Да», p1-kz-015 c06 4→0 (its total 24.71→17.65), p4-ru-002 c06 7→10. Earlier rounds measured 99.0% (507/512) and 99.6% (477–479/480) on older notes (`docs/research/benchmark-phase1.md`).
+**Воспроизводимость.** На финальных заметках и настройках контрольного прогона сданный прогон DEV (`results/dev/results.json`) и свежий полный прогон DEV от 2026-11-08, 04:10 совпадают по **514 из 520 вердиктов по критериям (98.8%)**: 475/480 на чатах, 39/40 на звонках. Флаги грубых ошибок идентичны (8 и 8). 6 изменений — пограничные случаи: p1-ru-012 c07 N/A→«Нет», p1-ru-015 c05 «Да»→«Нет», p1-kz-006 c07 и p1-kz-012 c07 «Нет»→«Да», p1-kz-015 c06 4→0 (итог 24.71→17.65), p4-ru-002 c06 7→10. Более ранние раунды на старых заметках дали 99.0% (507/512) и 99.6% (477–479/480) (`docs/internal/research/benchmark-phase1.md`).
 
-## Benchmark and gold labels
+## Бенчмарк и эталонная разметка
 
 ```bash
 python -m bench.run --profiles h200-gemma,aigw-sonnet --mode single --k 1 --set smoke|gold [--gold human]
@@ -165,67 +165,67 @@ python -m bench.select_gold --seed 7      # 24 DEV dialogs → 8 per labeller
 python -m bench.prefill                   # pre-fill bench/gold/labels.<login>.csv with model verdicts
 ```
 
-A run writes JSONL rows and a `summary.md` under `bench/results/<timestamp>/`. The summary reports:
-- validity and failure rates, latency and cost;
-- on `--set gold`: weighted per-criterion agreement, total MAE and bias, kappa, the N/A confusion matrix, gross-error precision and recall, and agreement by language and channel.
+Прогон пишет строки JSONL и `summary.md` в `bench/results/<timestamp>/`. В сводке:
+- доля валидных ответов и сбоев, задержка и стоимость;
+- при `--set gold`: взвешенное совпадение по критериям, MAE и смещение итога, каппа, матрица ошибок N/A, точность и полнота по грубым ошибкам, совпадение по языку и каналу.
 
-Gates and queues on top of the bench runs:
-- `scripts/regress_gate.py --baseline <run> --candidate <run> [--max-drop 0.03]`: paired comparison against gold with a bootstrap CI; exits 1 when the candidate loses more than `max-drop`. Run it on a fresh `bench.run` result before changing the model, prompt or notes. CI only smoke-tests the script on the two committed runs in `bench/baselines/`; it does not call the judge.
-- `scripts/holdout_gate.py`: a fixed, language-stratified 45/15 tune/holdout split of the 60 DEV chats (`bench/gold/holdout.json`); flags a notes change as overfit when tune improves and holdout does not. Results on our past notes changes: `bench/holdout.md`.
-- `bench/arbitration_queue.py`: which (dialog, criterion) cells a human should arbitrate next, by committee disagreement × weight × scale distance → `bench/gold/arbitration_queue.csv`.
-- `bench/asr_noise_floor.py`: the 5 DEV calls scored on each transcript source; verdict flips and total MAE against the FreedomSpeech reference → `bench/asr/noise-floor.md`.
+Гейты и очереди поверх прогонов бенчмарка:
+- `scripts/regress_gate.py --baseline <run> --candidate <run> [--max-drop 0.03]`: парное сравнение с эталонной разметкой с бутстрэп-доверительным интервалом; завершается с кодом 1, если кандидат проигрывает больше `max-drop`. Запускайте его на свежем результате `bench.run` перед сменой модели, промпта или заметок. CI лишь проверяет работоспособность скрипта на двух закоммиченных прогонах в `bench/baselines/`; судью он не вызывает.
+- `scripts/holdout_gate.py`: фиксированное, стратифицированное по языкам разбиение 60 чатов DEV на 45 для подбора и 15 для проверки (`bench/gold/holdout.json`); помечает изменение заметок как переобучение, когда на подборе улучшение есть, а на `holdout` нет. Результаты на наших прошлых изменениях заметок: `bench/holdout.md`.
+- `bench/arbitration_queue.py`: какие ячейки (диалог, критерий) человеку стоит арбитрировать следующими, по расхождению комитета × вес × расстояние по шкале → `bench/gold/arbitration_queue.csv`.
+- `bench/asr_noise_floor.py`: 5 звонков DEV, оценённых по каждому источнику транскрипта; смены вердиктов и MAE итога относительно эталона FreedomSpeech → `bench/asr/noise-floor.md`.
 
-## Call transcripts and ASR
+## Транскрипты звонков и ASR
 
-The organizers' call transcripts are poor ASR (e.g. «идентификацию успешно проеданная»). In the call card, the **«Транскрипт»** switch picks the source the evaluation runs on:
-- **Организатор (API):** the original transcript. The control run (chats only) always uses this one.
-- **FreedomSpeech** ([freedomspeech.kz](https://freedomspeech.kz), Kazakh/Russian STT with speaker diarization), one click away; the card opens on the organizer transcript.
-- **Our ASR models** (`config/asr.toml`). Each shows a quality badge from the benchmark: CER against FreedomSpeech and «оценщик N/40», the evaluator's gold hits on that transcript.
-- **«Вставить свой транскрипт»:** a pasted text, one line per turn, with `оператор:` / `клиент:` prefixes.
+Транскрипты звонков от организаторов — слабый ASR (например, «идентификацию успешно проеданная»). В карточке звонка переключатель **«Транскрипт»** выбирает источник, по которому идёт оценка:
+- **Организатор (API):** исходный транскрипт. Контрольный прогон (только чаты) всегда использует его.
+- **FreedomSpeech** ([freedomspeech.kz](https://freedomspeech.kz), казахско-русский STT с диаризацией говорящих) — в один клик; карточка открывается на транскрипте организатора.
+- **Наши ASR-модели** (`config/asr.toml`). У каждой есть бейдж качества из бенчмарка: CER относительно FreedomSpeech и «оценщик N/40» — попадания оценщика в эталонную разметку на этом транскрипте.
+- **«Вставить свой транскрипт»:** вставленный текст, одна строка на реплику, с префиксами `оператор:` / `клиент:`.
 
-«Распознать заново» runs a provider live: it fetches the call audio, transcribes it, assigns operator/client roles and masks personal data with the judge LLM. «Оценить по этому транскрипту» scores that source, and the result card records which transcript it used.
+«Распознать заново» запускает провайдера вживую: скачивает аудио звонка, транскрибирует его, назначает роли оператора/клиента и маскирует персональные данные с помощью LLM-судьи. «Оценить по этому транскрипту» оценивает этот источник, а карточка результата фиксирует, каким транскриптом пользовались.
 
-**Benchmark on the 5 DEV calls** (`bench/asr/summary.md`; mean over calls):
+**Бенчмарк на 5 звонках DEV** (`bench/asr/summary.md`; среднее по звонкам):
 
-| provider | where | diarization | s per audio min | CER vs FreedomSpeech | evaluator gold hits |
+| провайдер | где | диаризация | с на минуту аудио | CER относительно FreedomSpeech | попадания оценщика в эталон |
 |---|---|---|---|---|---|
-| FreedomSpeech | freedomspeech.kz | yes | 2.0 | (reference) | 27/40 |
-| T-one + pyannote | self-hosted H200 | yes | 4.4 | **0.118** | **29/40** |
-| GigaAM-v3 + pyannote | self-hosted H200 | yes | 2.9 | 0.126 | 27/40 |
-| Gemini 3.5 Transcribe | OpenRouter | yes | 11.6 | 0.145 | 28/40 |
-| KuSpeech multilingual (= GigaAM-Multilingual) | H200 | no | 0.4 | 0.158 | **29/40** |
-| Whisper large-v3 · 2 | H200 | no | 0.7 | 0.203 | 28/40 |
-| WhisperX large-v3 + pyannote | self-hosted H200 | yes | 7.7 | 0.271 | 25/40 |
-| Whisper large-v3 | H200 | no | 0.4 | 0.309 | 25/40 |
-| Whisper large-v3 turbo | H200 | no | 2.7 | 0.370 | 27/40 |
-| organizer API transcript | — | — | — | — | 26/40 |
+| FreedomSpeech | freedomspeech.kz | да | 2.0 | (эталон) | 27/40 |
+| T-one + pyannote | свой H200 | да | 4.4 | **0.118** | **29/40** |
+| GigaAM-v3 + pyannote | свой H200 | да | 2.9 | 0.126 | 27/40 |
+| Gemini 3.5 Transcribe | OpenRouter | да | 11.6 | 0.145 | 28/40 |
+| KuSpeech multilingual (= GigaAM-Multilingual) | H200 | нет | 0.4 | 0.158 | **29/40** |
+| Whisper large-v3 · 2 | H200 | нет | 0.7 | 0.203 | 28/40 |
+| WhisperX large-v3 + pyannote | свой H200 | да | 7.7 | 0.271 | 25/40 |
+| Whisper large-v3 | H200 | нет | 0.4 | 0.309 | 25/40 |
+| Whisper large-v3 turbo | H200 | нет | 2.7 | 0.370 | 27/40 |
+| транскрипт API организаторов | — | — | — | — | 26/40 |
 
-Gold hits are out of 40 cells per provider, and a re-run of FreedomSpeech through our pipeline gives 27/40 both times, with one verdict flip in `bench/asr/noise-floor.md`. A one- or two-cell gap is therefore not a ranking; the hits only show that no transcript hurt scoring. CER is agreement with another ASR, not accuracy. The manual quality comparison is Batyrkhantzy111's (`bench/asr/transcripts/<provider>/<cid>.md`); his scores go into `manual_score` in `data/asr/quality.json` and replace the automatic badge. Model research: `docs/research/asr-models.md` and `docs/research/asr-hosted.md`. Calls are evaluated with the same checklist; organizers said calls are mainly for the interface (#3075).
+Попадания в эталон считаются из 40 ячеек на провайдера, а повторный прогон FreedomSpeech через наш конвейер оба раза даёт 27/40, с одной сменой вердикта в `bench/asr/noise-floor.md`. Разница в одну-две ячейки поэтому не ранжирование; попадания лишь показывают, что ни один транскрипт не ухудшил оценку. CER — это совпадение с другим ASR, а не точность. Ручное сравнение качества выполнено Batyrkhantzy111 (`bench/asr/transcripts/<provider>/<cid>.md`); его оценки попадают в `manual_score` в `data/asr/quality.json` и заменяют автоматический бейдж. Исследование моделей: `docs/internal/research/asr-models.md` и `docs/internal/research/asr-hosted.md`. Звонки оцениваются тем же чек-листом; организаторы сказали, что звонки нужны в основном для интерфейса (#3075).
 
-For Kazakh audio see `bench/asr/kazakh.md`: WhisperX (`language=kk`) and FreedomSpeech are the two candidates that produce Kazakh script with speaker labels. On the one 180 s Kazakh call, FreedomSpeech has 272 words and no loop, while WhisperX looped on 108 words (removed by `collapse_repeats`). The reference there is not independent (Whisper large-v3 · 2 with listener corrections, partly quoting KuSpeech and FreedomSpeech), so its CER table is diagnostic, not a ranking, and the share of Kazakh letters is a proxy, not accuracy.
+Про казахское аудио см. `bench/asr/kazakh.md`: WhisperX (`language=kk`) и FreedomSpeech — два кандидата, дающих казахский текст с метками говорящих. На единственном казахском звонке длиной 180 с у FreedomSpeech 272 слова и нет зацикливания, а WhisperX зациклился на 108 словах (убрано `collapse_repeats`). Эталон там не независим (Whisper large-v3 · 2 с правками слушателя, частично цитирующий KuSpeech и FreedomSpeech), поэтому его таблица CER диагностическая, а не ранжирование, а доля казахских букв — косвенный признак, а не точность.
 
-### Running the ASR benchmark
+### Запуск ASR-бенчмарка
 
-Providers are listed in `config/asr.toml`. Adding one is config only: `kind`, URL/key env vars, `label`, `hosting`, optional `extra_form`. A provider whose env vars are unset reports «не настроен».
+Провайдеры перечислены в `config/asr.toml`. Добавление провайдера — только конфиг: `kind`, переменные окружения URL/ключа, `label`, `hosting`, необязательный `extra_form`. Провайдер с незаданными переменными окружения сообщает «не настроен».
 
 ```bash
 python -m bench.asr [--providers aigw-whisper,kuspeech,...] [--calls p4-ru-001,...] [--reuse-raw] [--no-score]
 ```
 
-For each provider × DEV call it transcribes `data/audio/<cid>.mp3` (fetched from the call's `audio_url` if missing), masks personal data and assigns roles with the judge LLM (`LLM_PROFILE`), then audits the result. If an audit fails (a run of 4+ digits, or a name, ID, phone or address found by a second LLM pass), no tracked file is written for that provider.
+Для каждой пары провайдер × звонок DEV он транскрибирует `data/audio/<cid>.mp3` (скачивается по `audio_url` звонка, если нет), маскирует персональные данные и назначает роли с помощью LLM-судьи (`LLM_PROFILE`), затем проверяет результат аудитом. Если аудит не пройден (последовательность из 4+ цифр, либо имя, ID, телефон или адрес, найденные вторым проходом LLM), для этого провайдера не пишется ни один отслеживаемый файл.
 
-| Output | Tracked | Content |
+| Выход | В git | Содержимое |
 |---|---|---|
-| `data/asr/raw/<provider>/<cid>.json` | no | raw ASR result, **unmasked** |
-| `data/calls/<provider>.dev.json` | yes | masked records, organizer API shape, shown in the UI as transcript sources (`freedomspeech.dev.json` is the hand-checked version and is never overwritten; the live FreedomSpeech run goes to `bench/asr/freedomspeech-live.dev.json`) |
-| `bench/asr/transcripts/<provider>/<cid>.md` | yes | masked `[N] (mm:ss) role: text` for the manual side-by-side comparison |
-| `bench/asr/summary.md`, `data/asr/metrics.json`, `data/asr/quality.json` | yes | tables per call and averages; quality for the UI (`manual_score` is kept between runs) |
+| `data/asr/raw/<provider>/<cid>.json` | нет | сырой результат ASR, **без маскирования** |
+| `data/calls/<provider>.dev.json` | да | замаскированные записи в форме API организаторов, показываются в интерфейсе как источники транскрипта (`freedomspeech.dev.json` — версия, проверенная вручную, и никогда не перезаписывается; живой прогон FreedomSpeech идёт в `bench/asr/freedomspeech-live.dev.json`) |
+| `bench/asr/transcripts/<provider>/<cid>.md` | да | замаскированные `[N] (mm:ss) role: text` для ручного сравнения бок о бок |
+| `bench/asr/summary.md`, `data/asr/metrics.json`, `data/asr/quality.json` | да | таблицы по звонкам и средние; качество для интерфейса (`manual_score` сохраняется между прогонами) |
 
-A partial run merges into the stored results instead of replacing the other providers' rows.
+Частичный прогон сливается с сохранёнными результатами, а не заменяет строки других провайдеров.
 
-**CER/WER are agreement, not accuracy.** There is no ground truth: both references are ASR too (the organizer `api` transcript and the hand-checked FreedomSpeech one). The one objective metric is the downstream score: verdict hits of the evaluator (`per_criterion`) on each transcript source against the gold labels of the same calls.
+**CER/WER — это совпадение, а не точность.** Эталона нет: оба референса тоже ASR (транскрипт `api` организаторов и проверенный вручную FreedomSpeech). Единственная объективная метрика — итоговая оценка: попадания вердиктов оценщика (`per_criterion`) на каждом источнике транскрипта относительно эталонной разметки тех же звонков.
 
-## Development
+## Разработка
 
 ```bash
 pytest -q                                  # all tests (offline; the fake profile, no network)
@@ -234,20 +234,20 @@ npm run typecheck --prefix web
 LLM_PROFILE=fake uvicorn server.app:app --port 8787   # full app offline: deterministic fake model, no GPU or network
 ```
 
-CI (`.github/workflows/ci.yml`) runs pytest, regenerates the types and fails if they are stale, and type-checks the web code. The plan and the decisions behind it are in `docs/superpowers/plans/2026-11-07-cqa-prototype.md`, terms in `GLOSSARY.md`, and team and agent conventions in `AGENTS.md`.
+CI (`.github/workflows/ci.yml`) запускает pytest, заново генерирует типы и падает, если они устарели, и проверяет типы веб-кода. Термины — в `GLOSSARY.md`, а соглашения команды и агентов — в `AGENTS.md`.
 
-The web UI is plain TypeScript ES modules with no framework and no bundler. Styles are scoped under `.cqa`, and the entry point is `mountCqa(root, {apiBase})`. The D365 loader, resource packager and opt-in CORS are included. Deployment conditions and local checks are documented in `docs/research/d365-web-resources.md`.
+Веб-интерфейс — обычные ES-модули TypeScript без фреймворка и без сборщика. Стили ограничены областью `.cqa`, а точка входа — `mountCqa(root, {apiBase})`. Включены загрузчик D365, упаковщик ресурсов и опциональный CORS. Условия развёртывания и локальные проверки описаны в `docs/internal/research/d365-web-resources.md`.
 
-## Embedding in Dynamics 365
+## Встраивание в Dynamics 365
 
-Build: `web/node_modules/.bin/tsc -p web`, then `python scripts/package_d365.py`.
-Upload every file from `out/d365/cqa_/` as a web resource under the same name: `cqa_/index.htm`, `cqa_/loader.js`, `cqa_/cqa.css`, `cqa_/dist/**/*.js`, `cqa_/assets/*.svg`.
-In the control's `data` parameter set JSON, for example `{"apiBase":"https://cqa.example.com/api","route":"#/dialogs/DEV"}`.
-On the API set `CQA_ALLOWED_ORIGINS=https://example.crm.dynamics.com`; separate several origins with commas, an empty value turns CORS off.
-In the control settings «Restrict cross-frame scripting» must be OFF and «Pass record object-type code and unique identifier» must be ON.
-The package is ready to upload as an HTML web resource and was checked on a local stand; conditions are listed in the [D365 report](research/d365-web-resources.md). Verification in a real D365 organization and HTTPS for the API are still needed.
+Сборка: `web/node_modules/.bin/tsc -p web`, затем `python scripts/package_d365.py`.
+Загрузите каждый файл из `out/d365/cqa_/` как веб-ресурс под тем же именем: `cqa_/index.htm`, `cqa_/loader.js`, `cqa_/cqa.css`, `cqa_/dist/**/*.js`, `cqa_/assets/*.svg`.
+В параметре `data` элемента управления задайте JSON, например `{"apiBase":"https://cqa.example.com/api","route":"#/dialogs/DEV"}`.
+В API задайте `CQA_ALLOWED_ORIGINS=https://example.crm.dynamics.com`; несколько источников разделяйте запятыми, пустое значение отключает CORS.
+В настройках элемента управления «Restrict cross-frame scripting» должно быть ВЫКЛ, а «Pass record object-type code and unique identifier» — ВКЛ.
+Пакет готов к загрузке как HTML-веб-ресурс и проверен на локальном стенде; условия перечислены в [отчёте по D365](internal/research/d365-web-resources.md). Проверка в реальной организации D365 и HTTPS для API всё ещё нужны.
 
-## Run with Docker
+## Запуск в Docker
 
 ```
 docker compose build
@@ -255,4 +255,4 @@ docker compose up -d      # http://localhost:8787
 docker compose down
 ```
 
-Secrets are read from `.env` at run time (never baked into the image). Store data persists in the `cqa-store` volume; to play call audio, uncomment the `data/audio` bind in `docker-compose.yml`. The image runs as a non-root user and includes ffmpeg for audio uploads. The app has no authentication, so compose publishes the port on `127.0.0.1` only.
+Секреты читаются из `.env` во время работы (никогда не вшиваются в образ). Данные хранилища сохраняются в томе `cqa-store`; чтобы воспроизводить аудио звонков, раскомментируйте привязку `data/audio` в `docker-compose.yml`. Образ запускается от непривилегированного пользователя и включает ffmpeg для загрузки аудио. В приложении нет аутентификации, поэтому compose публикует порт только на `127.0.0.1`.

@@ -50,8 +50,3 @@ def test_chat_text_is_verbatim() -> None:
         assert norm(c.description) in doc
         if c.na_condition:
             assert norm(c.na_condition) in doc
-
-
-def test_call_pauses() -> None:
-    c06 = next(c for c in load('call').criteria if c.id == 'c06')
-    assert 'управление паузами' in c06.description

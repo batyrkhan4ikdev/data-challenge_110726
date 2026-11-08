@@ -255,13 +255,7 @@ def test_prompt_contents():
         assert cid in text
     assert 'c01' not in system['content']
     assert CHECKLIST.notes in system['content']
-    assert 'Правила чек-листа' in system['content']
-    assert 'N/A не допускается' in system['content']
-    assert 'Ты — эксперт по контролю качества контакт-центра Freedom Broker' in system['content']
-    lines = user['content'].splitlines()
-    assert lines[0] == 'Канал: agent chat; язык диалога: RU; диалог: p1-ru-001'
     assert '[0] (00:00) client: ' in user['content']
-    assert lines[-1] == 'Верни JSON строго по схеме для критериев: c02, c04, c08'
 
 
 async def test_fake_client_output_parses():

@@ -61,7 +61,7 @@ max_tokens = 4096
 extra_body = {}
 cost = { kind = "gpu", usd_per_hour = 5.35, concurrency = 32 }
 
-# $5.35/GPU-h = median on-demand H200 price (Vast, RunPod, Nebius, CoreWeave; 2026-11), see docs/research/llm-candidates.md.
+# $5.35/GPU-h = median on-demand H200 price (Vast, RunPod, Nebius, CoreWeave; 2026-11), see docs/internal/research/llm-candidates.md.
 # cost.concurrency is a placeholder equal to max_concurrency until benchmark phase 1 measures throughput.
 
 # Paid / cloud models via the aigw gateway (OpenAI-compatible /v1). aigw drops response_format for
@@ -220,7 +220,7 @@ cost = { kind = "tokens", usd_per_mtok_in = 0.12, usd_per_mtok_out = 4.66 }
 hosting = "external_api"
 
 # Per-criterion vote of three judges (majority; scales take the median; gemma breaks ties and leads the evidence).
-# Same accuracy as gemma alone on the 65-dialog gold (0.928 vs 0.929, see docs/research/benchmark-phase1.md),
+# Same accuracy as gemma alone on the 65-dialog gold (0.928 vs 0.929, see docs/internal/research/benchmark-phase1.md),
 # lower total error (MAE 4.55 vs 4.91); kept as an option, not the control default.
 [profiles.ensemble]
 provider = "ensemble"

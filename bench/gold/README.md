@@ -3,7 +3,7 @@
 У каждого разметчика 8 диалогов. Файл с назначениями: `bench/gold/assignments.json`.
 
 1. Откройте свой CSV `bench/gold/labels.<ваш логин>.csv` и транскрипты в `bench/gold/transcripts/<id>.md`.
-2. Прочитайте чек-лист `docs/CQA_Chat_Quality_Checklist.md`; для звонков ещё `data/checklists/call.default.json`; и `docs/organizer-answers.md`. Для звонков (`p4-*`) читайте транскрипт FreedomSpeech `bench/gold/transcripts/freedomspeech/<id>.md` — он точнее ASR фикстуры; номера реплик для `gold_evidence` берите из `transcripts/<id>.md`.
+2. Прочитайте чек-лист `docs/CQA_Chat_Quality_Checklist.md`; для звонков ещё `data/checklists/call.default.json`; и `docs/internal/organizer-answers.md`. Для звонков (`p4-*`) читайте транскрипт FreedomSpeech `bench/gold/transcripts/freedomspeech/<id>.md` — он точнее ASR фикстуры; номера реплик для `gold_evidence` берите из `transcripts/<id>.md`.
 3. В колонке `gold_verdict` укажите ровно одно значение из колонки `allowed` (например `yes`, `no`, `na` или ступень шкалы `0`/`5`/`10`).
 4. В `gold_evidence` укажите номера реплик (`[N]` в транскрипте), через пробел.
 5. Не правьте колонки `prefill_*`.

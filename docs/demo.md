@@ -1,71 +1,71 @@
-# Demo script (≈7 min + questions, 8–10 min total)
+# Сценарий демо (≈7 мин + вопросы, всего 8–10 мин)
 
-The organizers want the live product to be the presentation, with the full cycle shown in order (#3398): checklist setup → getting dialogs → evaluation → viewing results → appeal → manual re-evaluation. A couple of slides frame it (`docs/pitch.md`, slides 1–3). Everything below is clicked live.
+Организаторы хотят, чтобы презентацией был живой продукт, а полный цикл показывался по порядку (#3398): настройка чек-листа → получение диалогов → оценка → просмотр результатов → апелляция → ручная переоценка. Рамку задают пара слайдов (`docs/pitch.md`, слайды 1–3). Всё остальное ниже кликается вживую.
 
-## Before the pitch
+## Перед выступлением
 
-1. Start the app: `.venv/Scripts/python.exe -m uvicorn server.app:app --port 8787`, then open `http://localhost:8787/#/dialogs/DEV`.
-2. Check that `data/store` holds the DEV results: the list should show totals for all 65 dialogs. If it doesn't, run `python scripts/run_batch.py DEV`, which takes 7–8.5 min on the 4-replica gemma (420 s and 507 s measured).
-3. Check the model with `python scripts/preflight.py`. If gemma goes down, each dialog falls back along `FALLBACK_PROFILE`, and the card shows which model scored it.
-4. Open a spare tab on the control group, `#/dialogs/<CONTROL_GROUP>`: «this is our raw control output, with no manual edits».
-5. The checklist edit in step 1 creates a new version of `chat`. That is fine after the control run. Before any further `--submit` run, restore the default with `--reset-defaults`.
-6. The Kazakh call `1234` is already in the group `UPLOADS` (`up-call-002`, uploaded on this machine; its audio is gitignored). Keep it for step 6 in case live ASR is slow.
-7. Type the appeal comment and the reviewer's reason for step 5 in a notepad beforehand: paste, don't type live.
+1. Запустить приложение: `.venv/Scripts/python.exe -m uvicorn server.app:app --port 8787`, затем открыть `http://localhost:8787/#/dialogs/DEV`.
+2. Проверить, что `data/store` содержит результаты DEV: в списке должны быть итоги по всем 65 диалогам. Если их нет, запустить `python scripts/run_batch.py DEV`: на gemma с 4 репликами это занимает 7–8.5 мин (измерено 420 с и 507 с).
+3. Проверить модель командой `python scripts/preflight.py`. Если gemma упадёт, каждый диалог переходит по цепочке `FALLBACK_PROFILE`, а в карточке видно, какая модель его оценила.
+4. Открыть запасную вкладку с контрольной группой, `#/dialogs/<CONTROL_GROUP>`: «это наш сырой вывод на контрольной группе, без ручных правок».
+5. Правка чек-листа в шаге 1 создаёт новую версию `chat`. После контрольного прогона это нормально. Перед любым следующим запуском с `--submit` вернуть значение по умолчанию через `--reset-defaults`.
+6. Казахский звонок `1234` уже лежит в группе `UPLOADS` (`up-call-002`, загружен на этой машине; его аудио в gitignore). Оставить его для шага 6 на случай, если живое ASR будет медленным.
+7. Комментарий к апелляции и причину проверяющего для шага 5 заранее набрать в блокноте: вставлять, а не печатать вживую.
 
-**Pacing.** Never wait on a spinner. If you upload a recording live, start it at the beginning of step 4 and come back to it in step 6. Any live step not done in ~60 s: say what it is doing, move on, return later. When showing the upload, say the one line that matters: «датасет помечает этот звонок RU, а система по звуку определила KZ».
+**Темп.** Никогда не ждать индикатор загрузки. Если загружаете запись вживую, запускайте её в начале шага 4 и возвращайтесь к ней в шаге 6. Любой живой шаг, не завершившийся за ~60 с: сказать, что он делает, идти дальше, вернуться позже. При показе загрузки произнести одну важную фразу: «датасет помечает этот звонок RU, а система по звуку определила KZ».
 
-## 0. Frame (30 s, slide 1)
+## 0. Рамка (30 с, слайд 1)
 
-One sentence: we score every operator chat and call against a versioned checklist, with a reason and the exact turn for each verdict, on our own GPU by default, in about 30 s per dialog (per-criterion mode). Accuracy is about 0.93 on DEV (0.931–0.939 in two runs), and we expect ≈ 0.91–0.93 on unseen chats. Our labels match five other teams' published DEV labels at 94.6–99.3%; a sixth, manual set agrees 86.7% (it reads C7 «прощание без итога» as «Да»), and the one fully blind manual set (14 dialogs) is lower, at 84% (`bench/gold/README.md`).
+Одно предложение: мы оцениваем каждый чат и звонок оператора по версионируемому чек-листу, с причиной и точной репликой для каждого вердикта, по умолчанию на своём GPU, примерно за 30 с на диалог (режим «по критерию»). Точность около 0.93 на DEV (0.931–0.939 в двух прогонах), на новых чатах ожидаем ≈ 0.91–0.93. Наша разметка совпадает с опубликованной DEV-разметкой пяти других команд на 94.6–99.3%; шестой, ручной набор согласуется на 86.7% (он читает C7 «прощание без итога» как «Да»), а единственный полностью слепой ручной набор (14 диалогов) ниже: 84% (`bench/gold/README.md`).
 
-## 1. Checklist setup (60 s): «добавить критерий, изменить, поменять вес»
+## 1. Настройка чек-листа (60 с): «добавить критерий, изменить, поменять вес»
 
-**Чек-листы** → `chat` → edit:
-- add «Предупреждение об ожидании»: answer type «Да / Нет», tick «N/A допустимо» and give the N/A condition («оператор не ставил клиента на ожидание»), weight 5;
-- change the wording of an existing criterion;
-- change the weight of c07 «Завершение» from 5 to 10, and lower c05 from 15 to 5 so the weights still sum to 100 (the editor shows «Σ весов: … · должно быть 100» until they do).
+**Чек-листы** → `chat` → правка:
+- добавить «Предупреждение об ожидании»: тип ответа «Да / Нет», отметить «N/A допустимо» и указать условие N/A («оператор не ставил клиента на ожидание»), вес 5;
+- изменить формулировку существующего критерия;
+- изменить вес c07 «Завершение» с 5 на 10 и снизить c05 с 15 до 5, чтобы сумма весов оставалась 100 (редактор показывает «Σ весов: … · должно быть 100», пока это не так).
 
-Save. A new version (v2) is created, and v1 stays readable; the page offers «К диалогам для переоценки». Rules and edge cases live in the checklist notes, not in the code, so QA changes the rules without a developer.
+Сохранить. Создаётся новая версия (v2), v1 остаётся доступной для чтения; страница предлагает «К диалогам для переоценки». Правила и граничные случаи живут в заметках чек-листа, а не в коде, поэтому QA меняет правила без разработчика.
 
-## 2. Getting dialogs (30 s)
+## 2. Получение диалогов (30 с)
 
-**Диалоги** → group DEV, loaded from the organizers' API. Filters: channel, language (RU/KZ/EN) and «Только с грубыми ошибками». Point out the 8 gross-error dialogs, including the KZ chat p1-kz-015, where an account restriction was revealed before identification (#3106).
+**Диалоги** → группа DEV, загружена из API организаторов. Фильтры: канал, язык (RU/KZ/EN) и «Только с грубыми ошибками». Показать 8 диалогов с грубыми ошибками, в том числе казахский чат p1-kz-015, где ограничение по счёту раскрыто до идентификации (#3106).
 
-## 3. Evaluation (45 s)
+## 3. Оценка (45 с)
 
-Select 2 dialogs → **Оценить выбранные**: progress is live; the batch finishes in about 35–70 s (rehearsal: 3 chats took 69 s), so start it and talk over it. Dialogs evaluated now use the new checklist v2, so their totals differ from the morning run. This is also the step the jury may ask to see on their own transcripts (#3327).
+Выбрать 2 диалога → **Оценить выбранные**: прогресс отображается вживую; пакет завершается примерно за 35–70 с (репетиция: 3 чата заняли 69 с), так что запустить его и говорить поверх. Диалоги, оценённые сейчас, используют новый чек-лист v2, поэтому их итоги отличаются от утреннего прогона. Именно этот шаг жюри может попросить показать на их собственных транскриптах (#3327).
 
-## 4. Viewing results (90 s): «результаты конкретного диалога, почему ошибка»
+## 4. Просмотр результатов (90 с): «результаты конкретного диалога, почему ошибка»
 
-1. **p1-ru-022**, gross error: the operator offers to take the money personally, «в обход компании». Open the c08 row and its evidence: the highlighted turn. The flag is reported separately and does not zero the total (31.25).
-2. **p1-ru-029**: the score ring, points as `x / weight`, and «Почему снижена оценка» with «Перейти к фрагменту». Two N/A: c02 «Выявление потребности» (the client gave everything up front) and c03 «Идентификация» (no account data was disclosed); each reason is shown, and the weight is redistributed. Mention that this dialog also carries the gross-error flag (total 46.15), so the badge on the card is expected; it is one of the 8.
-3. «Факты диалога»: first operator response against the 3-minute SLA, the longest client wait, masked data. It is computed from the transcript without an LLM.
-4. **Аналитика** (10 s): mean total, pass rate per criterion, by language and channel.
+1. **p1-ru-022**, грубая ошибка: оператор предлагает взять деньги лично, «в обход компании». Открыть строку c08 и её доказательство: подсвеченная реплика. Флаг сообщается отдельно и не обнуляет итог (31.25).
+2. **p1-ru-029**: кольцо оценки, баллы как `x / weight` и «Почему снижена оценка» с «Перейти к фрагменту». Два N/A: c02 «Выявление потребности» (клиент сразу назвал всё) и c03 «Идентификация» (данные аккаунта не раскрывались); для каждого показана причина, вес перераспределяется. Отметить, что в этом диалоге тоже есть флаг грубой ошибки (итог 46.15), так что значок на карточке ожидаем; это один из 8.
+3. «Факты диалога»: первый ответ оператора относительно SLA в 3 минуты, самое долгое ожидание клиента, маскированные данные. Считается по транскрипту без LLM.
+4. **Аналитика** (10 с): средний итог, доля прохождения по критериям, по языкам и каналам.
 
-## 5. Appeal and manual re-evaluation (90 s)
+## 5. Апелляция и ручная переоценка (90 с)
 
-1. On p1-ru-029: «Оспорить оценку» on c06, with a comment.
-2. **Апелляции** → the appeal is in the queue → «Изменить»: pick the new value (c06: 10), fill «Проверяющий» and the reason → the final total is recomputed (rehearsal: 46.15 → 69.23, «Исходный итог: 46,15»). The raw and the final score are both kept, and history shows who changed what. Now click «Выгрузить дело» on this evaluation: the ZIP holds the appeal and the decision.
-3. Manual re-evaluation under the new rules: open **p1-ru-028** (the operator says «Сейчас проверю путь» and later «Спасибо за ожидание») → «Переоценить по текущему чек-листу» (~15 s). The new criterion «Предупреждение об ожидании» gets a verdict with evidence, and «Сравнение оценок» shows v1 against v2 with only the changed criteria expanded. Do not re-evaluate p1-ru-029 after its appeal: a re-evaluation is a new evaluation and does not inherit appeal decisions, and there the new criterion is N/A.
+1. На p1-ru-029: «Оспорить оценку» на c06, с комментарием.
+2. **Апелляции** → апелляция в очереди → «Изменить»: выбрать новое значение (c06: 10), заполнить «Проверяющий» и причину → итог пересчитывается (репетиция: 46.15 → 69.23, «Исходный итог: 46,15»). Исходная и итоговая оценки хранятся обе, а история показывает, кто что менял. Теперь нажать «Выгрузить дело» на этой оценке: в ZIP лежат апелляция и решение.
+3. Ручная переоценка по новым правилам: открыть **p1-ru-028** (оператор говорит «Сейчас проверю путь» и позже «Спасибо за ожидание») → «Переоценить по текущему чек-листу» (~15 с). Новый критерий «Предупреждение об ожидании» получает вердикт с доказательством, а «Сравнение оценок» показывает v1 против v2, раскрыты только изменившиеся критерии. Не переоценивайте p1-ru-029 после её апелляции: переоценка — это новая оценка, она не наследует решения по апелляциям, и там новый критерий N/A.
 
-## 6. Calls: our approach (60 s), per #3397 «почему это важно для бизнеса»
+## 6. Звонки: наш подход (60 с), по #3397 «почему это важно для бизнеса»
 
-Open the call **p4-ru-003**. The organizers' transcript is unusable for QA («идентификацию успешно проеданная»), and a wrong transcript means a wrong score. In the «Транскрипт» switch:
-- the card opens on «Организатор (API)»: click **FreedomSpeech** (Freedom's own STT) and the «проеданная» line is gone;
-- 9 benchmarked models, each with a quality badge;
+Открыть звонок **p4-ru-003**. Транскрипт организаторов непригоден для QA («идентификацию успешно проеданная»), а неверный транскрипт означает неверную оценку. В переключателе «Транскрипт»:
+- карточка открывается на «Организатор (API)»: нажать **FreedomSpeech** (собственный STT Freedom), и строка «проеданная» пропадает;
+- 9 проверенных моделей, у каждой значок качества;
 - «Вставить свой транскрипт».
 
-«Распознать заново» on T-one or GigaAM-v3 runs on our H200: ASR alone takes 19–30 s on average, 7–57 s per call (`bench/asr/summary.md`), plus role assignment and masking by the LLM. Do not re-transcribe live with Gemini or WhisperX: their slowest calls took 110 s and 163 s (per-call maxima; means 71 s and 60 s). Roles are assigned and personal data masked by our own model by default, so customer data stays on our GPU. Click an evidence turn and the audio seeks to that moment.
+«Распознать заново» на T-one или GigaAM-v3 выполняется на нашем H200: одно ASR занимает в среднем 19–30 с, 7–57 с на звонок (`bench/asr/summary.md`), плюс назначение ролей и маскирование силами LLM. Не перераспознавайте вживую через Gemini или WhisperX: их самые медленные звонки заняли 110 с и 163 с (максимумы по звонкам; средние 71 с и 60 с). Роли назначаются, а персональные данные маскируются нашей собственной моделью по умолчанию, поэтому данные клиентов остаются на нашем GPU. Нажать на реплику-доказательство, и аудио перематывается на этот момент.
 
-**Your own recording.** «Диалоги» → **Загрузить звонок или чат** → pick an audio file (e.g. the Kazakh call `1234`, which the dataset labels RU), language «определить автоматически», model WhisperX (H200) → «Распознать и добавить». It takes about 1–1.5 min on WhisperX for 3 minutes of audio: the language comes out KZ, roles are assigned, personal data masked. Then «Оценить по этому транскрипту» (~70 s for this call; `up-call-002` is already evaluated on the demo machine: 84.62; a rehearsal re-run gave 88.24, so do not quote the number as fixed) → the usual result card, appeal and «Выгрузить дело». A pasted chat goes the same way in seconds. Everything lands in the group `UPLOADS`.
+**Своя запись.** «Диалоги» → **Загрузить звонок или чат** → выбрать аудиофайл (например, казахский звонок `1234`, который датасет помечает как RU), язык «определить автоматически», модель WhisperX (H200) → «Распознать и добавить». На WhisperX для 3 минут аудио это занимает около 1–1.5 мин: язык определяется как KZ, роли назначены, персональные данные замаскированы. Затем «Оценить по этому транскрипту» (~70 с для этого звонка; `up-call-002` на демо-машине уже оценён: 84.62; повторный прогон на репетиции дал 88.24, поэтому не называйте число как фиксированное) → обычная карточка результата, апелляция и «Выгрузить дело». Вставленный чат проходит так же, за секунды. Всё попадает в группу `UPLOADS`.
 
-## If they ask for laptop access
+## Если попросят доступ к ноутбуку
 
-Hand over the dialogs tab. Everything above is safe to click; live evaluation of one DEV dialog takes about 30–35 s.
+Передать вкладку с диалогами. Всё описанное выше безопасно кликать; живая оценка одного диалога DEV занимает около 30–35 с.
 
-## If they ask
+## Если спросят
 
-- **C7 «Завершение».** We read the checklist literally: a summary or an offer of further help, **and** a goodbye. A goodbye alone («Пожалуйста. Хорошего дня!») is «Нет»; the organizers' reply «Внимательно перечитайте чеклист по данному пункту» (#2814) most likely answers this very question (#2686, see `docs/organizer-answers.md`). Teams split on it. In our submitted DEV output C7 is «Нет» in 50 of 60 chats, and in 32 of them it is the only criterion that loses points (`results/dev/results.json`). If the reference reads it more softly, we lose up to most of one criterion out of eight. The rule lives in the checklist's notes and can be edited in the UI in a minute; the prompt and the scoring do not change.
-- **Why not a fine-tuned model.** 65 DEV dialogs, model-made labels, no held-out set; most remaining misses are gold ties. A judge tuned to 8 fixed criteria would handle «add a criterion» worse.
-- **Calls accuracy.** Not claimed: external call labels agree 69–79% and CER is agreement with FreedomSpeech, not accuracy.
-- **Reproducibility.** Two full DEV runs on the final rules agree on 514 of 520 verdicts (98.8%) and on all 8 gross errors. The same model at temperature 0 can still flip a borderline cell, and a call's score also moves with its ASR transcript (the uploaded Kazakh call scored 88.24 and 84.62 in two runs).
+- **C7 «Завершение».** Мы читаем чек-лист буквально: итог или предложение дальнейшей помощи, **и** прощание. Одно прощание («Пожалуйста. Хорошего дня!») — «Нет»; ответ организаторов «Внимательно перечитайте чеклист по данному пункту» (#2814), скорее всего, отвечает именно на этот вопрос (#2686, см. `docs/internal/organizer-answers.md`). Команды разошлись во мнениях. В нашем сданном выводе на DEV C7 равен «Нет» в 50 из 60 чатов, а в 32 из них это единственный критерий, теряющий баллы (`results/dev/results.json`). Если эталон читает его мягче, мы теряем до большей части одного критерия из восьми. Правило живёт в заметках чек-листа и правится в UI за минуту; промпт и подсчёт баллов не меняются.
+- **Почему не дообученная модель.** 65 диалогов DEV, разметка, сделанная моделями, нет отложенной выборки; большинство оставшихся промахов — ничьи в эталонной разметке. Судья, настроенный на 8 фиксированных критериев, хуже справился бы с «добавить критерий».
+- **Точность по звонкам.** Не заявляется: внешняя разметка звонков совпадает на 69–79%, а CER — это совпадение с FreedomSpeech, а не точность.
+- **Воспроизводимость.** Два полных прогона DEV на итоговых правилах совпадают в 514 из 520 вердиктов (98.8%) и во всех 8 грубых ошибках. Одна и та же модель при температуре 0 всё же может перевернуть пограничную ячейку, а оценка звонка также зависит от его ASR-транскрипта (загруженный казахский звонок получил 88.24 и 84.62 в двух прогонах).

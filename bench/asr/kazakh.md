@@ -1,14 +1,14 @@
-# Kazakh call: ASR providers compared (2026-11-08)
+# Казахский звонок: сравнение ASR-провайдеров (2026-11-08)
 
-One 180 s mono 16 kHz call, record `1234`, which **the dataset labels `language: RU` while the speech is Kazakh**. It is the only Kazakh audio we hold: the 5 DEV calls are Russian and the PART2 records are chats with no audio.
+Один звонок 180 с, моно, 16 кГц, запись `1234`, которую **датасет помечает `language: RU`, хотя речь казахская**. Это единственное казахское аудио, которым мы располагаем: 5 DEV-звонков русские, а записи PART2 — чаты без аудио.
 
-The listening review is done, 2026-11-08. Batyrkhantzy111 chose **Whisper large-v3 · 2 (H200)** as the reference base and corrected it from his notes. `bench/asr/kazakh-1234.reference.json` has 32 turns and 218 words: 22 Whisper rows, 11 word fixes, and 10 listener-quoted turns Whisper dropped. Roles are bot/operator/client; names and the city are masked. The **kk** letter share remains a secondary column only, a script proxy, not accuracy. Audio and raw output stay in `data/audio/` and `data/asr/raw/` (gitignored).
+Прослушивание завершено, 2026-11-08. Batyrkhantzy111 выбрал **Whisper large-v3 · 2 (H200)** базой для эталона и поправил её по своим заметкам. В `bench/asr/kazakh-1234.reference.json` 32 реплики и 218 слов: 22 строки Whisper, 11 исправлений слов и 10 реплик, процитированных слушателем, которые Whisper пропустил. Роли: bot/operator/client; имена и город замаскированы. Доля букв **kk** остаётся лишь вторичной колонкой: это прокси по письменности, а не точность. Аудио и сырой вывод лежат в `data/audio/` и `data/asr/raw/` (в gitignore).
 
-## CER against the reference (diagnostic)
+## CER относительно эталона (диагностика)
 
-Full text of each provider against all reference turns, after `collapse_repeats` (the WhisperX loop of 108 words is removed). Sorted by provider, not by score: these numbers are **not a ranking**.
+Полный текст каждого провайдера против всех реплик эталона, после `collapse_repeats` (цикл WhisperX из 108 слов удалён). Отсортировано по провайдеру, не по оценке: эти числа **не являются рейтингом**.
 
-| provider | CER | WER | words | loop |
+| провайдер | CER | WER | слов | цикл |
 |---|---|---|---|---|
 | FreedomSpeech | 0.343 | 0.537 | 272 | 0 |
 | GigaAM-v3 + pyannote | 0.790 | 0.922 | 59 | 0 |
@@ -21,37 +21,37 @@ Full text of each provider against all reference turns, after `collapse_repeats`
 | WhisperX + pyannote (`language=kk`) | 0.454 | 0.725 | 236 | 108 |
 | WhisperX + pyannote (auto → kk re-run) | 0.454 | 0.725 | 236 | 108 |
 
-Why this does not rank providers:
+Почему это не рейтинг провайдеров:
 
-- **The reference is incomplete.** Its `gaps` list 10 spans where other providers hear speech the reference does not contain (a second request for the operator, the rest of the client's credit question, the name exchange around 01:43–01:49, short replies). A provider that transcribes that speech is charged insertions for it; one that drops it is not. A fair comparison needs the same verified intervals with aligned text on both sides; that alignment has not been done. An earlier version of this section dropped hypothesis segments by gap overlap; that depends on each provider's segmentation (it removed reference-covered client speech from FreedomSpeech, and nothing from the untimed turbo output), so it was withdrawn.
-- **The reference is not independent.** It is Whisper large-v3 · 2 with the listener's 11 word fixes and 10 inserted turns. Two inserted turns were quoted from KuSpeech (the operator greeting and the client's first question), one from FreedomSpeech (`Операторға қосыңыз`). Whisper's own CER therefore reflects only those fixes and insertions, and KuSpeech and FreedomSpeech share text with the reference by construction.
-- **One call, 180 s.** The only signal robust to both biases is the gross one: T-one, GigaAM-v3 and Gemini do not produce usable Kazakh here.
+- **Эталон неполон.** Его `gaps` перечисляют 10 интервалов, где другие провайдеры слышат речь, которой в эталоне нет (второй запрос оператора, остаток кредитного вопроса клиента, обмен именами около 01:43–01:49, короткие реплики). Провайдеру, который расшифровал эту речь, засчитываются вставки; тому, кто её пропустил, — нет. Для честного сравнения нужны одни и те же проверенные интервалы с выровненным текстом с обеих сторон; такое выравнивание не сделано. Прежняя версия этого раздела отбрасывала сегменты гипотезы по пересечению с gaps; это зависит от сегментации каждого провайдера (у FreedomSpeech убралась речь клиента, покрытая эталоном, а у turbo без таймингов не убралось ничего), поэтому она была снята.
+- **Эталон не независим.** Это Whisper large-v3 · 2 с 11 исправлениями слов и 10 вставленными репликами от слушателя. Две вставленные реплики взяты из KuSpeech (приветствие оператора и первый вопрос клиента), одна — из FreedomSpeech (`Операторға қосыңыз`). Поэтому CER самого Whisper отражает только эти исправления и вставки, а KuSpeech и FreedomSpeech по построению разделяют текст с эталоном.
+- **Один звонок, 180 с.** Единственный сигнал, устойчивый к обоим смещениям, — грубый: T-one, GigaAM-v3 и Gemini не выдают здесь пригодного казахского текста.
 
-**Listener's note on the review itself.** The «идеально» marks are not always reliable: a row was marked green when the words in it were right, even where Whisper large-v3 · 2 (H200) had dropped the operator–client exchange around it. Whisper missed many of those dialogue turns; the 10 inserted turns and the 10 `gaps` are that missing speech, so 20 of 22 green rows do not mean Whisper covered the call well.
+**Замечание слушателя о самом прослушивании.** Отметки «идеально» не всегда надёжны: строка помечалась зелёной, если слова в ней верны, даже когда Whisper large-v3 · 2 (H200) пропустил вокруг неё обмен оператора и клиента. Whisper пропустил много таких реплик диалога; 10 вставленных реплик и 10 `gaps` — это и есть пропущенная речь, поэтому 20 из 22 зелёных строк не означают, что Whisper хорошо покрыл звонок.
 
-**Correction (03:55).** The first version of this table ranked WhisperX first with 340 words and 0.712. 108 of those words were one token, «өте», repeated in a single run: a Whisper decoding loop, not speech. The columns below count words after collapsing any run of 8+ identical words (`collapse_repeats` in `server/asr/providers.py`, now applied to every ASR result), and **loop** is how many words that removed.
+**Исправление (03:55).** Первая версия этой таблицы ставила WhisperX на первое место с 340 словами и 0.712. 108 из этих слов были одним токеном, «өте», повторённым подряд: цикл декодирования Whisper, а не речь. Колонки ниже считают слова после схлопывания любой серии из 8+ одинаковых слов (`collapse_repeats` в `server/asr/providers.py`, теперь применяется к каждому результату ASR), а **цикл** — сколько слов это убрало.
 
-| provider | where | words | loop | **kk** (raw → collapsed) | speakers | s |
+| провайдер | где | слов | цикл | **kk** (сырое → после схлопывания) | дикторы | с |
 |---|---|---|---|---|---|---|
-| Whisper large-v3 · 2 (H200) | cloud | 138 | 0 | 0.594 | no | 12.0 |
-| Whisper large-v3 (H200) | cloud | 146 | 0 | 0.575 | no | 3.1 |
-| **WhisperX + pyannote** (`language=kk`) | H200 | 232 | **108** | 0.712 → **0.569** | yes | 22.1 |
-| WhisperX + pyannote (auto → kk re-run) | H200 | 232 | **108** | 0.712 → 0.569 | yes | 80.2 |
-| KuSpeech multilingual | cloud | 250 | 0 | 0.540 | no | 1.7 |
-| **FreedomSpeech** | cloud | **272** | 0 | 0.533 | yes | 36.0 |
-| Whisper large-v3 turbo (H200) | cloud | 133 | 0 | 0.526 | no | 16.3 |
-| GigaAM-v3 + pyannote | H200 | 55 | 0 | 0.000 | yes | 3.8 |
-| T-one + pyannote | H200 | 129 | 0 | 0.000 | yes | 8.2 |
-| Gemini 3.5 Transcribe | OpenRouter | 28 | 0 | 0.000 | yes | 13.7 |
+| Whisper large-v3 · 2 (H200) | облако | 138 | 0 | 0.594 | нет | 12.0 |
+| Whisper large-v3 (H200) | облако | 146 | 0 | 0.575 | нет | 3.1 |
+| **WhisperX + pyannote** (`language=kk`) | H200 | 232 | **108** | 0.712 → **0.569** | да | 22.1 |
+| WhisperX + pyannote (auto → kk re-run) | H200 | 232 | **108** | 0.712 → 0.569 | да | 80.2 |
+| KuSpeech multilingual | облако | 250 | 0 | 0.540 | нет | 1.7 |
+| **FreedomSpeech** | облако | **272** | 0 | 0.533 | да | 36.0 |
+| Whisper large-v3 turbo (H200) | облако | 133 | 0 | 0.526 | нет | 16.3 |
+| GigaAM-v3 + pyannote | H200 | 55 | 0 | 0.000 | да | 3.8 |
+| T-one + pyannote | H200 | 129 | 0 | 0.000 | да | 8.2 |
+| Gemini 3.5 Transcribe | OpenRouter | 28 | 0 | 0.000 | да | 13.7 |
 
-## What it says
+## Что это показывает
 
-- **No clear Kazakh winner by this proxy.** Once the loop is removed, the Kazakh-script providers sit within 0.53–0.59. The differences are smaller than what the proxy can tell apart. The CER against the listener's reference ([diagnostic](#cer-against-the-reference-diagnostic)) does not settle it either.
-- **FreedomSpeech and WhisperX are the two candidates with speaker labels.** FreedomSpeech gives the most words (272) and has no loop. WhisperX runs on our GPU, but it looped on this call: without the new loop guard the judge would have read a turn of 109 «өте».
-- **Plain Whisper large-v3 (cloud) has the highest share, but about half the words** (138–146 against 232–272) and no speakers: it drops speech rather than mistranscribing it [INFERENCE from the word counts].
-- **The automatic kk re-run works on real audio.** With no hint, the hub first answers `language: auto` at kk 0.32. `transcribe()` sees Kazakh letters above the 0.15 threshold and re-runs with `kk`, landing on the same output as the forced provider. The cost is the wasted first pass: 80.2 s against 22.1 s.
-- **GigaAM-v3 and T-one are Russian-only** (0.000): they transliterate Kazakh into Russian words. They stay the right choice for Russian calls, where they led the earlier benchmark (`summary.md`), and the wrong one here.
-- **Gemini 3.5 Transcribe returned 28 words for 180 s.** It gave up on Kazakh rather than transcribing it.
-- **The dataset's language label cannot be trusted:** `1234` is tagged RU. The server therefore forces a language only for a `KZ` label and otherwise auto-detects, so the Kazakh check can fire (`server/routes/transcripts.py`).
+- **По этому прокси явного победителя для казахского нет.** После удаления цикла провайдеры с казахской письменностью укладываются в 0.53–0.59. Разница меньше, чем способен различить прокси. CER относительно эталона слушателя ([диагностика](#cer-относительно-эталона-диагностика)) тоже не решает вопрос.
+- **FreedomSpeech и WhisperX — два кандидата с метками дикторов.** FreedomSpeech даёт больше всего слов (272) и без цикла. WhisperX работает на нашем GPU, но на этом звонке зациклился: без нового защитного механизма от циклов судья прочитал бы реплику из 109 «өте».
+- **У обычного Whisper large-v3 (облако) самая высокая доля, но около половины слов** (138–146 против 232–272) и нет дикторов: он пропускает речь, а не искажает её [INFERENCE по числу слов].
+- **Автоматический повторный прогон kk работает на реальном аудио.** Без подсказки хаб сначала отвечает `language: auto` при kk 0.32. `transcribe()` видит казахские буквы выше порога 0.15 и перезапускает с `kk`, получая тот же вывод, что и принудительный провайдер. Цена — впустую потраченный первый проход: 80.2 с против 22.1 с.
+- **GigaAM-v3 и T-one — только для русского** (0.000): они транслитерируют казахский русскими словами. Для русских звонков они остаются верным выбором, там они лидировали в прежнем бенчмарке (`summary.md`), а здесь — неверным.
+- **Gemini 3.5 Transcribe вернул 28 слов на 180 с.** Он сдался на казахском, а не расшифровал его.
+- **Метке языка в датасете доверять нельзя:** `1234` помечена RU. Поэтому сервер принудительно задаёт язык только для метки `KZ`, а иначе определяет автоматически, чтобы сработала проверка на казахский (`server/routes/transcripts.py`).
 
-Reproduce: `data/asr/raw/` holds each provider's raw result as `1234.<provider>.json`; the collapsed numbers come from running `collapse_repeats` and `kazakh_share` over their `text`. CER/WER come from `bench.asr.cer`/`wer` against the turns of the reference after `collapse_repeats`; the numbers were computed on the unmasked local copy (masks would count as errors on the real names), so rerunning on the committed masked file gives slightly different values.
+Воспроизведение: в `data/asr/raw/` лежит сырой результат каждого провайдера как `1234.<provider>.json`; схлопнутые числа получаются запуском `collapse_repeats` и `kazakh_share` над их `text`. CER/WER считаются через `bench.asr.cer`/`wer` против реплик эталона после `collapse_repeats`; числа посчитаны на немаскированной локальной копии (маски считались бы ошибками на реальных именах), поэтому повторный запуск на закоммиченном маскированном файле даст немного другие значения.
