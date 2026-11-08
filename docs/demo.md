@@ -9,6 +9,10 @@ The organizers want the live product to be the presentation, with the full cycle
 3. Check the model with `python scripts/preflight.py`. If gemma goes down, each dialog falls back along `FALLBACK_PROFILE`, and the card shows which model scored it.
 4. Open a spare tab on the control group, `#/dialogs/<CONTROL_GROUP>`: «this is our raw control output, with no manual edits».
 5. The checklist edit in step 1 creates a new version of `chat`. That is fine after the control run. Before any further `--submit` run, restore the default with `--reset-defaults`.
+6. The Kazakh call `1234` is already in the group `UPLOADS` (`up-call-001`, uploaded on this machine; its audio is gitignored). Keep it for step 6 in case live ASR is slow.
+7. Type the appeal comment and the reviewer's reason for step 5 in a notepad beforehand: paste, don't type live.
+
+**Pacing.** Never wait on a spinner. If you upload a recording live, start it at the beginning of step 4 and come back to it in step 6. Any live step not done in ~60 s: say what it is doing, move on, return later. When showing the upload, say the one line that matters: «датасет помечает этот звонок RU, а система по звуку определила KZ».
 
 ## 0. Frame (30 s, slide 1)
 
