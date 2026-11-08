@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import logging
 import os
 import re
 import time
@@ -16,6 +17,8 @@ from pydantic import BaseModel
 from server.asr.audio import mp3_duration_s, split_mp3
 from server.asr.base import AsrError, AsrResult, AsrSegment
 from server.http import new_session
+
+log = logging.getLogger(__name__)
 
 TIMEOUT_S = 600
 ATTEMPTS = 3
@@ -354,7 +357,11 @@ async def transcribe(provider: AsrProvider, audio: bytes, filename: str = 'call.
     """
     result = await _transcribe_once(provider, audio, filename, language)
     if provider.accepts_language and (language or '').lower() != 'kk' and kazakh_share(result.text) >= KAZAKH_SHARE_MIN:
-        forced = await _transcribe_once(provider, audio, filename, 'kk')
+        try:
+            forced = await _transcribe_once(provider, audio, filename, 'kk')
+        except AsrError as e:  # the first pass is a usable transcript; a failed retry must not throw it away
+            log.warning('%s: kk re-run failed, keeping the auto-detected result: %s', provider.name, e)
+            return result
         if kazakh_share(forced.text) > kazakh_share(result.text):
             return forced.model_copy(update={'seconds': result.seconds + forced.seconds})
     return result

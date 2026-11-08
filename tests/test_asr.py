@@ -586,3 +586,19 @@ def test_decoding_loop_is_collapsed_but_real_repeats_stay():
     assert text == f'Бұл өте {REPEAT_MARK} жақсы' and removed == 8
     # a run of five «да» on a phone line is speech, not a loop
     assert collapse_repeats('да, да, да, да, да, хорошо') == ('да, да, да, да, да, хорошо', 0)
+
+
+async def test_failed_kk_rerun_keeps_the_first_transcript(monkeypatch):
+    from server.asr import providers as P
+
+    text = 'Сәлеметсіз бе, қалай көмектесе аламын, брокерлік шотыңыз туралы'
+
+    async def kind(provider, audio, filename, language=None):
+        if language == 'kk':
+            raise P.AsrError('hub timeout')
+        return {'text': text, 'language': 'auto'}, [AsrSegment(start=0.0, end=1.0, speaker='A', text=text)], True
+
+    monkeypatch.setitem(P._KINDS, 'openai_audio', kind)
+    auto = P.AsrProvider(name='x', kind='openai_audio', base_url='https://x', model='m', label='X',
+                         hosting='local', accepts_language=True)
+    assert (await P.transcribe(auto, b'mp3', 'c.mp3')).text == text
