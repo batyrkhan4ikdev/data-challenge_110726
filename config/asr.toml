@@ -29,7 +29,7 @@ base_url_env = "AIGW_BASE_URL"
 api_key_env = "AIGW_API_KEY"
 model = "whisper-large-v3"
 label = "Whisper large-v3 (H200)"
-hosting = "local"
+hosting = "external_api"
 max_audio_s = 590  # the endpoint answers 400 above 600 s; a longer call is cut into equal pieces
 extra = { response_format = "verbose_json" }
 
@@ -39,7 +39,7 @@ base_url_env = "AIGW_BASE_URL"
 api_key_env = "AIGW_API_KEY"
 model = "alemai/openai/whisper-large-v3-turbo"
 label = "Whisper large-v3 turbo (H200)"
-hosting = "local"
+hosting = "external_api"
 extra = { response_format = "verbose_json" }
 
 # Same engine as kuspeech (byte-identical output, one whole-file segment). Kept for the record, not run by default.
@@ -49,7 +49,7 @@ base_url_env = "AIGW_BASE_URL"
 api_key_env = "AIGW_API_KEY"
 model = "alemai/ai-sage/GigaAM-Multilingual"
 label = "GigaAM Multilingual (H200)"
-hosting = "local"
+hosting = "external_api"
 enabled = false
 extra = { response_format = "verbose_json" }
 
@@ -60,7 +60,7 @@ base_url_env = "AIGW_BASE_URL"
 api_key_env = "AIGW_API_KEY"
 model = "kuspeech:multilingual"
 label = "KuSpeech · GigaAM-Multilingual (H200)"
-hosting = "local"
+hosting = "external_api"
 extra = { response_format = "verbose_json" }
 
 # Probe: dropped ~5.7 s of leading speech on a test clip. Compare with the other Whisper large-v3 before trusting it.
@@ -70,7 +70,7 @@ base_url_env = "AIGW_BASE_URL"
 api_key_env = "AIGW_API_KEY"
 model = "alemai/openai/whisper-large-v3"
 label = "Whisper large-v3 · 2 (H200)"
-hosting = "local"
+hosting = "external_api"
 extra = { response_format = "verbose_json" }
 
 # Multimodal LLM as ASR (chat completion with an input_audio part). Disabled by default: it spends the OpenRouter test budget.
