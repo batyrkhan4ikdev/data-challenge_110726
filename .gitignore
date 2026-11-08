@@ -15,3 +15,6 @@ bench/results/**
 data/audio/
 data/asr/raw/
 data/asr/*.log
+
+# Synthetic call audio, raw ASR output and judge caches
+data/asr/synthetic/

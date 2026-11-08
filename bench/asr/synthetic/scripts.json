@@ -1,0 +1,3103 @@
+{
+ "note": "SYNTHETIC dialogs written by an LLM from a scenario matrix; invented names, no real personal data",
+ "seed": 20261108,
+ "generator": "h200-gemma",
+ "dialogs": [
+  {
+   "id": "syn-en-001",
+   "language": "EN",
+   "profile": "clean",
+   "topic": "tariff",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Hello! Thank you for calling Freedom Broker. My name is Sarah. How may I help you today?"
+    },
+    {
+     "speaker": "client",
+     "text": "Hi Sarah. I am looking at your commission plans. What is the difference between the Basic and Pro tariffs?"
+    },
+    {
+     "speaker": "operator",
+     "text": "I would be happy to explain that. To give you the best advice, may I ask how often you plan to trade?"
+    },
+    {
+     "speaker": "client",
+     "text": "Probably once or twice a month. I am just starting out."
+    },
+    {
+     "speaker": "operator",
+     "text": "And do you have a rough idea of your initial investment amount?"
+    },
+    {
+     "speaker": "client",
+     "text": "Maybe around one thousand dollars for now."
+    },
+    {
+     "speaker": "operator",
+     "text": "I understand. For a beginner, the Basic plan is ideal because it has no monthly maintenance fee."
+    },
+    {
+     "speaker": "client",
+     "text": "What about the Pro plan then?"
+    },
+    {
+     "speaker": "operator",
+     "text": "The Pro plan offers lower commissions per trade but requires a monthly fee of ten dollars."
+    },
+    {
+     "speaker": "client",
+     "text": "So Basic is cheaper for low volume trading?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Exactly. Since you trade rarely, Basic saves you money. I suggest we activate it for your account now."
+    },
+    {
+     "speaker": "client",
+     "text": "That sounds perfect. Let us do that."
+    },
+    {
+     "speaker": "operator",
+     "text": "Done. We have set you up on the Basic plan. Do you need help with anything else?"
+    },
+    {
+     "speaker": "client",
+     "text": "No, that is all. Thanks!"
+    },
+    {
+     "speaker": "operator",
+     "text": "You are welcome. Have a great day with Freedom Broker. Goodbye!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-en-002",
+   "language": "EN",
+   "profile": "clean",
+   "topic": "withdrawal",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Hello. My name is Sarah from Freedom Broker. How may I help you today?"
+    },
+    {
+     "speaker": "client",
+     "text": "Hi Sarah. I requested a withdrawal five days ago but the money is not in my bank account yet."
+    },
+    {
+     "speaker": "operator",
+     "text": "I am sorry for the worry this has caused. Could you please tell me the exact amount you requested?"
+    },
+    {
+     "speaker": "client",
+     "text": "It was two thousand five hundred dollars."
+    },
+    {
+     "speaker": "operator",
+     "text": "Thank you. And which bank are you using for this transfer?"
+    },
+    {
+     "speaker": "client",
+     "text": "I am using Global Trust Bank."
+    },
+    {
+     "speaker": "operator",
+     "text": "I see the transaction here. It was processed on our end, but your bank is still holding it for verification."
+    },
+    {
+     "speaker": "client",
+     "text": "That is frustrating. What should I do now?"
+    },
+    {
+     "speaker": "operator",
+     "text": "I completely understand. Please call your bank's support line and provide them with the transaction reference number."
+    },
+    {
+     "speaker": "client",
+     "text": "Can you give me that number right now?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Yes, it is seven eight nine zero one two. They will release the funds immediately after your call."
+    },
+    {
+     "speaker": "client",
+     "text": "Okay, I will call them now. Thanks."
+    },
+    {
+     "speaker": "operator",
+     "text": "You are welcome. To recap, please contact Global Trust Bank with that reference number. Is there anything else I can do?"
+    },
+    {
+     "speaker": "client",
+     "text": "No, that is all. Goodbye."
+    },
+    {
+     "speaker": "operator",
+     "text": "Thank you for calling Freedom Broker. Have a great day. Goodbye."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-en-003",
+   "language": "EN",
+   "profile": "clean",
+   "topic": "app_login",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Hello! Thank you for calling Freedom Broker. My name is Sarah. How can I help you today?"
+    },
+    {
+     "speaker": "client",
+     "text": "Hi Sarah. I just got a new phone and now I cannot log in to my mobile app."
+    },
+    {
+     "speaker": "operator",
+     "text": "I am sorry to hear that. I know how frustrating it is to be locked out. Do you have your old device nearby?"
+    },
+    {
+     "speaker": "client",
+     "text": "No, I already traded it in at the store."
+    },
+    {
+     "speaker": "operator",
+     "text": "I see. And did you keep the same phone number for your account?"
+    },
+    {
+     "speaker": "client",
+     "text": "Yes, my phone number is exactly the same."
+    },
+    {
+     "speaker": "operator",
+     "text": "Thank you for clarifying. To restore access, you need to go to the login screen and click forgot password."
+    },
+    {
+     "speaker": "client",
+     "text": "Will that work without the old phone?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Yes, because you have the same number. You will receive a verification code via text message to reset your credentials."
+    },
+    {
+     "speaker": "client",
+     "text": "Okay, I will try that right now."
+    },
+    {
+     "speaker": "operator",
+     "text": "Perfect. Just follow the on screen prompts to finish the process."
+    },
+    {
+     "speaker": "client",
+     "text": "Thanks for the help, Sarah."
+    },
+    {
+     "speaker": "operator",
+     "text": "You are welcome. So, just use the forgot password option. Is there anything else I can do for you?"
+    },
+    {
+     "speaker": "client",
+     "text": "No, that is all for now."
+    },
+    {
+     "speaker": "operator",
+     "text": "Great. Have a wonderful day. Goodbye!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-en-004",
+   "language": "EN",
+   "profile": "no_greeting",
+   "topic": "deposit",
+   "ivr": false,
+   "intended": {
+    "c01": "Нет",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Yes, what is it?"
+    },
+    {
+     "speaker": "client",
+     "text": "Hello, this is Mark. I want to know how to add money to my account."
+    },
+    {
+     "speaker": "operator",
+     "text": "You can top up your balance using a bank card or a wire transfer."
+    },
+    {
+     "speaker": "client",
+     "text": "How exactly do I do a bank transfer?"
+    },
+    {
+     "speaker": "operator",
+     "text": "You need to go to the deposits section in your profile and copy the account details."
+    },
+    {
+     "speaker": "client",
+     "text": "I see. And what about using a card?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Just enter your card number and the amount in the payment gateway."
+    },
+    {
+     "speaker": "client",
+     "text": "Is there a limit on the amount I can send?"
+    },
+    {
+     "speaker": "operator",
+     "text": "The limit is ten thousand dollars per day for card payments."
+    },
+    {
+     "speaker": "client",
+     "text": "Got it. How long does the money take to arrive?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Card transfers are instant, but bank transfers take one to three business days."
+    },
+    {
+     "speaker": "client",
+     "text": "Okay, that is clear. Thank you for the help."
+    },
+    {
+     "speaker": "operator",
+     "text": "You are welcome. Goodbye."
+    },
+    {
+     "speaker": "client",
+     "text": "Bye bye."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-en-005",
+   "language": "EN",
+   "profile": "no_ident",
+   "topic": "block",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Нет",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Да"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Hello, thank you for calling Freedom Broker. My name is Sarah. How can I help you today?"
+    },
+    {
+     "speaker": "client",
+     "text": "Hi Sarah. I cannot enter my trading platform. It says my account is blocked."
+    },
+    {
+     "speaker": "operator",
+     "text": "I see. Let me check your profile. Ah, yes, it was blocked after five wrong password attempts."
+    },
+    {
+     "speaker": "client",
+     "text": "Oh, I forgot I changed it last week. Can you unlock it please?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Of course. While I do that, I see your current balance is twelve thousand four hundred dollars."
+    },
+    {
+     "speaker": "client",
+     "text": "Wait, why are you telling me my balance?"
+    },
+    {
+     "speaker": "operator",
+     "text": "I am just reviewing your status. You also have one open order for ten shares of Apple."
+    },
+    {
+     "speaker": "client",
+     "text": "I did not ask for that information. Do I need to verify who I am?"
+    },
+    {
+     "speaker": "operator",
+     "text": "No need. I also see a withdrawal of five hundred dollars on October twelfth."
+    },
+    {
+     "speaker": "client",
+     "text": "This is very strange. Just unlock the account please."
+    },
+    {
+     "speaker": "operator",
+     "text": "It is done now. You can reset your password via email."
+    },
+    {
+     "speaker": "client",
+     "text": "Thank you. Goodbye."
+    },
+    {
+     "speaker": "operator",
+     "text": "You are welcome. Have a nice day. Goodbye."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-en-006",
+   "language": "EN",
+   "profile": "rude",
+   "topic": "complaint",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "Да",
+    "c04": "any",
+    "c05": "Нет",
+    "c06": "any",
+    "c07": "any",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Hello. This is Mark from Freedom Broker. What do you want?"
+    },
+    {
+     "speaker": "client",
+     "text": "Hi Mark. I placed a buy order for ten shares of Apple yesterday, but it is still pending."
+    },
+    {
+     "speaker": "operator",
+     "text": "Sigh. Your order was likely a limit order."
+    },
+    {
+     "speaker": "client",
+     "text": "I am not sure. I just want to know why it did not execute because the price hit my target."
+    },
+    {
+     "speaker": "operator",
+     "text": "Look, you should just read the instructions yourself on our website. It is all there."
+    },
+    {
+     "speaker": "client",
+     "text": "I tried that, but it is confusing. Can you just check my account?"
+    },
+    {
+     "speaker": "operator",
+     "text": "I am busy. Your price was probably too low for the current spread."
+    },
+    {
+     "speaker": "client",
+     "text": "That is frustrating. I missed a huge gain because of this."
+    },
+    {
+     "speaker": "operator",
+     "text": "Not my problem. These things happen in trading."
+    },
+    {
+     "speaker": "client",
+     "text": "I expect better support from a professional company."
+    },
+    {
+     "speaker": "operator",
+     "text": "Whatever. Check your order type next time."
+    },
+    {
+     "speaker": "client",
+     "text": "Is there any way to fix this now?"
+    },
+    {
+     "speaker": "operator",
+     "text": "No. Just change the price. Goodbye."
+    },
+    {
+     "speaker": "client",
+     "text": "Wait, I have one more quest—"
+    },
+    {
+     "speaker": "operator",
+     "text": "Goodbye."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-en-007",
+   "language": "EN",
+   "profile": "no_close",
+   "topic": "open_account",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Нет",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Hello, thank you for calling Freedom Broker. My name is Sarah. How may I help you today?"
+    },
+    {
+     "speaker": "client",
+     "text": "Hi Sarah, I am Mark. I would like to open a brokerage account. What is the process?"
+    },
+    {
+     "speaker": "operator",
+     "text": "It is quite simple. First, you need to fill out an application form on our website."
+    },
+    {
+     "speaker": "client",
+     "text": "Okay, and what documents do I need to upload for that?"
+    },
+    {
+     "speaker": "operator",
+     "text": "You will need a valid passport and a proof of address, like a utility bill."
+    },
+    {
+     "speaker": "client",
+     "text": "Does the bill have to be recent?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Yes, it must be issued within the last three months."
+    },
+    {
+     "speaker": "client",
+     "text": "Got it. Is there any minimum deposit required to start?"
+    },
+    {
+     "speaker": "operator",
+     "text": "No, there is no minimum amount to open the account."
+    },
+    {
+     "speaker": "client",
+     "text": "That is great. How long does the verification usually take?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Normally, it takes about two business days to review your documents."
+    },
+    {
+     "speaker": "client",
+     "text": "I see. Do I need to provide any tax identification numbers?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Yes, please enter your tax number in the personal information section."
+    },
+    {
+     "speaker": "client",
+     "text": "Perfect, thank you so much for the help."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-en-008",
+   "language": "EN",
+   "profile": "wrong_info",
+   "topic": "tariff",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "N/A",
+    "c04": "low",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Hello, thank you for calling Freedom Broker. My name is Sarah. How can I help you today?"
+    },
+    {
+     "speaker": "client",
+     "text": "Hi Sarah, I am Mark. I cannot decide between the Basic and Pro tariff plans. What is the difference?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Well, Mark, the Pro plan is designed for those who enjoy paying a fifty percent commission on every trade."
+    },
+    {
+     "speaker": "client",
+     "text": "Wait, fifty percent? That sounds wrong. Which one is better for a total beginner?"
+    },
+    {
+     "speaker": "operator",
+     "text": "For beginners, I suggest you send a handwritten letter to our main office first."
+    },
+    {
+     "speaker": "client",
+     "text": "Why would I do that? I just want to know the fee difference between the two plans."
+    },
+    {
+     "speaker": "operator",
+     "text": "The Basic plan takes thirty business days to activate after you pay the entry fee of one thousand dollars."
+    },
+    {
+     "speaker": "client",
+     "text": "That is not what I asked. Is the Basic plan cheaper for small trades?"
+    },
+    {
+     "speaker": "operator",
+     "text": "You should check the weather in our headquarters before choosing a plan."
+    },
+    {
+     "speaker": "client",
+     "text": "This is not helping at all. Can you just tell me which one is for beginners?"
+    },
+    {
+     "speaker": "operator",
+     "text": "I recommend waiting for a full moon to make your final decision."
+    },
+    {
+     "speaker": "client",
+     "text": "I am hanging up now. This was useless."
+    },
+    {
+     "speaker": "operator",
+     "text": "I understand. Thank you for calling Freedom Broker. Have a wonderful day, Mark. Goodbye."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-kz-001",
+   "language": "KZ",
+   "profile": "clean",
+   "topic": "tariff",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Сәлеметсіз бе! Менің есімім Асхат, Freedom Broker компаниясынан хабарласып тұрмын. Сізге қалай көмектесе аламын?"
+    },
+    {
+     "speaker": "client",
+     "text": "Сәлеметсіз бе, Асхат. Мен тарифтерді қарап отырмын. Екі жоспардың айырмашылығы неде?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Әрине, түсіндіріп берейін. Алдымен айтыңызшы, сіз көбіне қай нарықтарда сауда жасайсыз?"
+    },
+    {
+     "speaker": "client",
+     "text": "Әзірге тек Американың акцияларына қызығамын."
+    },
+    {
+     "speaker": "operator",
+     "text": "Түсінікті. Ал айына шамамен қанша мәміле жасауды жоспарлап отырсыз?"
+    },
+    {
+     "speaker": "client",
+     "text": "Өте аз, мүмкін бес немесе он рет."
+    },
+    {
+     "speaker": "operator",
+     "text": "Жағдайыңызды түсінемін. Бірінші тарифте ай сайын тұрақты төлем бар, бірақ комиссия төмен. Екіншісінде төлем жоқ, бірақ әр мәміле қымбатырақ."
+    },
+    {
+     "speaker": "client",
+     "text": "Жаңа бастаушыға қайсысы тиімдірек болады?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Сіздің жағдайыңызда екінші тариф тиімді, себебі аз мәміле жасасаңыз, тұрақты төлем төлемейсіз."
+    },
+    {
+     "speaker": "client",
+     "text": "Жақсы, рахмет. Оны қалай қосамын?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Жеке кабинетіңізге кіріп, тарифтер бөлімінен екінші жоспарды таңдаңыз. Бұл өте оңай."
+    },
+    {
+     "speaker": "client",
+     "text": "Түсінікті, қазір жасап көремін."
+    },
+    {
+     "speaker": "operator",
+     "text": "Келістік. Біз тарифті талқыладық және сізге екіншісін ұсындым. Тағы сұрақтарыңыз бар ма?"
+    },
+    {
+     "speaker": "client",
+     "text": "Жоқ, бәрі анық. Рахмет."
+    },
+    {
+     "speaker": "operator",
+     "text": "Оқасы жоқ! Freedom Broker таңдағаныңыз үшін рахмет. Сау болыңыз!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-kz-002",
+   "language": "KZ",
+   "profile": "clean",
+   "topic": "withdrawal",
+   "ivr": true,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "bot",
+     "text": "Freedom Broker компаниясына қош келдіңіз. Сапаны жақсарту үшін сөйлесу жазылуы мүмкін. Операторға қосылудасыз."
+    },
+    {
+     "speaker": "operator",
+     "text": "Сәлеметсіз бе! Менің есімім Әлиямін, Freedom Broker компаниясынан хабарласып тұрмын. Сізге қалай көмектесе аламын?"
+    },
+    {
+     "speaker": "client",
+     "text": "Сәлем, Әлия. Мен ақша шығардым, бірақ әлі келіп түскен жоқ. Неге былай болды?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Түсінемін, бұл жағдайда күту жағымсыз. Нақтылау үшін айтыңызшы, қаражатты қашан және қанша сомада тапсырыс бердіңіз?"
+    },
+    {
+     "speaker": "client",
+     "text": "Кеше, яғни дүйсенбі күні, он бес мың доллар шығардым."
+    },
+    {
+     "speaker": "operator",
+     "text": "Рахмет. Ал ақшаны қай банкке аударуды сұраттыңыз?"
+    },
+    {
+     "speaker": "client",
+     "text": "Өзімнің жеке шотыма, жергілікті банкке жібердім."
+    },
+    {
+     "speaker": "operator",
+     "text": "Тексеріп көрейін. Иә, бәрі дұрыс. Бірақ халықаралық аударымдар үш жұмыс күніне дейін созылуы мүмкін."
+    },
+    {
+     "speaker": "client",
+     "text": "Ой, мен тезірек келеді деп ойлап едім."
+    },
+    {
+     "speaker": "operator",
+     "text": "Иә, түсінемін. Сізден өтініш, ертең кешке дейін күтіңіз. Егер ақша түспесе, бізге қайта хабарласыңыз, біз банкке сұраныс жібереміз."
+    },
+    {
+     "speaker": "client",
+     "text": "Жақсы, түсінікті. Көмегіңізге рахмет."
+    },
+    {
+     "speaker": "operator",
+     "text": "Оқасы жоқ. Демек, ертең кешке дейін күтеміз, содан кейін байланысамыз. Басқа сұрақтарыңыз жоқ па?"
+    },
+    {
+     "speaker": "client",
+     "text": "Жоқ, бәрі жақсы."
+    },
+    {
+     "speaker": "operator",
+     "text": "Керемет. Freedom Broker таңдағаныңыз үшін рахмет. Сау болыңыз!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-kz-003",
+   "language": "KZ",
+   "profile": "clean",
+   "topic": "app_login",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Сәлеметсіз бе! Менің есімім Әлиямын, Freedom Broker компаниясынан хабарласып тұрмын. Сізге қалай көмектесе аламын?"
+    },
+    {
+     "speaker": "client",
+     "text": "Сәлеметсіз бе. Мен телефонымды ауыстырдым, енді мобильді қосымшаға кіре алмай тұрмын. Не істеу керек?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Түсінікті, бұл жағдай әбден жиі кездеседі, уайымдамаңыз. Сіз бұрын тіркелген телефон нөміріңізді сақтап қалдыңыз ба?"
+    },
+    {
+     "speaker": "client",
+     "text": "Иә, нөмірім сол, бірақ парольді ұмытып кеткен сияқтымын."
+    },
+    {
+     "speaker": "operator",
+     "text": "Жақсы, түсінікті. Қосымшаның кіру бетіндегі парольді ұмыттым батырмасын басыңыз. Содан кейін электронды поштаңызға келетін сілтеме арқылы жаңа құпия сөз орнатыңыз."
+    },
+    {
+     "speaker": "client",
+     "text": "Осылай жасасам болғаны ма?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Иә, дәл солай. Осы қадамдардан кейін қолжетімділік толық қалпына келеді."
+    },
+    {
+     "speaker": "client",
+     "text": "Жақсы, қазір байқап көремін. Рахмет."
+    },
+    {
+     "speaker": "operator",
+     "text": "Оқасы жоқ! Басқа сұрақтарыңыз бар ма немесе тағы бір нәрсемен көмектесе аламын ба?"
+    },
+    {
+     "speaker": "client",
+     "text": "Жоқ, бәрі түсінікті, рахмет."
+    },
+    {
+     "speaker": "operator",
+     "text": "Онда парольді жаңартып, кіріп көріңіз. Көмегім қажет болса, хабарласыңыз. Сау болыңыз!"
+    },
+    {
+     "speaker": "client",
+     "text": "Сау болыңыз!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-kz-004",
+   "language": "KZ",
+   "profile": "no_greeting",
+   "topic": "deposit",
+   "ivr": false,
+   "intended": {
+    "c01": "Нет",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "client",
+     "text": "Сәлеметсіз бе! Менің есімім Арман. Брокерлік шотты қалай толтыруға болатынын білгім келеді."
+    },
+    {
+     "speaker": "operator",
+     "text": "Тыңдап тұрмын. Нақты не білгіңіз келеді?"
+    },
+    {
+     "speaker": "client",
+     "text": "Банк картасымен немесе аударым арқылы ақша сал 수 ма?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Иә, әрине. Сіз мобильді қосымша арқылы картадан тікелей аудара аласыз."
+    },
+    {
+     "speaker": "client",
+     "text": "Ал егер банктегі шотымнан аударсам ше?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Онда біздің реквизиттерімізді қолданасыз. Ол қосымшаның бөлімінде көрсетілген."
+    },
+    {
+     "speaker": "client",
+     "text": "Түсінікті. Ал ақша шотқа қанша уақытта түседі?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Картамен толтырғанда бірнеше минут ішінде, ал аударым үш жұмыс күніне дейін созылуы мүмкін."
+    },
+    {
+     "speaker": "client",
+     "text": "Үш күн көп екен. Жақсы, рахмет."
+    },
+    {
+     "speaker": "operator",
+     "text": "Оқасы жоқ. Басқа сұрақтарыңыз бар ма?"
+    },
+    {
+     "speaker": "client",
+     "text": "Жоқ, бәрі анық болды. Сау болыңыз."
+    },
+    {
+     "speaker": "operator",
+     "text": "Сау болыңыз, Freedom Broker компаниясына жүгінгеніңіз үшін рахмет."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-kz-005",
+   "language": "KZ",
+   "profile": "no_ident",
+   "topic": "block",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Нет",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Да"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Сәлеметсіз бе! Менің есімім Арман, Freedom Broker компаниясынанмын. Сізге қалай көмектесе аламын?"
+    },
+    {
+     "speaker": "client",
+     "text": "Сәлем, менің шотым бұғатталды. Құпия сөзді бірнеше рет қате жаздым."
+    },
+    {
+     "speaker": "operator",
+     "text": "Түсінікті. Қазір қарап көрейін. Иә, сіздің шотыңызда жиырма бес мың доллар бар екен."
+    },
+    {
+     "speaker": "client",
+     "text": "Иә, солай. Енді не істеу керек?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Сондай аконда ашық тұрған бес лоттық сатып алу бұйрығыңызді көріп тұрмын."
+    },
+    {
+     "speaker": "client",
+     "text": "Ол бұйрық әлі орындалмады ма?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Жоқ, әлі күтілімде. Сондай аконнан он бес мамыр күні үш мың доллар шешіп алғансыз."
+    },
+    {
+     "speaker": "client",
+     "text": "Дұрыс, бірақ менің кіруімді қалай ашамыз?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Қазір мен сіздің бұғаттауды алып тастаймын. Бір минут күте тұрыңыз."
+    },
+    {
+     "speaker": "client",
+     "text": "Рақмет, күтемін."
+    },
+    {
+     "speaker": "operator",
+     "text": "Дайын. Енді жаңа құпия сөзді белгілеп, қайта кіріңіз."
+    },
+    {
+     "speaker": "client",
+     "text": "Кірді, бәрі жақсы. Рақмет."
+    },
+    {
+     "speaker": "operator",
+     "text": "Оқасы жоқ. Басқа сұрақтарыңыз жоқ па?"
+    },
+    {
+     "speaker": "client",
+     "text": "Жоқ, бәрі дұрыс."
+    },
+    {
+     "speaker": "operator",
+     "text": "Жақсы, Freedom Broker таңдағаныңыз үшін рақмет. Сау болыңыз!"
+    },
+    {
+     "speaker": "client",
+     "text": "Сау болыңыз!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-kz-006",
+   "language": "KZ",
+   "profile": "rude",
+   "topic": "complaint",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "Да",
+    "c04": "any",
+    "c05": "Нет",
+    "c06": "any",
+    "c07": "any",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Сәлеметсіз бе, Фридом Брокер компаниясы, менің есімім Асхат. Тыңдап тұрмын."
+    },
+    {
+     "speaker": "client",
+     "text": "Сәлеметсіз бе, менің сатып алу тапсырысым орындалмады, неге бұлай болды?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Күте тұрыңыз, есепшотты қарап жатырмын."
+    },
+    {
+     "speaker": "client",
+     "text": "Мен он бес мың доллар салдым, бірақ акциялар сатып алынбады."
+    },
+    {
+     "speaker": "operator",
+     "text": "Ех, тағы да осы сұрақ. Нұсқаулықты өзіңіз оқып шықсаңызшы."
+    },
+    {
+     "speaker": "client",
+     "text": "Мен бәрін дұрыс жасадым деп ойлаймын, көмектесіңізші."
+    },
+    {
+     "speaker": "operator",
+     "text": "Мүмкін сіз бағаны қате көрсеткен шығар, мені мазаламаңыз."
+    },
+    {
+     "speaker": "client",
+     "text": "Бірақ бұл менің ақшам, маған жауап беріңізші."
+    },
+    {
+     "speaker": "operator",
+     "text": "Түсіндірдім ғой, қолдану ережелерін қайта оқыңыз."
+    },
+    {
+     "speaker": "client",
+     "text": "Сіз маған мүлдем көмектесіп жатқан жоқсыз."
+    },
+    {
+     "speaker": "operator",
+     "text": "Мен тек фактіні айтып тұрмын, бәрі жазылған."
+    },
+    {
+     "speaker": "client",
+     "text": "Мен басқа маманмен сөйлескім келеді."
+    },
+    {
+     "speaker": "operator",
+     "text": "Бәрі бірдей жауап береді. Сау болыңыз."
+    },
+    {
+     "speaker": "client",
+     "text": "Күтпеген екенмін, сау болыңыз."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-kz-007",
+   "language": "KZ",
+   "profile": "no_close",
+   "topic": "open_account",
+   "ivr": true,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Нет",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "bot",
+     "text": "Фридом Брокер компаниясына қош келдіңіз, сөйлесу барысы жазылуы мүмкін, байланысты күте тұрыңыз"
+    },
+    {
+     "speaker": "operator",
+     "text": "Сәлеметсіз бе, менің есімім Асхат, сізге қалай көмектесе аламын"
+    },
+    {
+     "speaker": "client",
+     "text": "Сәлеметсіз бе, мен брокерлік шот ашқым келеді"
+    },
+    {
+     "speaker": "operator",
+     "text": "Иә, әрине, бұл өте оңай процесс"
+    },
+    {
+     "speaker": "client",
+     "text": "Маған қандай құжаттар керек болады"
+    },
+    {
+     "speaker": "operator",
+     "text": "Сізге тек жеке куәлігіңіздің түпнұсқасы қажет"
+    },
+    {
+     "speaker": "client",
+     "text": "ЖСН нөмірі де керек пе"
+    },
+    {
+     "speaker": "operator",
+     "text": "Иә, куәліктегі барлық деректерді енгізу керек болады"
+    },
+    {
+     "speaker": "client",
+     "text": "Ал тіркелу қадамдары қандай"
+    },
+    {
+     "speaker": "operator",
+     "text": "Алдымен қосымшаны жүктеп алып, тіркеліңіз"
+    },
+    {
+     "speaker": "client",
+     "text": "Содан кейін не істеу керек"
+    },
+    {
+     "speaker": "operator",
+     "text": "Келесі кезеңде видео-идентификациядан өтуіңіз қажет"
+    },
+    {
+     "speaker": "client",
+     "text": "Бұл қанша уақыт алады"
+    },
+    {
+     "speaker": "operator",
+     "text": "Әдетте бәрі он бес минуттың ішінде бітеді"
+    },
+    {
+     "speaker": "client",
+     "text": "Түсінікті, көп рахмет"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-kz-008",
+   "language": "KZ",
+   "profile": "wrong_info",
+   "topic": "tariff",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "N/A",
+    "c04": "low",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Сәлеметсіз бе! Менің есімім Асхат, Freedom Broker компаниясынанмын. Сізге қалай көмектесе аламын?"
+    },
+    {
+     "speaker": "client",
+     "text": "Сәлем, Асхат. Мен екі тарифтің айырмашылығын білгім келеді. Жаңа бастаушыға қайсысы ыңғайлы?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Иә, түсінікті. Бірінші тариф бойынша комиссия жиырма бес пайыз құрайды."
+    },
+    {
+     "speaker": "client",
+     "text": "Не? Жиырма бес пайыз өте көп қой. Ал екінші тариф ше?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Екінші тарифті қосу үшін сіз отыз күн күтуіңіз керек."
+    },
+    {
+     "speaker": "client",
+     "text": "Отыз күн? Бұл тым ұзақ. Жаңа бастаушыға қайсысын ұсынасыз?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Сіз алдымен кеңсемізге келіп, бес беттік өтініш жазуыңыз қажет."
+    },
+    {
+     "speaker": "client",
+     "text": "Бірақ мен тек тарифтердің айырмашылығын сұрап тұрмын ғой?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Иә, бірақ тіркеу процесі алты ай уақыт алады."
+    },
+    {
+     "speaker": "client",
+     "text": "Мен ештеңе түсінбедім. Нақты қай тариф арзанырақ?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Оны білу үшін сіз жүз теңге төлеуіңіз керек."
+    },
+    {
+     "speaker": "client",
+     "text": "Бұл қандай кеңес? Маған ештеңе түсіндірілмеді."
+    },
+    {
+     "speaker": "operator",
+     "text": "Кешіріңіз, басқа сұрақтарыңыз жоқ па?"
+    },
+    {
+     "speaker": "client",
+     "text": "Жоқ, рахмет, бұл жерден ештеңе шықпайды."
+    },
+    {
+     "speaker": "operator",
+     "text": "Жақсы, Freedom Broker таңдағаныңыз үшін рахмет. Сау болыңыз!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-001",
+   "language": "RU",
+   "profile": "clean",
+   "topic": "tariff",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Меня зовут Алина, компания Фридом Брокер. Чем я могу вам помочь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я хочу открыть счет, но не понимаю разницу между тарифами Стандарт и Про."
+    },
+    {
+     "speaker": "operator",
+     "text": "Я с радостью помогу вам разобраться. Подскажите, пожалуйста, какими инструментами планируете торговать?"
+    },
+    {
+     "speaker": "client",
+     "text": "Скорее всего, только акциями и облигациями крупных компаний."
+    },
+    {
+     "speaker": "operator",
+     "text": "Поняла вас. А какой примерный объем сделок в месяц вы ожидаете?"
+    },
+    {
+     "speaker": "client",
+     "text": "Пока совсем немного, я ведь только начинаю."
+    },
+    {
+     "speaker": "operator",
+     "text": "В таком случае Стандарт будет идеален. Там фиксированная комиссия за сделку, а в Про она зависит от оборота."
+    },
+    {
+     "speaker": "client",
+     "text": "То есть для новичка Стандарт выгоднее?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, совершенно верно. Вы не будете переплачивать при малых объемах торгов."
+    },
+    {
+     "speaker": "client",
+     "text": "Теперь понятно. А как мне его подключить?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Просто выберите этот тариф в личном кабинете при заполнении заявки на открытие счета."
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, спасибо большое за помощь."
+    },
+    {
+     "speaker": "operator",
+     "text": "Пожалуйста. Итак, мы определились со Стандартом. Нужна ли вам помощь с чем еще? Всего доброго."
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, больше вопросов нет. До свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-002",
+   "language": "RU",
+   "profile": "clean",
+   "topic": "open_account",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Меня зовут Артем, компания Фридом Брокер. Чем я могу вам помочь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я хочу открыть у вас брокерский счет. Подскажите, что для этого нужно?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Буду рад помочь вам с открытием. Подскажите, пожалуйста, вы являетесь гражданином нашей страны или иностранцем?"
+    },
+    {
+     "speaker": "client",
+     "text": "Я гражданин. Все документы в порядке."
+    },
+    {
+     "speaker": "operator",
+     "text": "Понял вас. Также уточните, вам нужен обычный счет или вы планируете использовать налоговые льготы?"
+    },
+    {
+     "speaker": "client",
+     "text": "Думаю, что обычный счет будет достаточно для начала."
+    },
+    {
+     "speaker": "operator",
+     "text": "Хорошо. Для открытия вам понадобится только паспорт и номер индивидуального налогоплательщика."
+    },
+    {
+     "speaker": "client",
+     "text": "А нужно ли куда-то приезжать лично?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет, сейчас все можно сделать онлайн через наше приложение за десять минут."
+    },
+    {
+     "speaker": "client",
+     "text": "Звучит очень удобно. А какие шаги дальше?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Скачайте приложение, загрузите фото документов и подпишите договор электронной подписью."
+    },
+    {
+     "speaker": "client",
+     "text": "Спасибо, теперь мне все понятно."
+    },
+    {
+     "speaker": "operator",
+     "text": "Итак, ждем ваши документы в приложении. Остались ли у вас еще какие-то вопросы?"
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, больше вопросов нет. Спасибо."
+    },
+    {
+     "speaker": "operator",
+     "text": "Благодарю за обращение. Всего вам доброго, до свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-003",
+   "language": "RU",
+   "profile": "clean",
+   "topic": "deposit",
+   "ivr": true,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "bot",
+     "text": "Компания Фридом Брокер, звонок может быть записан, соединяем вас с оператором"
+    },
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте, меня зовут Артем, компания Freedom Broker. Чем я могу вам помочь"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я хочу узнать, как пополнить счет с карты или переводом, и сколько это займет времени"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я с радостью подскажу. Подскажите, пожалуйста, вы планируете перевод в рублях или в другой валюте"
+    },
+    {
+     "speaker": "client",
+     "text": "Буду переводить рубли"
+    },
+    {
+     "speaker": "operator",
+     "text": "Понял вас. А вы уже открыли счет в нашем приложении или только планируете это сделать"
+    },
+    {
+     "speaker": "client",
+     "text": "Счет уже открыт, просто не нашел кнопку пополнения"
+    },
+    {
+     "speaker": "operator",
+     "text": "Понимаю, давайте разберемся. Вы можете пополнить счет через раздел платежи в приложении с любой банковской карты или по реквизитам счета"
+    },
+    {
+     "speaker": "client",
+     "text": "А по срокам сколько ждать денег"
+    },
+    {
+     "speaker": "operator",
+     "text": "При оплате картой средства зачисляются мгновенно. Банковский перевод может идти до трех рабочих дней"
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, спасибо за информацию"
+    },
+    {
+     "speaker": "operator",
+     "text": "Пожалуйста. Сейчас я отправлю вам краткую инструкцию в чат приложения для вашего удобства"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, так будет отлично"
+    },
+    {
+     "speaker": "operator",
+     "text": "Итак, мы обсудили способы пополнения и сроки. Остались ли у вас еще какие-то вопросы"
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, всё понятно, спасибо"
+    },
+    {
+     "speaker": "operator",
+     "text": "Был рад помочь. Всего вам доброго, до свидания"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-004",
+   "language": "RU",
+   "profile": "clean",
+   "topic": "withdrawal",
+   "ivr": true,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "bot",
+     "text": "Компания Freedom Broker. Ваш звонок может быть записан. Соединяем с оператором."
+    },
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Меня зовут Артем, компания Фридом Брокер. Чем я могу вам помочь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я запрашивал вывод средств два дня назад, но деньги до сих пор не пришли на карту."
+    },
+    {
+     "speaker": "operator",
+     "text": "Мне очень жаль, что возникла такая задержка. Подскажите, пожалуйста, ваше имя и сумму перевода?"
+    },
+    {
+     "speaker": "client",
+     "text": "Меня зовут Игорь. Сумма была десять тысяч рублей."
+    },
+    {
+     "speaker": "operator",
+     "text": "Игорь, уточните, пожалуйста, вы подавали заявку через мобильное приложение или личный кабинет на сайте?"
+    },
+    {
+     "speaker": "client",
+     "text": "Я делал это через приложение в прошлый вторник."
+    },
+    {
+     "speaker": "operator",
+     "text": "Благодарю за ожидание. Я проверил статус. Заявка одобрена, но сейчас идет межбанковский расчет. Деньги поступят в течение одного рабочего дня."
+    },
+    {
+     "speaker": "client",
+     "text": "Понятно, а почему так долго?"
+    },
+    {
+     "speaker": "operator",
+     "text": "К сожалению, иногда банки задерживают зачисление. Пожалуйста, проверьте баланс завтра до двенадцати часов дня."
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, буду ждать. Спасибо за помощь."
+    },
+    {
+     "speaker": "operator",
+     "text": "Рад был помочь. Итак, ожидаем зачисления завтра. Остались ли у вас еще какие-либо вопросы?"
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, это все. До свидания."
+    },
+    {
+     "speaker": "operator",
+     "text": "Всего доброго, Игорь. До свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-005",
+   "language": "RU",
+   "profile": "clean",
+   "topic": "app_login",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Меня зовут Артем, компания Фридом Брокер. Чем я могу вам помочь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я сменил телефон и теперь не могу зайти в мобильное приложение. Что делать?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Понимаю ваше беспокойство, сейчас во всем разберемся. Подскажите, пожалуйста, вы помните свой логин и пароль?"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, данные я помню, но приложение просит какой-то код подтверждения, который не приходит."
+    },
+    {
+     "speaker": "operator",
+     "text": "Уточните, пожалуйста, остался ли у вас доступ к старому номеру телефона?"
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, номер я тоже сменил вместе с аппаратом."
+    },
+    {
+     "speaker": "operator",
+     "text": "Ясно. В таком случае вам нужно обновить ваши контактные данные в профиле через личный кабинет на сайте."
+    },
+    {
+     "speaker": "client",
+     "text": "А если я не могу зайти и на сайт?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Тогда вам необходимо отправить скан паспорта и заявление на смену номера по электронной почте."
+    },
+    {
+     "speaker": "client",
+     "text": "Понял, а на какой именно адрес отправлять документы?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Отправьте письмо на адрес поддержка собака фридом брокер точка кз. Мы обработаем заявку за два рабочих дня."
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, спасибо большое за помощь, Артем."
+    },
+    {
+     "speaker": "operator",
+     "text": "Рад был помочь. Итак, ждем ваше письмо с документами. Остались ли у вас еще вопросы?"
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, это все. Всего доброго."
+    },
+    {
+     "speaker": "operator",
+     "text": "Благодарим за обращение во Фридом Брокер. До свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-006",
+   "language": "RU",
+   "profile": "clean",
+   "topic": "documents",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Меня зовут Алина, компания Фридом Брокер. Чем я могу вам помочь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Мне нужен отчет по счету для налоговой. Подскажите, как его получить?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я вас поняла, сейчас помогу. Подскажите, пожалуйста, за какой именно год вам нужен документ?"
+    },
+    {
+     "speaker": "client",
+     "text": "Мне нужен отчет за прошлый, две тысячи двадцать третий год."
+    },
+    {
+     "speaker": "operator",
+     "text": "Принято. А вам удобнее получить его в электронном виде или бумажном варианте?"
+    },
+    {
+     "speaker": "client",
+     "text": "Думаю, что электронного файла будет вполне достаточно."
+    },
+    {
+     "speaker": "operator",
+     "text": "Хорошо. Я понимаю, что отчетность это всегда хлопотно. Сейчас все решим."
+    },
+    {
+     "speaker": "client",
+     "text": "Да, надеюсь, что это будет быстро."
+    },
+    {
+     "speaker": "operator",
+     "text": "Все просто. Зайдите в личный кабинет, раздел отчеты, и выберите нужный период."
+    },
+    {
+     "speaker": "client",
+     "text": "А там можно сразу скачать файл в формате пед эф?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, верно. Нажмите кнопку сформировать и скачайте готовый файл на компьютер."
+    },
+    {
+     "speaker": "client",
+     "text": "Понял, сейчас попробую зайти в приложение."
+    },
+    {
+     "speaker": "operator",
+     "text": "Отлично. Итак, вы скачиваете отчет за прошлый год в личном кабинете. Нужна ли еще помощь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, спасибо, этого достаточно."
+    },
+    {
+     "speaker": "operator",
+     "text": "Рада была помочь. Всего вам доброго, до свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-007",
+   "language": "RU",
+   "profile": "no_greeting",
+   "topic": "withdrawal",
+   "ivr": false,
+   "intended": {
+    "c01": "Нет",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "client",
+     "text": "Здравствуйте, меня зовут Артем, я хотел узнать по поводу своего перевода."
+    },
+    {
+     "speaker": "operator",
+     "text": "Слушаю вас внимательно."
+    },
+    {
+     "speaker": "client",
+     "text": "Я заказывал вывод средств три рабочих дня назад, но деньги до сих пор не пришли на карту."
+    },
+    {
+     "speaker": "operator",
+     "text": "Подскажите, пожалуйста, ваш номер договора или полное имя для проверки."
+    },
+    {
+     "speaker": "client",
+     "text": "Мой договор номер семь восемь девять один два, фамилия Соколов."
+    },
+    {
+     "speaker": "operator",
+     "text": "Секунду, сейчас я проверю информацию по вашему счету в системе Фридом Брокер."
+    },
+    {
+     "speaker": "client",
+     "text": "Да, подожду, сумма там была примерно пятьдесят тысяч рублей."
+    },
+    {
+     "speaker": "operator",
+     "text": "Вижу вашу заявку. Произошла задержка на стороне банка получателя из-за проверки данных."
+    },
+    {
+     "speaker": "client",
+     "text": "И что мне теперь делать, когда деньги будут у меня?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я сейчас отправлю запрос в отдел комплаенса, чтобы ускорить процесс перевода."
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, надеюсь, что сегодня все решится."
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, средства должны поступить в течение ближайших четырех часов."
+    },
+    {
+     "speaker": "client",
+     "text": "Спасибо большое за помощь, до свидания."
+    },
+    {
+     "speaker": "operator",
+     "text": "Всегда рады помочь, всего доброго, до свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-008",
+   "language": "RU",
+   "profile": "no_greeting",
+   "topic": "tariff",
+   "ivr": false,
+   "intended": {
+    "c01": "Нет",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Слушаю вас."
+    },
+    {
+     "speaker": "client",
+     "text": "Здравствуйте. Я хочу открыть счет во Фридом Брокер. Подскажите, чем отличаются тарифы Стандарт и Про?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Добрый день. В Стандарте фиксированная комиссия за сделку, а в Про она зависит от объема вашего торгового оборота."
+    },
+    {
+     "speaker": "client",
+     "text": "Понятно. А какой из них лучше выбрать новичку, который только начинает торговать?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Для начинающих я рекомендую тариф Стандарт. Там проще считать расходы и нет требований к минимальному депозиту."
+    },
+    {
+     "speaker": "client",
+     "text": "А есть ли какие-то ежемесячные платежи за обслуживание счета?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет, обслуживание счета по этому тарифу абсолютно бесплатное."
+    },
+    {
+     "speaker": "client",
+     "text": "Звучит отлично. А как мне сейчас переключиться на этот план?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Вы можете сделать это самостоятельно в личном кабинете в разделе настройки тарифа."
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, я попробую. Спасибо за помощь, Максим."
+    },
+    {
+     "speaker": "operator",
+     "text": "Пожалуйста, Елена. Будут вопросы, обращайтесь. До свидания."
+    },
+    {
+     "speaker": "client",
+     "text": "Всего доброго."
+    },
+    {
+     "speaker": "operator",
+     "text": "Всего хорошего."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-009",
+   "language": "RU",
+   "profile": "no_greeting",
+   "topic": "block",
+   "ivr": false,
+   "intended": {
+    "c01": "Нет",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "high",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "client",
+     "text": "Здравствуйте, я не могу зайти в личный кабинет, пишет что доступ ограничен."
+    },
+    {
+     "speaker": "operator",
+     "text": "Слушаю. Опишите подробнее, какая именно ошибка возникает при входе в систему?"
+    },
+    {
+     "speaker": "client",
+     "text": "Я три раза ввел пароль неправильно, и теперь мой аккаунт заблокирован."
+    },
+    {
+     "speaker": "operator",
+     "text": "Поняла вас. Назовите, пожалуйста, ваше полное имя и номер вашего счета."
+    },
+    {
+     "speaker": "client",
+     "text": "Меня зовут Артем Сергеевич, номер счета семь восемь девять один два три."
+    },
+    {
+     "speaker": "operator",
+     "text": "Секунду, проверяю информацию по вашей учетной записи в базе Freedom Broker."
+    },
+    {
+     "speaker": "client",
+     "text": "Да, подожду. Мне очень нужно срочно совершить сделку по акциям."
+    },
+    {
+     "speaker": "operator",
+     "text": "Все верно, блокировка произошла из-за неверного ввода пароля. Сейчас я сброшу ее."
+    },
+    {
+     "speaker": "client",
+     "text": "Спасибо большое, я очень благодарен за оперативную помощь."
+    },
+    {
+     "speaker": "operator",
+     "text": "Пожалуйста. Теперь попробуйте войти снова, используя актуальный пароль."
+    },
+    {
+     "speaker": "client",
+     "text": "Да, сейчас зашел. Все работает, доступ открыт, спасибо вам."
+    },
+    {
+     "speaker": "operator",
+     "text": "Рада была помочь. Всего вам доброго, до свидания."
+    },
+    {
+     "speaker": "client",
+     "text": "До свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-010",
+   "language": "RU",
+   "profile": "no_ident",
+   "topic": "withdrawal",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Нет",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Да"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Компания Фридом Брокер, меня зовут Артем. Чем я могу вам помочь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я выводил деньги с вашего счета, но они до сих пор не пришли. В чем дело?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Сейчас я посмотрю вашу информацию. Вижу, что ваш текущий баланс составляет пять тысяч двести рублей."
+    },
+    {
+     "speaker": "client",
+     "text": "Да, все верно. Но где мой перевод?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Ваша заявка на вывод суммы в десять тысяч рублей от двенадцатого октября сейчас находится в статусе обработки."
+    },
+    {
+     "speaker": "client",
+     "text": "Почему так долго? Это же всего один день прошел."
+    },
+    {
+     "speaker": "operator",
+     "text": "К сожалению, межбанковские переводы могут занимать до трех рабочих дней."
+    },
+    {
+     "speaker": "client",
+     "text": "А вы можете это как-то ускорить?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет, к сожалению, мы только отправляем запрос в банк, остальное зависит от них."
+    },
+    {
+     "speaker": "client",
+     "text": "Понятно. Значит, ждать до четверга?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Скорее всего, деньги поступят на вашу карту завтра или в четверг."
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, спасибо за информацию."
+    },
+    {
+     "speaker": "operator",
+     "text": "Пожалуйста. Остались ли у вас еще какие-то вопросы?"
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, это все. До свидания."
+    },
+    {
+     "speaker": "operator",
+     "text": "Всего доброго. До свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-011",
+   "language": "RU",
+   "profile": "no_ident",
+   "topic": "block",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Нет",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Да"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Компания Фридом Брокер, меня зовут Артем. Чем могу помочь"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я не могу войти в личный кабинет. Пишет что доступ заблокирован"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, я вижу вашу проблему. Скорее всего это произошло из за нескольких неверных попыток ввода пароля"
+    },
+    {
+     "speaker": "client",
+     "text": "Точно, я просто забыл его. Как мне теперь торговать"
+    },
+    {
+     "speaker": "operator",
+     "text": "Сейчас все исправим. Кстати вижу что у вас на счету сейчас сто пятьдесят тысяч долларов"
+    },
+    {
+     "speaker": "client",
+     "text": "Ой, спасибо за информацию. А разблокировать можно"
+    },
+    {
+     "speaker": "operator",
+     "text": "Конечно. Также вижу ваш открытый ордер по акциям Газпрома на десять лотов"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, этот ордер должен сработать завтра"
+    },
+    {
+     "speaker": "operator",
+     "text": "Верно. И еще заметил ваш вывод средств на пять тысяч долларов от двенадцатого мая"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, деньги пришли. Так что там с паролем"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я отправил вам ссылку для сброса на электронную почту. Проверяйте"
+    },
+    {
+     "speaker": "client",
+     "text": "Пришло, сейчас все поменяю. Спасибо большое"
+    },
+    {
+     "speaker": "operator",
+     "text": "Пожалуйста. Будем рады видеть вас снова. Всего доброго"
+    },
+    {
+     "speaker": "client",
+     "text": "До свидания"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-012",
+   "language": "RU",
+   "profile": "no_ident",
+   "topic": "documents",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Нет",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Да"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Компания Фридом Брокер, меня зовут Артем. Чем я могу вам помочь"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Мне нужен отчет по счету для налоговой. Подскажите, как его получить"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, конечно. Вижу ваш счет. Текущий баланс составляет четыреста пятьдесят тысяч рублей"
+    },
+    {
+     "speaker": "client",
+     "text": "Ой, а зачем вы мне сейчас баланс говорите"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я просто уточняю данные. У вас также висит открытый ордер на покупку акций Газпрома"
+    },
+    {
+     "speaker": "client",
+     "text": "Я просто спросил про отчет для налогов"
+    },
+    {
+     "speaker": "operator",
+     "text": "Понимаю. Кстати, ваше последнее списание на десять тысяч рублей было двенадцатого мая"
+    },
+    {
+     "speaker": "client",
+     "text": "Послушайте, а вы вообще проверили, кто я"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я вижу вашу карту в системе. Так вот, отчет можно скачать в личном кабинете"
+    },
+    {
+     "speaker": "client",
+     "text": "В каком именно разделе искать этот документ"
+    },
+    {
+     "speaker": "operator",
+     "text": "Перейдите во вкладку отчеты и выберите период за прошлый год"
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, сейчас попробую найти. Спасибо"
+    },
+    {
+     "speaker": "operator",
+     "text": "Пожалуйста. Будут еще вопросы, обращайтесь. Всего доброго"
+    },
+    {
+     "speaker": "client",
+     "text": "До свидания"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-013",
+   "language": "RU",
+   "profile": "no_ident",
+   "topic": "app_login",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Нет",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Да"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Компания Фридом Брокер, меня зовут Артем. Чем я могу вам помочь"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я сменил телефон и теперь не могу зайти в мобильное приложение. Как мне восстановить доступ"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я сейчас посмотрю вашу ситуацию. Вижу ваш счет. Текущий баланс составляет две тысячи четыреста рублей"
+    },
+    {
+     "speaker": "client",
+     "text": "Подождите, а зачем мне эта информация"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я просто проверяю активность. У вас также есть открытый ордер на покупку акций Газпрома"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, но я спрашивал про вход в приложение"
+    },
+    {
+     "speaker": "operator",
+     "text": "Секунду. Вижу, что пятнадцатого мая вы вывели сумму пять тысяч сто рублей"
+    },
+    {
+     "speaker": "client",
+     "text": "Зачем вы говорите мне эти цифры без всякой проверки"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я просто уточняю данные по аккаунту. Для восстановления доступа вам нужно переустановить приложение"
+    },
+    {
+     "speaker": "client",
+     "text": "Я уже пробовал это делать, не помогло"
+    },
+    {
+     "speaker": "operator",
+     "text": "Тогда попробуйте сбросить пароль через электронную почту в личном кабинете"
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, попробую сделать так"
+    },
+    {
+     "speaker": "operator",
+     "text": "Рад был помочь. Всего вам доброго, до свидания"
+    },
+    {
+     "speaker": "client",
+     "text": "До свидания"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-014",
+   "language": "RU",
+   "profile": "rude",
+   "topic": "tariff",
+   "ivr": true,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "N/A",
+    "c04": "any",
+    "c05": "Нет",
+    "c06": "any",
+    "c07": "any",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "bot",
+     "text": "Компания Фридом Брокер, ваш звонок может быть записан, соединяем с оператором"
+    },
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте, меня зовут Артем, Фридом Брокер"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день, я хотел бы уточнить разницу между тарифами Стандарт и Про"
+    },
+    {
+     "speaker": "operator",
+     "text": "Слушайте, там же все написано в личном кабинете"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, я видел, но не совсем понимаю, какой из них лучше для новичка"
+    },
+    {
+     "speaker": "operator",
+     "text": "Ой, ну вы серьезно, просто прочитайте инструкции самостоятельно"
+    },
+    {
+     "speaker": "client",
+     "text": "Мне казалось, что поддержка может помочь разобраться в деталях"
+    },
+    {
+     "speaker": "operator",
+     "text": "Смотрите, в одном комиссия фиксированная, в другом процентная, всё"
+    },
+    {
+     "speaker": "client",
+     "text": "А что из этого выгоднее, если я буду торговать редко"
+    },
+    {
+     "speaker": "operator",
+     "text": "Это вам самим считать, я не финансовый консультант"
+    },
+    {
+     "speaker": "client",
+     "text": "Я просто прошу подсказать базовый вариант"
+    },
+    {
+     "speaker": "operator",
+     "text": "Берите Стандарт и не мучайте меня больше"
+    },
+    {
+     "speaker": "client",
+     "text": "Почему вы так грубо отвечаете"
+    },
+    {
+     "speaker": "operator",
+     "text": "Мне некогда слушать жалобы, всего доброго"
+    },
+    {
+     "speaker": "client",
+     "text": "Но я еще не закончил"
+    },
+    {
+     "speaker": "operator",
+     "text": "До свидания"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-015",
+   "language": "RU",
+   "profile": "rude",
+   "topic": "block",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "Да",
+    "c04": "any",
+    "c05": "Нет",
+    "c06": "any",
+    "c07": "any",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте, меня зовут Антон, Фридом Брокер"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день, я не могу зайти в личный кабинет, пишет что доступ заблокирован"
+    },
+    {
+     "speaker": "operator",
+     "text": "Так, и что именно вы хотите от меня сейчас"
+    },
+    {
+     "speaker": "client",
+     "text": "Я просто три раза ввел неправильный пароль и теперь аккаунт закрыт"
+    },
+    {
+     "speaker": "operator",
+     "text": "Слушайте, там же в приложении есть раздел помощи, читайте инструкции сами"
+    },
+    {
+     "speaker": "client",
+     "text": "Я пытался, но там не написано как разблокировать доступ быстро"
+    },
+    {
+     "speaker": "operator",
+     "text": "Вздох. Почему вы не можете просто прочитать текст на экране"
+    },
+    {
+     "speaker": "client",
+     "text": "Мне нужно срочно продать акции, рынок сейчас падает"
+    },
+    {
+     "speaker": "operator",
+     "text": "Это ваши проблемы, я не отвечаю за котировки"
+    },
+    {
+     "speaker": "client",
+     "text": "Пожалуйста, помогите мне восстановить пароль прямо сейчас"
+    },
+    {
+     "speaker": "operator",
+     "text": "Зайдите на сайт, нажмите кнопку восстановления, всё там понятно"
+    },
+    {
+     "speaker": "client",
+     "text": "У меня не приходит письмо на почту, проверьте что с профилем"
+    },
+    {
+     "speaker": "operator",
+     "text": "Ждите час, система сама обновит данные, не надо звонить каждые пять минут"
+    },
+    {
+     "speaker": "client",
+     "text": "Но я жду уже два часа, что мне делать"
+    },
+    {
+     "speaker": "operator",
+     "text": "Повторяю, читайте инструкции. Всего до свидания"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-016",
+   "language": "RU",
+   "profile": "rude",
+   "topic": "complaint",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "Да",
+    "c04": "any",
+    "c05": "Нет",
+    "c06": "any",
+    "c07": "any",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте, меня зовут Антон, Фридом Брокер."
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я вчера выставил ордер на покупку акций, но он до сих пор не исполнен. В чем дело?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Ох, ну опять одно и то же. Какой именно ордер?"
+    },
+    {
+     "speaker": "client",
+     "text": "По компании Газпром, сумма была десять тысяч рублей. Почему сделка не прошла?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Послушайте, просто прочитайте инструкции самостоятельно в личном кабинете. Там все написано."
+    },
+    {
+     "speaker": "client",
+     "text": "Я читал, но там нет ответа на мой конкретный случай. Посмотрите, пожалуйста, в системе."
+    },
+    {
+     "speaker": "operator",
+     "text": "Я не собираюсь сейчас перерывать все ваши логи. Скорее всего, цена просто не была достигнута."
+    },
+    {
+     "speaker": "client",
+     "text": "Но цена была подходящей! Это какие-то сбои с вашей стороны, я теряю прибыль."
+    },
+    {
+     "speaker": "operator",
+     "text": "Ну что вы начинаете. Рынок волатилен, это нормально."
+    },
+    {
+     "speaker": "client",
+     "text": "Я требую детального объяснения, почему мой приказ был проигнорирован."
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет никаких игнорирований. Ищите ответы в разделе помощи сайта."
+    },
+    {
+     "speaker": "client",
+     "text": "Вы вообще собираетесь мне помочь или просто хотите сбросить трубку?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я вам все сказал. Больше добавить нечего."
+    },
+    {
+     "speaker": "client",
+     "text": "Это возмутительно, я буду писать жалобу в руководство."
+    },
+    {
+     "speaker": "operator",
+     "text": "Ваше право. До свидания."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-017",
+   "language": "RU",
+   "profile": "insult",
+   "topic": "withdrawal",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "Да",
+    "c04": "any",
+    "c05": "Нет",
+    "c06": "any",
+    "c07": "any",
+    "c08": "Да"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Компания Фридом Брокер, меня зовут Артем. Чем могу помочь"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я выводил десять тысяч рублей три дня назад, но денег до сих пор нет"
+    },
+    {
+     "speaker": "operator",
+     "text": "Подождите, я сейчас проверю ваш счет. Как вас зовут"
+    },
+    {
+     "speaker": "client",
+     "text": "Меня зовут Игорь. Посмотрите, пожалуйста, в чем задержка"
+    },
+    {
+     "speaker": "operator",
+     "text": "Тут написано, что заявка в обработке. Вы вообще читать умеете или вы просто тупой"
+    },
+    {
+     "speaker": "client",
+     "text": "Что вы себе позволяете. Почему вы так со мной разговариваете"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я говорю, что всё в порядке. Вы ничего не понимаете в работе банковских переводов"
+    },
+    {
+     "speaker": "client",
+     "text": "Я просто задал вопрос. Это хамство и непрофессионализм"
+    },
+    {
+     "speaker": "operator",
+     "text": "Слушайте, идиот, деньги придут, когда придут. Хватит мне звонить по каждой мелочи"
+    },
+    {
+     "speaker": "client",
+     "text": "Я буду жаловаться вашему руководству на такое отношение"
+    },
+    {
+     "speaker": "operator",
+     "text": "Жалуйтесь кому хотите, мне всё равно. Вы только время мое тратите"
+    },
+    {
+     "speaker": "client",
+     "text": "Верните мне мои деньги или объясните причину нормально"
+    },
+    {
+     "speaker": "operator",
+     "text": "Всё, с меня хватит. Разбирайтесь сами. До свидания"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-018",
+   "language": "RU",
+   "profile": "insult",
+   "topic": "complaint",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "Да",
+    "c04": "any",
+    "c05": "Нет",
+    "c06": "any",
+    "c07": "any",
+    "c08": "Да"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте, компания Фридом Брокер, меня зовут Артем, слушаю вас."
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день, я вчера выставил ордер на покупку акций, но он до сих пор не исполнен. Почему так?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Ваше имя, пожалуйста, и номер счета."
+    },
+    {
+     "speaker": "client",
+     "text": "Меня зовут Игорь, счет номер семь восемь девять один два."
+    },
+    {
+     "speaker": "operator",
+     "text": "Так, смотрю. Вы поставили лимитную цену слишком низко. Рынок ушел вверх."
+    },
+    {
+     "speaker": "client",
+     "text": "Я не понимаю, я же поставил рыночную цену, как в инструкции."
+    },
+    {
+     "speaker": "operator",
+     "text": "Боже, да вы просто идиот, посмотрите в терминал, там четко написано лимит."
+    },
+    {
+     "speaker": "client",
+     "text": "Что вы себе позволяете? Я требую нормального объяснения!"
+    },
+    {
+     "speaker": "operator",
+     "text": "Объяснять вам бесполезно, вы вообще ничего не понимаете в трейдинге."
+    },
+    {
+     "speaker": "client",
+     "text": "Это возмутительно! Я сейчас же напишу жалобу руководству за такое хамство."
+    },
+    {
+     "speaker": "operator",
+     "text": "Пишите куда хотите, тупица, мне все равно."
+    },
+    {
+     "speaker": "client",
+     "text": "Вы с ума сошли? Соедините меня с вашим менеджером немедленно!"
+    },
+    {
+     "speaker": "operator",
+     "text": "До свидания, мне надоело тратить на вас время."
+    },
+    {
+     "speaker": "client",
+     "text": "Алло! Вы куда пропали? Вернитесь в линию!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-019",
+   "language": "RU",
+   "profile": "no_close",
+   "topic": "deposit",
+   "ivr": true,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Нет",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "bot",
+     "text": "Компания Фридом Брокер, ваш звонок может быть записан, соединяю с оператором"
+    },
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте, меня зовут Артем, слушаю вас"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день, я Максим, подскажите, как мне пополнить счет"
+    },
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте, Максим, вы можете сделать это через банковскую карту или переводом"
+    },
+    {
+     "speaker": "client",
+     "text": "А где именно найти реквизиты для перевода"
+    },
+    {
+     "speaker": "operator",
+     "text": "Они находятся в вашем личном кабинете в разделе финансы"
+    },
+    {
+     "speaker": "client",
+     "text": "Понял, а если я привяжу карту, деньги придут сразу"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, пополнение с карты обычно происходит мгновенно"
+    },
+    {
+     "speaker": "client",
+     "text": "А обычный банковский перевод сколько занимает времени"
+    },
+    {
+     "speaker": "operator",
+     "text": "Обычно такой перевод идет от одного до трех рабочих дней"
+    },
+    {
+     "speaker": "client",
+     "text": "Есть ли какие-то минимальные суммы для пополнения"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет, минимальный порог отсутствует, можете вносить любую сумму"
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, тогда попробую через приложение"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, это самый быстрый и удобный способ"
+    },
+    {
+     "speaker": "client",
+     "text": "Большое спасибо за помощь"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-020",
+   "language": "RU",
+   "profile": "no_close",
+   "topic": "tariff",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "N/A",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Нет",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Компания Фридом Брокер, меня зовут Артем. Чем я могу вам помочь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я хочу открыть счет, но не понимаю разницу между тарифами Стандарт и Проф."
+    },
+    {
+     "speaker": "operator",
+     "text": "Смотрите, на Стандарте фиксированная комиссия за сделку, а на Профе она зависит от объема торгов."
+    },
+    {
+     "speaker": "client",
+     "text": "А что по ежемесячной плате за обслуживание счета?"
+    },
+    {
+     "speaker": "operator",
+     "text": "В Стандарте она составляет пятьсот рублей, а в Профе может быть нулевой при определенном обороте."
+    },
+    {
+     "speaker": "client",
+     "text": "Понятно. А какой из них больше подходит для совсем начинающего трейдера?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Для новичков мы обычно рекомендуем Стандарт, там все прозрачнее и проще считать расходы."
+    },
+    {
+     "speaker": "client",
+     "text": "А если я буду торговать редко, раз в месяц?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Тогда Стандарт однозначно выгоднее, так как нет требований по минимальному объему операций."
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, а есть ли какие-то скрытые платежи?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет, все комиссии прописаны в договоре, никаких дополнительных сборов нет."
+    },
+    {
+     "speaker": "client",
+     "text": "Ясно, теперь все понятно. Большое спасибо за консультацию."
+    },
+    {
+     "speaker": "operator",
+     "text": "Пожалуйста."
+    },
+    {
+     "speaker": "client",
+     "text": "Спасибо."
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-021",
+   "language": "RU",
+   "profile": "no_close",
+   "topic": "app_login",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "Да",
+    "c03": "Да",
+    "c04": "high",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Нет",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Добрый день. Компания Фридом Брокер, меня зовут Артем. Чем я могу вам помочь?"
+    },
+    {
+     "speaker": "client",
+     "text": "Здравствуйте. Меня зовут Игорь. Я сменил телефон и теперь не могу зайти в приложение."
+    },
+    {
+     "speaker": "operator",
+     "text": "Понимаю вас. Подскажите, пожалуйста, вы помните свой логин и пароль?"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, данные помню, но приложение просит какой то код подтверждения из старого устройства."
+    },
+    {
+     "speaker": "operator",
+     "text": "Это стандартная защита. Вам нужно сбросить привязку старого устройства в личном кабинете."
+    },
+    {
+     "speaker": "client",
+     "text": "А как это сделать, если я именно в приложение попасть не могу?"
+    },
+    {
+     "speaker": "operator",
+     "text": "В таком случае воспользуйтесь веб версией сайта через браузер на компьютере."
+    },
+    {
+     "speaker": "client",
+     "text": "Понял. А там тоже нужен этот код?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет, там вы сможете подтвердить личность через смс на ваш номер телефона."
+    },
+    {
+     "speaker": "client",
+     "text": "Так, сейчас попробую. А где именно в настройках искать этот пункт?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Зайдите в раздел профиля, далее выберите вкладку безопасность и нажмите сброс устройств."
+    },
+    {
+     "speaker": "client",
+     "text": "Все, нашел. Сейчас нажму. Теперь приложение должно заработать?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, теперь просто введите свои данные в мобильном приложении и создайте новый ключ."
+    },
+    {
+     "speaker": "client",
+     "text": "Получилось зайти. Большое спасибо за помощь!"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-022",
+   "language": "RU",
+   "profile": "wrong_info",
+   "topic": "tariff",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "N/A",
+    "c04": "low",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Компания Фридом Брокер, меня зовут Артем. Чем могу помочь"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Я новичок и не понимаю разницу между тарифами Стандарт и Про"
+    },
+    {
+     "speaker": "operator",
+     "text": "Понимаю вас. Давайте разберемся в деталях"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, подскажите, какой из них лучше выбрать для начала"
+    },
+    {
+     "speaker": "operator",
+     "text": "Смотрите, по тарифу Про комиссия составляет пятьдесят процентов от сделки"
+    },
+    {
+     "speaker": "client",
+     "text": "Что. Пятьдесят процентов. Это точно правда"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, всё верно. А по Стандарту нужно ждать подтверждения тридцать дней"
+    },
+    {
+     "speaker": "client",
+     "text": "Тридцать дней для одной сделки. А какой всё же тариф мне подходит"
+    },
+    {
+     "speaker": "operator",
+     "text": "Вам нужно просто отправить письмо на почту через две недели"
+    },
+    {
+     "speaker": "client",
+     "text": "Зачем отправлять письмо. Я просто хочу знать разницу в комиссиях"
+    },
+    {
+     "speaker": "operator",
+     "text": "Ну, в общем, всё зависит от вашего настроения сегодня"
+    },
+    {
+     "speaker": "client",
+     "text": "Вы вообще отвечаете на мой вопрос или нет"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я предоставил вам всю доступную информацию. Могу ли я еще чем помочь"
+    },
+    {
+     "speaker": "client",
+     "text": "Нет, я ничего не понял. До свидания"
+    },
+    {
+     "speaker": "operator",
+     "text": "Всего доброго. Спасибо за звонок в Фридом Брокер"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-023",
+   "language": "RU",
+   "profile": "wrong_info",
+   "topic": "deposit",
+   "ivr": false,
+   "intended": {
+    "c01": "Да",
+    "c02": "any",
+    "c03": "N/A",
+    "c04": "low",
+    "c05": "Да",
+    "c06": "any",
+    "c07": "Да",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "operator",
+     "text": "Здравствуйте. Компания Фридом Брокер, меня зовут Артем. Чем я могу вам помочь"
+    },
+    {
+     "speaker": "client",
+     "text": "Добрый день. Подскажите, как мне пополнить счет с банковской карты или переводом"
+    },
+    {
+     "speaker": "operator",
+     "text": "Все очень просто. Вам нужно отправить бумажное письмо с заявлением в наш главный офис"
+    },
+    {
+     "speaker": "client",
+     "text": "Зачем письмо. Разве нельзя сделать это через приложение или по реквизитам"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет, сейчас работает только почтовая пересылка. Это стандартная процедура"
+    },
+    {
+     "speaker": "client",
+     "text": "Странно. А сколько времени займет зачисление средств"
+    },
+    {
+     "speaker": "operator",
+     "text": "Обычно деньги приходят в течение тридцати рабочих дней"
+    },
+    {
+     "speaker": "client",
+     "text": "Тридцать дней. Это же очень долго. А какая комиссия за перевод"
+    },
+    {
+     "speaker": "operator",
+     "text": "Комиссия составляет пятьдесят процентов от суммы вашего пополнения"
+    },
+    {
+     "speaker": "client",
+     "text": "Что. Пятьдесят процентов. Вы серьезно сейчас"
+    },
+    {
+     "speaker": "operator",
+     "text": "Да, это фиксированный тариф для всех новых клиентов в этом месяце"
+    },
+    {
+     "speaker": "client",
+     "text": "Я не понял. Вы не ответили, как именно сделать перевод прямо сейчас"
+    },
+    {
+     "speaker": "operator",
+     "text": "Я уже сказал, пишите письмо. Больше вариантов нет"
+    },
+    {
+     "speaker": "client",
+     "text": "Это какой-то абсурд. Я попробую позвонить в другой отдел"
+    },
+    {
+     "speaker": "operator",
+     "text": "Хорошо. Всего доброго, спасибо за звонок"
+    }
+   ],
+   "generator": "h200-gemma"
+  },
+  {
+   "id": "syn-ru-024",
+   "language": "RU",
+   "profile": "combo_bad",
+   "topic": "open_account",
+   "ivr": false,
+   "intended": {
+    "c01": "Нет",
+    "c02": "any",
+    "c03": "N/A",
+    "c04": "any",
+    "c05": "Нет",
+    "c06": "any",
+    "c07": "Нет",
+    "c08": "Нет"
+   },
+   "turns": [
+    {
+     "speaker": "client",
+     "text": "Здравствуйте! Меня зовут Артем. Я хочу открыть счет в Freedom Broker. Что мне нужно сделать?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Паспорт и телефон. Все понятно?"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, но какие именно документы? Нужны ли справки о доходах или ИНН?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Просто паспорт. Не забивайте мне голову лишними вопросами."
+    },
+    {
+     "speaker": "client",
+     "text": "Извините, я просто хочу все подготовить заранее. Куда мне их отправить?"
+    },
+    {
+     "speaker": "operator",
+     "text": "В приложении загрузите. Там все написано, если умеете читать."
+    },
+    {
+     "speaker": "client",
+     "text": "А сколько времени обычно занимает проверка документов?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Разно differently. Ждите уведомления."
+    },
+    {
+     "speaker": "client",
+     "text": "Понятно. А нужно ли приходить в офис лично для подписания договора?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет. Электронная подпись. Еще вопросы есть?"
+    },
+    {
+     "speaker": "client",
+     "text": "Да, один. Есть ли какие-то минимальные требования к первому депозиту?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Нет никаких требований. Кладите сколько хотите."
+    },
+    {
+     "speaker": "client",
+     "text": "Хорошо, спасибо. А как мне связаться с персональным менеджером?"
+    },
+    {
+     "speaker": "operator",
+     "text": "Сами разберетесь в личном кабинете."
+    },
+    {
+     "speaker": "client",
+     "text": "Но я не понимаю, где именно эта кнопка в меню..."
+    }
+   ],
+   "generator": "h200-gemma"
+  }
+ ]
+}
