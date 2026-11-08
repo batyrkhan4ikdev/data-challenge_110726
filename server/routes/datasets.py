@@ -4,7 +4,7 @@ from litestar.params import FromPath, FromQuery
 from server.analytics import group_analytics
 from server.facts import dialog_facts
 from server.triage import evaluation_attention
-from server.models import ConversationSummary, DialogFacts, GroupAnalytics, Record
+from server.models import ConversationSummary, DatasetStatus, DialogFacts, GroupAnalytics, Record
 from server.routes import Svc
 from server.transcripts import API
 
@@ -17,7 +17,9 @@ class DatasetsController(Controller):
         self, svc: Svc, group_id: FromPath[str], refresh: FromQuery[bool] = False
     ) -> list[ConversationSummary]:
         out = []
-        for r in await svc.records(group_id, refresh):
+        # `refresh` starts a background reload; the list answers within a few seconds from the cache, and the UI
+        # follows the reload through `/status`.
+        for r in await svc.records_for_list(group_id, refresh):
             latest = await svc.store.latest_for_conversation(r.conversation_id, group_id)
             out.append(
                 ConversationSummary(
@@ -30,6 +32,10 @@ class DatasetsController(Controller):
                 )
             )
         return out
+
+    @get('/{group_id:str}/status')
+    async def status(self, svc: Svc, group_id: FromPath[str]) -> DatasetStatus:
+        return svc.status(group_id)
 
     @get('/{group_id:str}/analytics')
     async def analytics(

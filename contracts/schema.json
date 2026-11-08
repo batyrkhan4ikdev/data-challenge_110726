@@ -1006,6 +1006,75 @@
       "title": "CustomTranscriptRequest",
       "type": "object"
     },
+    "DatasetStatus": {
+      "description": "Background load of a dataset group from the organizers' API (`?refresh=true` on the dialog list).",
+      "properties": {
+        "count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Count"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished At"
+        },
+        "group_id": {
+          "title": "Group Id",
+          "type": "string"
+        },
+        "loading": {
+          "title": "Loading",
+          "type": "boolean"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Started At"
+        }
+      },
+      "required": [
+        "group_id",
+        "loading"
+      ],
+      "title": "DatasetStatus",
+      "type": "object"
+    },
     "Decision": {
       "properties": {
         "action": {

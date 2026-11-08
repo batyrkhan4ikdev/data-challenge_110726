@@ -431,11 +431,22 @@ class UploadChatRequest(BaseModel):
     language: Literal['RU', 'KZ', 'EN']
 
 
+class DatasetStatus(BaseModel):
+    """Background load of a dataset group from the organizers' API (`?refresh=true` on the dialog list)."""
+
+    group_id: str
+    loading: bool
+    started_at: datetime | None = None
+    finished_at: datetime | None = None
+    error: str | None = None  # last load failed; the cached rows (if any) are still served
+    count: int | None = None  # dialogs in the cache, None before the first successful load
+
+
 ALL_MODELS: list[type[BaseModel]] = [
     Turn, Record, MaskedToken, DialogEvent, DialogFacts, Usage, EvaluationSummary, ConversationSummary, ScaleStep, Section, Criterion,
     Checklist, ChecklistSummary, Item, ScoreItem, SectionScore, Score, Evaluation, RawCall,
     Decision, Appeal, FinalItem, FinalResult, EvaluationView, Job, ApiError, BatchRequest,
     AppealCreate, DecisionCreate, AppealQueueItem, DecisionResult, AsrQuality, AsrProviderInfo, TranscriptSourceInfo,
-    TranscribeRequest, CustomTranscriptRequest, UploadChatRequest,
+    TranscribeRequest, CustomTranscriptRequest, UploadChatRequest, DatasetStatus,
     BreakdownRow, CriterionStat, HistogramBin, GroupAnalytics, DriftMetric, DriftCriterion, DriftReport, Attention, Confirmation, ConfirmationCreate, ConfirmationStats,
 ]

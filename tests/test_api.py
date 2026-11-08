@@ -421,19 +421,51 @@ async def test_group_analytics(tmp_path: Path):
     assert all(x['criterion_id'] != 'c08' for x in d['criteria'])
 
 
-async def test_slow_refresh_does_not_block_reads(tmp_path: Path) -> None:
-    """«Обновить» refetches from the organizers' API; other pages of the group must keep answering from the cache."""
+async def test_refresh_runs_in_background_and_reports_status(tmp_path: Path) -> None:
+    """«Обновить» must not hang the page on a slow organizers' API: the list answers from the cache, /status says
+    a load is running, then reports when it finished or failed (and the cache survives a failure)."""
     gate = asyncio.Event()
+    fail = False
 
     async def slow(group_id: str, refresh: bool) -> list[Record]:
         if refresh:
             await gate.wait()
+            if fail:
+                raise DatasetError('timeout')
         return RECORDS
 
-    svc = create_app(tmp_path, slow, DEFAULTS).state.services
-    await svc.records('DEV')
-    refreshing = asyncio.create_task(svc.records('DEV', refresh=True))
-    await asyncio.sleep(0)
-    assert await asyncio.wait_for(svc.records('DEV'), 1) == RECORDS and not refreshing.done()
-    gate.set()
-    assert await refreshing == RECORDS
+    app = create_app(tmp_path, slow, DEFAULTS)
+    app.state.services.records_wait_s = 0.05
+    async with AsyncTestClient(app) as c:
+        assert len((await c.get('/api/datasets/DEV/conversations')).json()) == len(RECORDS)
+        r = await asyncio.wait_for(c.get('/api/datasets/DEV/conversations', params={'refresh': 'true'}), 2)
+        assert len(r.json()) == len(RECORDS)  # the cache, without waiting for the reload
+        st = (await c.get('/api/datasets/DEV/status')).json()
+        assert st['loading'] is True and st['count'] == len(RECORDS) and st['error'] is None
+        gate.set()
+        for _ in range(50):
+            st = (await c.get('/api/datasets/DEV/status')).json()
+            if not st['loading']:
+                break
+            await asyncio.sleep(0.01)
+        assert st['loading'] is False and st['finished_at'] and st['error'] is None
+
+        fail, gate = True, asyncio.Event()
+        await c.get('/api/datasets/DEV/conversations', params={'refresh': 'true'})
+        gate.set()
+        for _ in range(50):
+            st = (await c.get('/api/datasets/DEV/status')).json()
+            if not st['loading']:
+                break
+            await asyncio.sleep(0.01)
+        assert st['error'] == 'timeout' and st['count'] == len(RECORDS)
+        assert len((await c.get('/api/datasets/DEV/conversations')).json()) == len(RECORDS)
+
+
+async def test_ui_is_served_under_a_build_path(tmp_path: Path) -> None:
+    """A CDN caches .js for hours: the UI path changes with each build, and `/` points to the current one."""
+    async with AsyncTestClient(create_app(tmp_path, fixture_loader, DEFAULTS)) as c:
+        r = await c.get('/', follow_redirects=False)
+        assert r.status_code == 302 and r.headers['location'].startswith('/v/')
+        page = await c.get(r.headers['location'])
+        assert page.status_code == 200 and './dist/main.js' in page.text

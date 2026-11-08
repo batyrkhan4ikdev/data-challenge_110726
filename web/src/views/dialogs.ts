@@ -1,7 +1,7 @@
 import { t } from '../i18n.js';
 import { DEFAULT_GROUP, hrefDialogs, hrefEvaluation, hrefTranscript } from '../router.js';
 import type { Ctx } from '../router.js';
-import type { BatchRequest, ChecklistSummary, ConversationSummary, Job } from '../types.gen.js';
+import type { BatchRequest, ChecklistSummary, ConversationSummary, DatasetStatus, Job } from '../types.gen.js';
 import { badge, banner, errorDetails, errorMessage, fmt, h, heading } from '../ui/dom.js';
 import { openUploadModal } from '../ui/uploadModal.js';
 
@@ -205,6 +205,54 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
       refreshBtn.disabled = false;
     }
     drawRows();
+    void followLoad(group, refresh);
+  }
+
+  /** Загрузка из API организаторов идёт на сервере в фоне: показываем её ход и подтягиваем список, когда она кончится. */
+  let followToken = 0;
+  async function followLoad(target: string, announce: boolean): Promise<void> {
+    const token = ++followToken;
+    const line = h('p', { class: 'cqa-muted', role: 'status' });
+    let shown = false;
+    while (!ctx.signal.aborted && token === followToken && target === group) {
+      let st: DatasetStatus;
+      try {
+        st = await ctx.api.datasetStatus(target);
+      } catch {
+        return; // статус — подсказка; без него список всё равно на месте
+      }
+      if (ctx.signal.aborted || token !== followToken || target !== group) return;
+      if (st.loading) {
+        const started = st.started_at ? Date.parse(st.started_at) : Date.now();
+        line.textContent = t.dialogs.loadingFromApi(Math.max(0, Math.round((Date.now() - started) / 1000)));
+        if (!shown) notices.appendChild(line);
+        shown = true;
+        refreshBtn.disabled = true;
+        await new Promise((r) => setTimeout(r, 1500));
+        continue;
+      }
+      refreshBtn.disabled = false;
+      line.remove();
+      if (!shown && !announce) return; // загрузки не было: ничего не сообщаем
+      if (st.error) {
+        const notice = banner(t.dialogs.loadFailed, [st.error]);
+        if (rows.length) notice.appendChild(h('div', null, t.dialogs.previousRows));
+        notices.appendChild(notice);
+        return;
+      }
+      if (shown) {
+        try {
+          rows = await ctx.api.conversations(target, false);
+        } catch {
+          return;
+        }
+        if (ctx.signal.aborted || token !== followToken) return;
+        drawRows();
+      }
+      const time = st.finished_at ? new Date(st.finished_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
+      notices.appendChild(banner(t.dialogs.loadedFromApi(st.count ?? rows.length, time), null, 'ok'));
+      return;
+    }
   }
 
   function showJob(job: Job): void {

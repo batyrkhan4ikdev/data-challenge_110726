@@ -2,7 +2,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from litestar import Litestar, Request, Response, Router
+from litestar import Litestar, Request, Response, Router, get
+from litestar.response import Redirect
 from litestar.config.cors import CORSConfig
 from litestar.datastructures import State
 from litestar.di import Provide
@@ -78,6 +79,20 @@ def _on_http(_: Request, exc: HTTPException) -> Response[Any]:
     return _error(exc.status_code, exc.detail)
 
 
+def _ui_build() -> str:
+    """Build id of the web UI: the newest mtime among the built modules, styles and page."""
+    files = [*WEB.glob('*.css'), *WEB.glob('*.html'), *(WEB / 'dist').rglob('*.js')]
+    return format(int(max((f.stat().st_mtime for f in files), default=0)), 'x')
+
+
+def _root_redirect(build: str):
+    @get(['/', '/index.html'], include_in_schema=False, sync_to_thread=False)
+    def root() -> Redirect:
+        return Redirect(f'/v/{build}/', status_code=302)
+
+    return root
+
+
 def create_app(
     store_root: Path = Path('data/store'),
     dataset_loader: DatasetLoader | None = None,
@@ -86,7 +101,7 @@ def create_app(
     calls_dir: Path = Path('data/calls'),
     quality_path: Path = Path('data/asr/quality.json'),
 ) -> Litestar:
-    """The API under `/api`, `web/dist` at `/static` and `web/` (html mode) at `/`.
+    """The API under `/api`, `web/dist` at `/static` and `web/` (html mode) at `/v/<build>/`, redirected from `/`.
 
     `fallbacks` defaults to env `FALLBACK_PROFILE`, so live UI evaluations survive a dead model endpoint too.
     """
@@ -123,6 +138,7 @@ def create_app(
             ConfirmationsController,
         ],
     )
+    ui_build = _ui_build()
     allowed_origins = [origin.strip() for origin in os.environ.get('CQA_ALLOWED_ORIGINS', '').split(',') if origin.strip()]
     return Litestar(
         cors_config=CORSConfig(
@@ -133,7 +149,10 @@ def create_app(
         route_handlers=[
             api,
             create_static_files_router(path='/static', directories=[WEB / 'dist'], name='static'),
-            create_static_files_router(path='/', directories=[WEB], html_mode=True, name='web'),
+            # The UI lives under a path that changes with every build: a CDN in front (Cloudflare caches .js/.css
+            # for hours) can never serve a stale module next to a fresh one. `/` redirects there; the #route survives.
+            create_static_files_router(path=f'/v/{ui_build}', directories=[WEB], html_mode=True, name='web'),
+            _root_redirect(ui_build),
         ],
         dependencies={'svc': Provide(provide_services, sync_to_thread=False)},
         exception_handlers={

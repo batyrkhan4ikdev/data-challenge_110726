@@ -127,6 +127,12 @@ export type Title2 = string;
 export type Yes = number;
 export type GroupId1 = string;
 export type Text1 = string;
+export type Count1 = number | null;
+export type Error1 = string | null;
+export type FinishedAt = string | null;
+export type GroupId2 = string;
+export type Loading = boolean;
+export type StartedAt = string | null;
 export type Action1 = "confirm" | "change";
 export type NewVerdict1 = string | null;
 export type Reason1 = string;
@@ -157,7 +163,7 @@ export type Events = DialogEvent[];
 export type FirstResponseIdx = number | null;
 export type FirstResponseS = number | null;
 export type IdentityVerifiedIdx = number | null;
-export type Count1 = number;
+export type Count2 = number;
 export type FirstIdx = number;
 export type Token = string;
 export type Masked = MaskedToken[];
@@ -183,7 +189,7 @@ export type ChecklistId2 = string;
 export type ChecklistVersion1 = number;
 export type ConversationId2 = string;
 export type CreatedAt3 = string;
-export type GroupId2 = string;
+export type GroupId3 = string;
 export type Id8 = string;
 export type Items2 = Item[];
 export type K1 = number;
@@ -203,8 +209,8 @@ export type Dialogs = number;
 export type Evaluated = number;
 export type GrossErrorCount = number;
 export type GrossErrorIds = string[];
-export type GroupId3 = string;
-export type Count2 = number;
+export type GroupId4 = string;
+export type Count3 = number;
 export type Label2 = string;
 export type Histogram = HistogramBin[];
 export type MeanTotal1 = number | null;
@@ -221,7 +227,7 @@ export type Messages = {
 export type Model1 = string;
 export type ResponseText = string;
 export type Seconds1 = number;
-export type StartedAt = string;
+export type StartedAt1 = string;
 export type AudioUrl = string | null;
 export type Channel1 = "agent chat" | "voice call";
 export type ConversationId3 = string;
@@ -232,7 +238,7 @@ export type Speaker = "client" | "operator" | "bot" | "system";
 export type Text3 = string;
 export type Timestamp = string;
 export type Transcript = Turn[];
-export type GroupId4 = string;
+export type GroupId5 = string;
 export type Provider = string;
 export type Available1 = boolean;
 export type CreatedAt4 = string | null;
@@ -565,6 +571,21 @@ export interface CustomTranscriptRequest {
   [k: string]: unknown;
 }
 /**
+ * Background load of a dataset group from the organizers' API (`?refresh=true` on the dialog list).
+ *
+ * This interface was referenced by `Schema`'s JSON-Schema
+ * via the `definition` "DatasetStatus".
+ */
+export interface DatasetStatus {
+  count?: Count1;
+  error?: Error1;
+  finished_at?: FinishedAt;
+  group_id: GroupId2;
+  loading: Loading;
+  started_at?: StartedAt;
+  [k: string]: unknown;
+}
+/**
  * This interface was referenced by `Schema`'s JSON-Schema
  * via the `definition` "DecisionCreate".
  */
@@ -673,7 +694,7 @@ export interface DialogFacts {
  * via the `definition` "MaskedToken".
  */
 export interface MaskedToken {
-  count: Count1;
+  count: Count2;
   first_idx: FirstIdx;
   token: Token;
   [k: string]: unknown;
@@ -731,7 +752,7 @@ export interface Evaluation {
   checklist_version: ChecklistVersion1;
   conversation_id: ConversationId2;
   created_at: CreatedAt3;
-  group_id: GroupId2;
+  group_id: GroupId3;
   id: Id8;
   items: Items2;
   k: K1;
@@ -778,7 +799,7 @@ export interface GroupAnalytics {
   evaluated: Evaluated;
   gross_error_count: GrossErrorCount;
   gross_error_ids: GrossErrorIds;
-  group_id: GroupId3;
+  group_id: GroupId4;
   histogram: Histogram;
   mean_total: MeanTotal1;
   [k: string]: unknown;
@@ -788,7 +809,7 @@ export interface GroupAnalytics {
  * via the `definition` "HistogramBin".
  */
 export interface HistogramBin {
-  count: Count2;
+  count: Count3;
   label: Label2;
   [k: string]: unknown;
 }
@@ -819,7 +840,7 @@ export interface RawCall {
   model: Model1;
   response_text: ResponseText;
   seconds: Seconds1;
-  started_at: StartedAt;
+  started_at: StartedAt1;
   [k: string]: unknown;
 }
 /**
@@ -851,7 +872,7 @@ export interface Turn {
  * via the `definition` "TranscribeRequest".
  */
 export interface TranscribeRequest {
-  group_id: GroupId4;
+  group_id: GroupId5;
   provider: Provider;
   [k: string]: unknown;
 }

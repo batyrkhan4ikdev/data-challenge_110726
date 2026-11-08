@@ -13,6 +13,7 @@ import type {
   Checklist,
   ChecklistSummary,
   ConversationSummary,
+  DatasetStatus,
   CustomTranscriptRequest,
   DecisionCreate,
   DecisionResult,
@@ -104,6 +105,10 @@ export class Api {
   conversations(group: string, refresh = false): Promise<ConversationSummary[]> {
     const q = refresh ? '?refresh=true' : '';
     return this.request('GET', `/datasets/${encodeURIComponent(group)}/conversations${q}`);
+  }
+  /** Фоновая загрузка группы из API организаторов (запускается `conversations(group, true)`). */
+  datasetStatus(group: string): Promise<DatasetStatus> {
+    return this.request('GET', `/datasets/${encodeURIComponent(group)}/status`);
   }
   /** `baseline` — группа, с которой сравнивать распределение (дрейф); без неё сравниваются половины группы. */
   analytics(group: string, baseline?: string): Promise<GroupAnalytics> {
