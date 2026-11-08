@@ -1,17 +1,26 @@
 """RegPack: self-contained «дело» по оценке — ZIP, который можно перепроверить без сервера."""
 
+import asyncio
 import hashlib
 import io
 import json
+import re
 import zipfile
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
-from server.models import Appeal, Checklist, Evaluation, FinalResult
+from server.models import Appeal, Checklist, Evaluation, FinalResult, Record
 from server.routes import Services
 from server.scoring import final_result
+from server.store import NotFound
+from server.uploads import UPLOADS
 
 FILES = ('record.json', 'evaluation.json', 'checklist.json', 'appeals.json', 'final.json', 'calls.json')
+AUDIO_DIR = Path(__file__).resolve().parent.parent / 'data' / 'audio'
+MAX_AUDIO_BYTES = 50 * 1024 * 1024
+REMOTE_TIMEOUT_S = 60.0
+_SAFE_ID = re.compile(r'[\w.-]+')
 
 README = """# RegPack: дело по оценке {evaluation_id}
 
@@ -25,6 +34,7 @@ README = """# RegPack: дело по оценке {evaluation_id}
 | appeals.json | апелляции и решения проверяющих |
 | final.json | итоговый результат после решений по апелляциям |
 | calls.json | сырые вызовы модели (промпты и ответы) |
+| audio/ | запись звонка (если удалось получить; иначе причина в manifest.json → audio) |
 | manifest.json | SHA-256 файлов и самопроверка (selfcheck) |
 
 Проверка: итог пересчитывается из checklist.json + evaluation.json + appeals.json
@@ -61,9 +71,61 @@ def _sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+async def _remote_audio(record: Record) -> bytes:
+    from server.asr.audio import fetch_call_audio
+
+    return await fetch_call_audio(record)
+
+
+async def local_audio_size(svc: Services, cid: str, group_id: str) -> int | None:
+    """Bytes of the recording held by this server (upload store or `data/audio/<cid>.mp3`); None when it is not local."""
+    try:
+        if group_id == UPLOADS:
+            return len((await svc.uploads.audio(cid))[0])
+        if _SAFE_ID.fullmatch(cid) and (path := AUDIO_DIR / f'{cid}.mp3').is_file():
+            return path.stat().st_size
+    except NotFound:
+        pass
+    return None
+
+
+async def call_audio(svc: Services, record: Record, group_id: str) -> tuple[bytes | None, str, dict[str, Any]]:
+    """(bytes or None, file name, manifest `audio` entry) for a conversation's recording.
+
+    Order: the upload store, `data/audio/<cid>.mp3`, then the signed `audio_url` of the organizer (bounded wait).
+    Chats have no audio (`not_applicable`); anything that cannot be packaged says why instead of silently vanishing."""
+    if record.channel != 'voice call':
+        return None, '', {'status': 'not_applicable', 'reason': 'диалог не является звонком'}
+    cid = record.conversation_id
+    data: bytes | None = None
+    name = f'{cid}.mp3'
+    reason = ''
+    try:
+        if group_id == UPLOADS:
+            data, _, name = await svc.uploads.audio(cid)
+        elif _SAFE_ID.fullmatch(cid) and (path := AUDIO_DIR / f'{cid}.mp3').is_file():
+            data = await asyncio.to_thread(path.read_bytes)
+        elif record.audio_url:
+            data = await asyncio.wait_for(_remote_audio(record), REMOTE_TIMEOUT_S)
+        else:
+            reason = 'у звонка нет audio_url и нет локального файла'
+    except NotFound as e:
+        reason = str(e)
+    except TimeoutError:
+        reason = f'аудио не получено за {REMOTE_TIMEOUT_S:.0f} с'
+    except Exception as e:  # AsrError and network failures: the pack is still useful without the recording
+        reason = str(e) or type(e).__name__
+    if data is None:
+        return None, '', {'status': 'missing', 'reason': reason}
+    if len(data) > MAX_AUDIO_BYTES:
+        return None, '', {'status': 'too_large', 'bytes': len(data), 'limit': MAX_AUDIO_BYTES,
+                          'reason': f'запись больше {MAX_AUDIO_BYTES // (1024 * 1024)} МБ'}
+    return data, name, {'status': 'included', 'bytes': len(data)}
+
+
 async def build_regpack(
     svc: Services, cid: str, group_id: str, evaluation_id: str | None
-) -> tuple[bytes, str, bool]:
+) -> tuple[bytes, str, bool, str]:
     """ZIP bytes, suggested file name and selfcheck verdict for the conversation's evaluation (latest by default)."""
     if evaluation_id is None:
         evs = await svc.store.list_for_conversation(cid)
@@ -79,6 +141,7 @@ async def build_regpack(
     appeals = await svc.store.appeals_for(ev.id)
     final = final_result(checklist, ev, appeals)
     calls = await svc.store.get_raw(ev.id)
+    audio, audio_name, audio_info = await call_audio(svc, record, group_id)
 
     parts: dict[str, Any] = {
         'record.json': record.model_copy(update={'audio_url': None}).model_dump(mode='json'),
@@ -90,6 +153,11 @@ async def build_regpack(
     }
     check = selfcheck(parts['checklist.json'], parts['evaluation.json'], parts['appeals.json'], parts['final.json'])
     blobs = {name: _dump(obj) for name, obj in parts.items()}
+    hashes = {name: _sha(b) for name, b in blobs.items()}
+    if audio is not None:
+        audio_file = f'audio/{audio_name}'
+        audio_info = {**audio_info, 'file': audio_file}
+        hashes[audio_file] = _sha(audio)
     manifest = {
         'evaluation_id': ev.id,
         'conversation_id': cid,
@@ -97,7 +165,8 @@ async def build_regpack(
         'checklist': {'id': ev.checklist_id, 'version': ev.checklist_version},
         'transcript_source': ev.transcript_source,
         'exported_at': datetime.now(UTC).isoformat(),
-        'sha256': {name: _sha(b) for name, b in blobs.items()},
+        'sha256': hashes,
+        'audio': audio_info,
         'selfcheck': check,
     }
     readme = README.format(
@@ -114,7 +183,9 @@ async def build_regpack(
         z.writestr('manifest.json', _dump(manifest))
         for name, b in blobs.items():
             z.writestr(name, b)
-    return buf.getvalue(), f'regpack-{cid}-{ev.id}.zip', check['ok']
+        if audio is not None:
+            z.writestr(audio_file, audio, compress_type=zipfile.ZIP_STORED)  # MP3 does not compress
+    return buf.getvalue(), f'regpack-{cid}-{ev.id}.zip', check['ok'], audio_info['status']
 
 
 def verify_regpack(data: bytes) -> dict:
@@ -126,7 +197,13 @@ def verify_regpack(data: bytes) -> dict:
         if missing:
             return {'ok': False, 'problems': [f'нет файлов: {", ".join(missing)}'], 'selfcheck': None}
         raw = {n: z.read(n) for n in (*FILES, 'manifest.json')}
-    manifest = json.loads(raw['manifest.json'])
+        manifest = json.loads(raw['manifest.json'])
+        audio_file = (manifest.get('audio') or {}).get('file')
+        if audio_file:
+            if audio_file not in names:
+                problems.append(f'{audio_file}: файл записи указан в manifest.json, но его нет в архиве')
+            elif manifest.get('sha256', {}).get(audio_file) != _sha(z.read(audio_file)):
+                problems.append(f'{audio_file}: хеш не совпадает с manifest.json')
     for name in FILES:
         if manifest.get('sha256', {}).get(name) != _sha(raw[name]):
             problems.append(f'{name}: хеш не совпадает с manifest.json')

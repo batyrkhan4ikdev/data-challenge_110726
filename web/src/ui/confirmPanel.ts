@@ -1,6 +1,7 @@
 import { t } from '../i18n.js';
 import type { Ctx } from '../router.js';
 import type { Attention, Confirmation, EvaluationView } from '../types.gen.js';
+import { humanizeIds, nameResolver, type NameOf } from './criterionNames.js';
 import { banner, errorMessage, h } from './dom.js';
 
 const REVIEWER_KEY = 'cqa-reviewer';
@@ -33,22 +34,23 @@ export function reviewerInput(): HTMLInputElement {
 }
 
 /** Критерии без причины внимания и ещё не принятые ранее. */
-async function undisputedIds(ctx: Ctx, evaluationId: string): Promise<string[]> {
+async function undisputedIds(ctx: Ctx, evaluationId: string): Promise<{ ids: string[]; nameOf: NameOf }> {
   const [view, attention, done] = await Promise.all([
     ctx.api.evaluation(evaluationId),
     ctx.api.attention(evaluationId),
     ctx.api.confirmations(evaluationId),
   ]);
   const skip = new Set([...attention.criterion_ids, ...done.flatMap((c) => c.criterion_ids)]);
-  return view.checklist.criteria.map((c) => c.id).filter((id) => !skip.has(id));
+  return { ids: view.checklist.criteria.map((c) => c.id).filter((id) => !skip.has(id)), nameOf: nameResolver(view.checklist.criteria) };
 }
 
 /** «Принять неспорные»: один пакетный POST. Пустой результат = принимать нечего. */
-export async function acceptUndisputed(ctx: Ctx, evaluationId: string, reviewer: string): Promise<Confirmation | null> {
+export async function acceptUndisputed(ctx: Ctx, evaluationId: string, reviewer: string): Promise<{ confirmation: Confirmation; nameOf: NameOf } | null> {
   if (!reviewer.trim()) throw new Error(t.confirm.reviewerRequired);
-  const ids = await undisputedIds(ctx, evaluationId);
+  const { ids, nameOf } = await undisputedIds(ctx, evaluationId);
   if (!ids.length) return null;
-  return ctx.api.createConfirmation(evaluationId, { criterion_ids: ids, mode: 'batch', reviewer, note: '' });
+  const confirmation = await ctx.api.createConfirmation(evaluationId, { criterion_ids: ids, mode: 'batch', reviewer, note: '' });
+  return { confirmation, nameOf };
 }
 
 /** Строка счётчиков: пакетом / по одному / изменено через апелляцию. Возвращает элемент и функцию обновления. */
@@ -81,7 +83,7 @@ export function acceptButton(
     status.textContent = '';
     acceptUndisputed(ctx, evaluationId, reviewer())
       .then((c) => {
-        status.textContent = c ? t.confirm.accepted(c.criterion_ids.join(', ')) : t.confirm.nothing;
+        status.textContent = c ? t.confirm.accepted(c.confirmation.criterion_ids.map(c.nameOf).join(', ')) : t.confirm.nothing;
         if (c) onDone();
       })
       .catch((e) => {
@@ -95,7 +97,7 @@ export function acceptButton(
   return { el: h('span', { class: 'cqa-confirm-accept' }, btn, status), run };
 }
 
-function historyList(items: Confirmation[]): HTMLElement {
+function historyList(items: Confirmation[], nameOf: NameOf): HTMLElement {
   if (!items.length) return h('p', { class: 'cqa-muted' }, t.confirm.none);
   return h(
     'ul',
@@ -105,7 +107,7 @@ function historyList(items: Confirmation[]): HTMLElement {
         'li',
         null,
         h('strong', null, `${c.reviewer} · ${c.mode === 'batch' ? t.confirm.modeBatch : t.confirm.modeSingle}: `),
-        c.criterion_ids.join(', '),
+        c.criterion_ids.map(nameOf).join(', '),
         c.auto_note ? h('div', { class: 'cqa-muted' }, c.auto_note) : null,
         c.note ? h('div', { class: 'cqa-muted' }, c.note) : null,
       ),
@@ -116,6 +118,7 @@ function historyList(items: Confirmation[]): HTMLElement {
 /** Полная панель подтверждений для страницы результата: причины внимания, пакет, поштучно, журнал. */
 export async function mountConfirmPanel(ctx: Ctx, view: EvaluationView): Promise<HTMLElement> {
   const evaluationId = view.evaluation.id;
+  const nameOf = nameResolver(view.checklist.criteria);
   const body = h('div', { class: 'cqa-confirm-body' });
   const stats = statsLine(ctx);
   const reviewer = reviewerInput();
@@ -140,6 +143,7 @@ export async function mountConfirmPanel(ctx: Ctx, view: EvaluationView): Promise
         {
           type: 'button',
           class: 'cqa-btn cqa-btn--small',
+          'data-criterion': id,
           onclick: async (e: Event) => {
             const btn = e.target as HTMLButtonElement;
             if (!reviewer.value.trim()) {
@@ -158,15 +162,15 @@ export async function mountConfirmPanel(ctx: Ctx, view: EvaluationView): Promise
             }
           },
         },
-        `${t.review.confirm} ${id}`,
+        `${t.review.confirm}: ${nameOf(id)}`,
       );
     body.replaceChildren(
       attention.reasons.length
-        ? h('div', null, h('h3', null, t.confirm.disputed), h('ul', null, attention.reasons.map((r) => h('li', null, r))), attention.criterion_ids.map(single))
+        ? h('div', { class: 'cqa-confirm-disputed' }, h('h3', null, t.confirm.disputed), h('ul', null, attention.reasons.map((r) => h('li', null, humanizeIds(r, nameOf)))), h('div', { class: 'cqa-confirm-singles' }, attention.criterion_ids.map(single)))
         : h('p', { class: 'cqa-muted' }, t.dialogs.attentionNone),
       h('div', { class: 'cqa-confirm-actions' }, accept.el),
       h('h3', null, t.confirm.history),
-      historyList(history),
+      historyList(history, nameOf),
     );
   };
   await draw();

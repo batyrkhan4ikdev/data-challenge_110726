@@ -184,12 +184,27 @@ export class Api {
   raw(id: string): Promise<RawCall[]> {
     return this.request('GET', `/evaluations/${encodeURIComponent(id)}/raw`);
   }
-  /** ZIP «дела» по оценке (RegPack); ошибки — как у остальных запросов. */
-  async regpack(group: string, cid: string, evaluationId: string): Promise<{ blob: Blob; name: string; selfcheckOk: boolean }> {
+  /** ZIP «дела» по оценке (RegPack); ошибки — как у остальных запросов. `audio`: included | missing | too_large | not_applicable. */
+  async regpack(
+    group: string,
+    cid: string,
+    evaluationId: string,
+  ): Promise<{ blob: Blob; name: string; selfcheckOk: boolean; audio: string }> {
     const q = `?group_id=${encodeURIComponent(group)}&evaluation_id=${encodeURIComponent(evaluationId)}`;
     const res = await this.send(`/conversations/${encodeURIComponent(cid)}/regpack${q}`);
     const m = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '');
-    return { blob: await res.blob(), name: m?.[1] ?? `regpack-${cid}.zip`, selfcheckOk: res.headers.get('X-Regpack-Selfcheck') === 'ok' };
+    return {
+      blob: await res.blob(),
+      name: m?.[1] ?? `regpack-${cid}.zip`,
+      selfcheckOk: res.headers.get('X-Regpack-Selfcheck') === 'ok',
+      audio: res.headers.get('X-Regpack-Audio') ?? 'missing',
+    };
+  }
+  /** Размер записи звонка в байтах, если она хранится на сервере; иначе null. */
+  async audioSize(group: string, cid: string): Promise<number | null> {
+    const q = `?group_id=${encodeURIComponent(group)}`;
+    const r = await this.request<{ size_bytes: number | null }>('GET', `/conversations/${encodeURIComponent(cid)}/audio-info${q}`);
+    return r.size_bytes;
   }
   /** Измеренное согласие судьи с разметкой на DEV по критериям (data/criterion_reliability.json). */
   criterionReliability(): Promise<CriterionReliability> {

@@ -28,7 +28,7 @@ function diffBlock(edit: RecourseEdit, record: DialogRecord | null): HTMLElement
   const turns = record?.transcript ?? [];
   const old = edit.idx !== null ? turns.find((t) => t.idx === edit.idx) : undefined;
   const where =
-    edit.idx !== null ? `Реплика оператора [${edit.idx}]` : `Новая реплика оператора после [${edit.insert_after}]`;
+    edit.idx !== null ? `Реплика оператора #${edit.idx + 1}` : `Новая реплика оператора после #${(edit.insert_after ?? 0) + 1}`;
   return h(
     'div',
     { class: 'cqa-recourse-diff' },
@@ -45,18 +45,18 @@ function renderResult(r: RecourseResult, record: DialogRecord | null): HTMLEleme
   return h(
     'div',
     { class: 'cqa-recourse' },
-    h('div', { class: 'cqa-recourse-head' }, h('strong', null, 'Как было бы правильно'), badgeEl),
+    h('div', { class: 'cqa-recourse-head' }, h('strong', null, t.result.recourseButton), badgeEl),
     r.edits.length ? r.edits.map((e) => diffBlock(e, record)) : h('div', { class: 'cqa-muted' }, 'Модель не предложила правок.'),
     r.rationale ? h('p', { class: 'cqa-recourse-why' }, r.rationale) : null,
     h('p', { class: 'cqa-muted cqa-recourse-note' }, 'Подсказка для оператора. В оценку не входит: баллы и итог не меняются.'),
   );
 }
 
-/** Кнопка «Как было бы правильно» для потерянного критерия; для грубых ошибок ничего не показывает. */
-export function recourseControl(api: Api, evaluationId: string, c: Criterion, record: DialogRecord | null): HTMLElement | null {
+/** Кнопка «Как было бы правильно» для потерянного критерия и слот под её результат; для грубых ошибок null. */
+export function recourseControl(api: Api, evaluationId: string, c: Criterion, record: DialogRecord | null): { button: HTMLButtonElement; slot: HTMLElement } | null {
   if (c.kind === 'gross_error' || c.id === 'c08') return null;
   const slot = h('div', { class: 'cqa-recourse-slot' });
-  const button = h('button', { type: 'button', class: 'cqa-btn cqa-btn--small cqa-recourse-btn' }, 'Как было бы правильно');
+  const button = h('button', { type: 'button', class: 'cqa-btn cqa-btn--small cqa-recourse-btn' }, t.result.recourseButton);
   button.addEventListener('click', async () => {
     button.disabled = true;
     slot.replaceChildren(h('span', { class: 'cqa-muted' }, 'Судья подбирает правку и проверяет её…'));
@@ -67,5 +67,5 @@ export function recourseControl(api: Api, evaluationId: string, c: Criterion, re
       button.disabled = false;
     }
   });
-  return h('div', { class: 'cqa-recourse-wrap' }, button, slot);
+  return { button, slot };
 }

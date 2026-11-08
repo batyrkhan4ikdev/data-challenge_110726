@@ -4,6 +4,7 @@ import type { Ctx } from '../router.js';
 import type { AppealQueueItem, EvaluationView, Record as DialogRecord } from '../types.gen.js';
 import { allowedVerdicts, badge, banner, errorDetails, errorMessage, fmt, h, rangeOf, verdictLabel, verdictTone } from '../ui/dom.js';
 import { acceptButton, reviewerInput, statsLine } from '../ui/confirmPanel.js';
+import { humanizeRefs } from '../ui/criterionNames.js';
 import { renderTranscript } from '../ui/transcript.js';
 
 interface Loaded {
@@ -70,7 +71,7 @@ function card(ctx: Ctx, q: AppealQueueItem, loaded: Loaded, onResolved: () => vo
       h('span', { class: 'cqa-field-label' }, t.review.original),
       badge(verdictLabel(item.verdict), verdictTone(criterion, item.verdict)),
     ),
-    h('div', { class: 'cqa-appeal-text' }, h('h3', null, t.review.explanation), h('p', null, item.explanation)),
+    h('div', { class: 'cqa-appeal-text' }, h('h3', null, t.review.explanation), h('p', null, humanizeRefs(item.explanation))),
     h('div', { class: 'cqa-appeal-text cqa-appeal-comment' }, h('h3', null, t.review.comment), h('p', null, appeal.comment)),
   );
 
@@ -208,7 +209,7 @@ function card(ctx: Ctx, q: AppealQueueItem, loaded: Loaded, onResolved: () => vo
     h(
       'header',
       { class: 'cqa-appeal-head' },
-      h('h2', { id: titleId, class: 'cqa-appeal-title' }, `${criterion.id} · ${criterion.title}`),
+      h('h2', { id: titleId, class: 'cqa-appeal-title', title: criterion.id }, criterion.title),
       stateBadge,
       h('a', { class: 'cqa-link cqa-appeal-dialog', href: dialogHref }, `${q.conversation_id} — ${t.review.openDialog}`),
     ),

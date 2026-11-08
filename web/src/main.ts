@@ -2,7 +2,7 @@ import { Api } from './api.js';
 import { t } from './i18n.js';
 import { startRouter } from './router.js';
 import type { Ctx, Route, RouteName, View } from './router.js';
-import { navIcon } from './ui/icons.js';
+import { navIcon, themeIcon } from './ui/icons.js';
 import type { NavIcon } from './ui/icons.js';
 import { badge, banner, errorDetails, errorMessage, h } from './ui/dom.js';
 import { render as renderAnalytics } from './views/analytics.js';
@@ -22,6 +22,20 @@ export interface CqaOptions {
 
 /** Логотип берётся относительно модуля: так путь работает и в `web/dist`, и внутри `cqa_/dist` веб-ресурса. */
 const LOGO_LIGHT = new URL('../assets/logoCqaLight.svg', import.meta.url).href;
+const LOGO_DARK = new URL('../assets/logoCqaDark.svg', import.meta.url).href;
+const THEME_KEY = 'cqa-theme';
+
+type Theme = 'light' | 'dark';
+
+function initialTheme(): Theme {
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === 'light' || saved === 'dark') return saved;
+  } catch {
+    /* хранилище недоступно (встраивание в iframe) */
+  }
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
 
 const notFound: View = async (root) => {
   root.replaceChildren(banner(t.common.notFound, null, 'info'));
@@ -62,6 +76,27 @@ const NAV_ITEMS: [NavKey, string, NavIcon][] = [
 /** Монтирует приложение в `root`. Встраиваемо (например, веб-ресурс Dynamics 365). Возвращает функцию размонтирования. */
 export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
   root.classList.add('cqa');
+  let theme = initialTheme();
+  const logo = h('img', { src: LOGO_LIGHT, alt: t.logoAlt, width: 233, height: 48 });
+  const themeBtn = h('button', { type: 'button', class: 'cqa-theme-toggle' });
+  const applyTheme = () => {
+    root.dataset.theme = theme;
+    logo.setAttribute('src', theme === 'dark' ? LOGO_DARK : LOGO_LIGHT);
+    const next: Theme = theme === 'dark' ? 'light' : 'dark';
+    const caption = next === 'dark' ? t.theme.toDark : t.theme.toLight;
+    themeBtn.replaceChildren(themeIcon(next), h('span', null, caption));
+    themeBtn.setAttribute('aria-label', caption);
+  };
+  themeBtn.addEventListener('click', () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      /* не критично */
+    }
+    applyTheme();
+  });
+  applyTheme();
   const api = new Api(opts.apiBase);
   if (opts.route && !/^#\/?.+/.test(location.hash)) location.hash = opts.route;
 
@@ -88,9 +123,10 @@ export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
     h(
       'aside',
       { class: 'cqa-sidebar' },
-      h('a', { class: 'cqa-brand', href: '#/dialogs/DEV', 'aria-label': t.appTitle }, h('img', { src: LOGO_LIGHT, alt: t.logoAlt, width: 233, height: 48 })),
+      h('a', { class: 'cqa-brand', href: '#/dialogs/DEV', 'aria-label': t.appTitle }, logo),
       nav,
       badgeSlot,
+      themeBtn,
     ),
     main,
   );
@@ -141,5 +177,6 @@ export function mountCqa(root: HTMLElement, opts: CqaOptions): () => void {
     controller?.abort();
     root.replaceChildren();
     root.classList.remove('cqa');
+    delete root.dataset.theme;
   };
 }

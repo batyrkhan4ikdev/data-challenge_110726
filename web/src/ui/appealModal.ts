@@ -105,7 +105,7 @@ export function openAppealModal(host: HTMLElement, opts: AppealModalOptions): vo
         'p',
         { id: criterionId, class: 'cqa-modal-criterion' },
         h('span', { class: 'cqa-field-label' }, t.appeal.criterion),
-        h('strong', null, `${opts.criterion.id} · ${opts.criterion.title}`),
+        h('strong', { title: opts.criterion.id }, opts.criterion.title),
       ),
       h('label', { class: 'cqa-field' }, h('span', { class: 'cqa-field-label' }, t.appeal.comment), comment),
       errors,

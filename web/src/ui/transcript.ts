@@ -1,5 +1,6 @@
 import { t } from '../i18n.js';
 import type { Record as DialogRecord, Turn } from '../types.gen.js';
+import { createAudioPlayer } from './audioPlayer.js';
 import { h } from './dom.js';
 
 export interface TranscriptOptions {
@@ -11,6 +12,8 @@ export interface TranscriptOptions {
   audio?: boolean;
   /** Disable evidence and expected highlights when transcript/audio identity differs. */
   evidenceEnabled?: boolean;
+  /** Размер записи в байтах (null — неизвестен); показывается рядом с длительностью. */
+  loadAudioSize?: () => Promise<number | null>;
 }
 
 export interface TranscriptView {
@@ -32,7 +35,7 @@ function clock(turn: Turn): string {
   return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
 }
 
-function turnEl(turn: Turn, ids: boolean): HTMLElement {
+function turnEl(turn: Turn, ids: boolean, onJump: (idx: number) => void): HTMLElement {
   return h(
     'div',
     { class: `cqa-turn cqa-turn--${turn.speaker}`, id: ids ? `turn-${turn.idx}` : null, 'data-idx': turn.idx, tabindex: '-1' },
@@ -41,7 +44,7 @@ function turnEl(turn: Turn, ids: boolean): HTMLElement {
       { class: 'cqa-turn-meta' },
       clock(turn) ? h('time', { class: 'cqa-turn-time', title: turn.timestamp }, clock(turn)) : null,
       h('span', { class: 'cqa-turn-speaker' }, t.speaker[turn.speaker] ?? turn.speaker),
-      h('span', { class: 'cqa-turn-idx', title: `№ ${turn.idx + 1}` }, `#${turn.idx + 1}`),
+      h('button', { type: 'button', class: 'cqa-turn-idx', title: t.result.turnJump(turn.idx + 1), 'aria-label': t.result.turnJump(turn.idx + 1), onclick: () => onJump(turn.idx) }, `#${turn.idx + 1}`),
       h('span', { class: 'cqa-turn-marker', hidden: true }),
     ),
     h('div', { class: 'cqa-turn-text' }, turn.text),
@@ -51,12 +54,17 @@ function turnEl(turn: Turn, ids: boolean): HTMLElement {
 export function renderTranscript(record: DialogRecord, opts: TranscriptOptions = {}): TranscriptView {
   const [from, to] = opts.range ?? [0, Number.POSITIVE_INFINITY];
   const showAudio = (opts.audio ?? true) && record.channel === 'voice call';
-  const audio = showAudio
-    ? h('audio', { class: 'cqa-audio', id: opts.ids ? 'cqa-call-audio' : null, controls: true, preload: 'none', src: record.audio_url || null, 'aria-label': t.result.audio })
-    : null;
   const audioStatus = h('p', { class: 'cqa-muted', role: 'status' }, record.audio_url ? '' : t.result.audioMissing);
-  audio?.addEventListener('error', () => { audioStatus.textContent = t.result.audioError; });
-  audio?.addEventListener('loadedmetadata', () => { audioStatus.textContent = ''; });
+  const player = showAudio
+    ? createAudioPlayer({
+        src: record.audio_url,
+        id: opts.ids ? 'cqa-call-audio' : null,
+        loadSize: opts.loadAudioSize,
+        onError: () => { audioStatus.textContent = t.result.audioError; },
+        onReady: () => { audioStatus.textContent = ''; },
+      })
+    : null;
+  const audio = player?.audio ?? null;
   const body = h('div', { class: 'cqa-turns' });
   const byIdx = new Map<number, { turn: Turn; el: HTMLElement }>();
   let evidenceEnabled = opts.evidenceEnabled ?? true;
@@ -65,13 +73,13 @@ export function renderTranscript(record: DialogRecord, opts: TranscriptOptions =
     body.replaceChildren();
     for (const turn of turns) {
       if (turn.idx < from || turn.idx > to) continue;
-      const turnNode = turnEl(turn, opts.ids ?? false);
+      const turnNode = turnEl(turn, opts.ids ?? false, flash);
       byIdx.set(turn.idx, { turn, el: turnNode });
       body.appendChild(turnNode);
     }
   }
   setTurns(record.transcript);
-  const el = h('div', { class: 'cqa-transcript' }, audio ? h('div', { class: 'cqa-audio-bar' }, audio, audioStatus) : null, body);
+  const el = h('div', { class: 'cqa-transcript' }, player ? h('div', { class: 'cqa-audio-bar' }, player.el, audioStatus) : null, body);
 
   function highlight(evidence: number[], expected?: [number, number] | null): void {
     for (const [idx, { el: e }] of byIdx) {
@@ -93,6 +101,20 @@ export function renderTranscript(record: DialogRecord, opts: TranscriptOptions =
     if (audio && entry.turn.offset_s !== null && entry.turn.offset_s !== undefined) {
       audio.currentTime = entry.turn.offset_s;
     }
+  }
+
+  /** Клик по номеру реплики: прокрутить к ней, коротко подсветить и перемотать аудио. */
+  function flash(idx: number): void {
+    const entry = byIdx.get(idx);
+    if (!entry) return;
+    const { el: node, turn } = entry;
+    node.focus({ preventScroll: true });
+    node.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    node.classList.remove('is-flash');
+    void node.offsetWidth;
+    node.classList.add('is-flash');
+    window.setTimeout(() => node.classList.remove('is-flash'), 2200);
+    if (audio && turn.offset_s !== null && turn.offset_s !== undefined) audio.currentTime = turn.offset_s;
   }
 
   return {

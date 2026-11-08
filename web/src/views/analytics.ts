@@ -60,14 +60,14 @@ function breakdown(title: string, rows: BreakdownRow[], label: (k: string) => st
 
 const DRIFT_GROUPS = ['DEV', 'PROD', 'PART2'];
 
-function driftRow(label: string, m: DriftMetric, withKs: boolean): HTMLElement {
+function driftRow(label: string, m: DriftMetric, withKs: boolean, id?: string): HTMLElement {
   const d = t.analytics.drift;
   const tone = m.verdict === 'drift' ? 'bad' : m.verdict === 'watch' ? 'warn' : m.verdict === 'stable' ? 'good' : '';
   const num = (x: number | null, digits: number) => (x === null ? t.common.none : x.toFixed(digits).replace('.', ','));
   return h(
     'tr',
-    { 'data-drift': label },
-    h('td', null, label),
+    { 'data-drift': id ?? label },
+    h('td', { title: id ?? undefined }, label),
     h('td', { class: 'cqa-num' }, `${m.n_baseline} / ${m.n_window}`),
     h('td', { class: 'cqa-num' }, num(m.psi, 3)),
     h('td', { class: 'cqa-num' }, withKs ? num(m.ks, 3) : '—'),
@@ -86,7 +86,7 @@ function driftCard(drift: DriftReport, group: string, baseline: string, onBaseli
     DRIFT_GROUPS.filter((g) => g !== group).map((g) => h('option', { value: g, selected: g === baseline }, d.against(g))),
   ) as HTMLSelectElement;
   select.addEventListener('change', () => onBaseline(select.value));
-  const rows = [driftRow(d.total, drift.total, true), ...drift.criteria.map((c) => driftRow(`${c.criterion_id} · ${c.title}`, c.metric, false))];
+  const rows = [driftRow(d.total, drift.total, true), ...drift.criteria.map((c) => driftRow(c.title, c.metric, false, c.criterion_id))];
   return h(
     'section',
     { class: 'cqa-card cqa-drift', id: 'cqa-drift' },

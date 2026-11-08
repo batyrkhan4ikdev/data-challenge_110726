@@ -8,6 +8,7 @@ import { mountConfirmPanel } from '../ui/confirmPanel.js';
 import { openAppealModal } from '../ui/appealModal.js';
 import { recourseControl } from '../ui/recourse.js';
 import { renderCriteriaTable } from '../ui/criteriaTable.js';
+import { humanizeRefs, nameResolver, type NameOf } from '../ui/criterionNames.js';
 import { badge, banner, errorDetails, errorMessage, fmt, fmtDate, h, heading, rangeOf } from '../ui/dom.js';
 import { factsCard } from '../ui/facts.js';
 import { checkIcon, crossIcon, scoreRing } from '../ui/icons.js';
@@ -43,7 +44,7 @@ function summaryTotal(s: EvaluationSummary): HTMLElement {
   return h('span', null, fmt(s.total), changed ? ` → ${fmt(s.final_total)}` : '');
 }
 
-function rawPanel(calls: RawCall[]): HTMLElement {
+function rawPanel(calls: RawCall[], nameOf: NameOf): HTMLElement {
   if (!calls.length) return h('p', { class: 'cqa-muted' }, t.result.rawEmpty);
   return h(
     'div',
@@ -55,7 +56,7 @@ function rawPanel(calls: RawCall[]): HTMLElement {
         h(
           'summary',
           null,
-          `#${i + 1} · ${call.model} · ${fmt(call.seconds)} ${t.result.seconds} · ${call.criterion_ids.join(', ')}`,
+          `#${i + 1} · ${call.model} · ${fmt(call.seconds)} ${t.result.seconds} · ${call.criterion_ids.map(nameOf).join(', ')}`,
         ),
         h('h3', null, t.result.rawMessages),
         call.messages.map((m) =>
@@ -118,14 +119,22 @@ function regpackButton(ctx: Ctx, group: string, cid: string, evaluationId: strin
     btn.disabled = true;
     btn.textContent = t.caseTools.regpackBusy;
     try {
-      const { blob, name, selfcheckOk } = await ctx.api.regpack(group, cid, evaluationId);
+      const { blob, name, selfcheckOk, audio } = await ctx.api.regpack(group, cid, evaluationId);
       const url = URL.createObjectURL(blob);
       const a = h('a', { href: url, download: name });
       document.body.appendChild(a);
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
-      status.replaceChildren(selfcheckOk ? banner(t.caseTools.regpackOk, null, 'ok') : banner(t.caseTools.regpackMismatch));
+      const audioNote =
+        audio === 'included'
+          ? banner(t.caseTools.regpackAudioIncluded, null, 'ok')
+          : audio === 'too_large'
+            ? banner(t.caseTools.regpackAudioTooLarge, null, 'info')
+            : audio === 'missing'
+              ? banner(t.caseTools.regpackAudioMissing, null, 'info')
+              : null;
+      status.replaceChildren(selfcheckOk ? banner(t.caseTools.regpackOk, null, 'ok') : banner(t.caseTools.regpackMismatch), ...(audioNote ? [audioNote] : []));
     } catch (e) {
       status.replaceChildren(banner(`${t.caseTools.regpackFail}: ${errorMessage(e)}`, errorDetails(e)));
     } finally {
@@ -188,7 +197,7 @@ interface ScoreCardOptions {
   view: EvaluationView;
   onJump: (c: Criterion) => void;
   onAppeal: (c: Criterion) => void;
-  recourse?: (c: Criterion) => HTMLElement | null;
+  recourse?: (c: Criterion) => { button: HTMLElement; slot: HTMLElement } | null;
 }
 
 function scoreCard(opts: ScoreCardOptions): HTMLElement {
@@ -233,19 +242,22 @@ function scoreCard(opts: ScoreCardOptions): HTMLElement {
         const it = items.get(c.id);
         const hasFragment = !!it && (it.evidence_idx.length > 0 || (it.verdict === 'no' && rangeOf(it.expected_range) !== null));
         const hasOpen = appeals.some((a) => a.criterion_id === c.id && a.status === 'open');
+        const rc = opts.recourse?.(c) ?? null;
         return h(
           'li',
           { class: 'cqa-why-row', 'data-criterion': c.id },
-          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl' }, text), opts.recourse?.(c) ?? null),
+          h('div', { class: 'cqa-why-text' }, h('strong', null, c.title), h('span', { class: 'cqa-why-expl' }, humanizeRefs(text))),
           h(
             'div',
             { class: 'cqa-why-actions' },
             h('button', { type: 'button', class: 'cqa-btn cqa-btn--tint cqa-btn--small cqa-jump', disabled: !hasFragment, 'data-has-fragment': String(hasFragment), onclick: () => opts.onJump(c) }, t.result.jumpToFragment),
             !hasFragment ? h('span', { class: 'cqa-muted cqa-no-fragment' }, t.result.noFragment) : null,
+            rc?.button ?? null,
             hasOpen
               ? badge(t.result.appealOpen, 'warn')
               : h('button', { type: 'button', class: 'cqa-btn cqa-btn--small', onclick: () => opts.onAppeal(c) }, t.result.appealButton),
           ),
+          rc?.slot ?? null,
         );
       })
     : [h('li', { class: 'cqa-muted' }, t.result.whyNone)];
@@ -297,10 +309,18 @@ function detailsBlock(
       ),
     ),
   );
-  return h(
+  const toggleLabel = h('span', { class: 'cqa-details-toggle' }, t.result.detailsOpen);
+  const details = h(
     'details',
     { class: 'cqa-card cqa-details', open: false },
-    h('summary', null, t.result.details),
+    h(
+      'summary',
+      { class: 'cqa-details-summary' },
+      h('span', { class: 'cqa-details-chevron', 'aria-hidden': 'true' }),
+      h('span', { class: 'cqa-details-title' }, t.result.details),
+      h('span', { class: 'cqa-details-hint cqa-muted' }, t.result.detailsHint(checklist.criteria.length)),
+      toggleLabel,
+    ),
     h(
       'div',
       { class: 'cqa-sections-totals' },
@@ -331,6 +351,10 @@ function detailsBlock(
     h('h3', null, t.result.detailsTable),
     h('div', { class: 'cqa-table-wrap', tabindex: '0', role: 'region', 'aria-label': t.result.detailsTable }, table),
   );
+  details.addEventListener('toggle', () => {
+    toggleLabel.textContent = details.open ? t.result.detailsClose : t.result.detailsOpen;
+  });
+  return details;
 }
 
 export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
@@ -431,7 +455,7 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
     if (!rawBody.hidden && !rawLoaded) {
       rawBody.replaceChildren(h('span', { class: 'cqa-muted' }, t.common.loading));
       try {
-        rawBody.replaceChildren(rawPanel(await ctx.api.raw(ev.id)));
+        rawBody.replaceChildren(rawPanel(await ctx.api.raw(ev.id), nameResolver(view.checklist.criteria)));
         rawLoaded = true;
       } catch (e) {
         rawBody.replaceChildren(banner(errorMessage(e), errorDetails(e)));
@@ -450,8 +474,10 @@ export async function render(root: HTMLElement, ctx: Ctx): Promise<void> {
       const audio = root.querySelector<HTMLAudioElement>('#cqa-call-audio');
       if (!audio) return;
       event.preventDefault();
-      audio.focus({ preventScroll: true });
-      audio.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      // The native <audio> has no UI: focus the custom player's first control and scroll its container into view.
+      const player = audio.closest<HTMLElement>('.cqa-player') ?? audio;
+      player.querySelector<HTMLElement>('.cqa-player-btn--main')?.focus({ preventScroll: true });
+      player.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     });
     header.appendChild(link);
   }

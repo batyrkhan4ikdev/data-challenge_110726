@@ -153,7 +153,7 @@ export function createTranscriptPanel(opts: TranscriptPanelOptions): TranscriptP
       cache.set(source, record);
     }
     if (ticket !== shown || opts.signal.aborted) return;
-    view = renderTranscript(record, { ids: true });
+    view = renderTranscript(record, { ids: true, loadAudioSize: () => opts.api.audioSize(opts.group, opts.cid) });
     body.replaceChildren(view.el);
   }
 

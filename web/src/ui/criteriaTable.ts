@@ -1,6 +1,7 @@
 import type { CriterionReliability } from '../api.js';
 import { t } from '../i18n.js';
 import type { Criterion, EvaluationView, FinalItem, Item, ScoreItem } from '../types.gen.js';
+import { humanizeRefs } from './criterionNames.js';
 import { badge, fmt, h, rangeOf, stepDescription, verdictLabel, verdictTone } from './dom.js';
 
 export interface CriteriaTableOptions {
@@ -51,13 +52,13 @@ function evidenceCell(item: Item | undefined, opts: CriteriaTableOptions): HTMLE
   if (!item) return cell;
   for (const idx of item.evidence_idx) {
     cell.appendChild(
-      h('button', { type: 'button', class: 'cqa-link cqa-evidence-link', disabled: opts.evidenceEnabled === false, onclick: () => opts.onEvidence(idx) }, t.result.evidenceLabel(idx)),
+      h('button', { type: 'button', class: 'cqa-chip-btn cqa-evidence-link', title: t.result.evidenceGo(idx), 'aria-label': t.result.evidenceGo(idx), disabled: opts.evidenceEnabled === false, onclick: () => opts.onEvidence(idx) }, t.result.evidenceLabel(idx)),
     );
   }
   const range = item.verdict === 'no' ? rangeOf(item.expected_range) : null;
   if (range) {
     cell.appendChild(
-      h('button', { type: 'button', class: 'cqa-link cqa-expected-link', disabled: opts.evidenceEnabled === false, onclick: () => opts.onExpected(range) }, t.result.expectedHere),
+      h('button', { type: 'button', class: 'cqa-chip-btn cqa-expected-link', disabled: opts.evidenceEnabled === false, onclick: () => opts.onExpected(range) }, t.result.expectedHere),
     );
   }
   return cell;
@@ -113,7 +114,7 @@ export function renderCriteriaTable(opts: CriteriaTableOptions): HTMLElement {
     const explain = h(
       'td',
       { class: 'cqa-explanation' },
-      item?.explanation ?? '',
+      humanizeRefs(item?.explanation ?? ''),
       votesBadge(item, evaluation.k),
       reliabilityBadge(c.id, opts.reliability),
       warnings.length ? badge('⚠', 'warn', warnings.join('\n')) : null,
@@ -134,7 +135,7 @@ export function renderCriteriaTable(opts: CriteriaTableOptions): HTMLElement {
         h('td', { class: 'cqa-section' }, c.section_id ? (sections.get(c.section_id) ?? c.section_id) : t.checklists.noSection),
         h(
           'td',
-          { class: 'cqa-title' },
+          { class: 'cqa-title', title: c.id },
           h(
             'div',
             { class: 'cqa-title-text' },
@@ -145,7 +146,6 @@ export function renderCriteriaTable(opts: CriteriaTableOptions): HTMLElement {
                 : badge(t.result.kindGross, 'neutral')
               : null,
           ),
-          h('div', { class: 'cqa-muted cqa-id' }, c.id),
         ),
         verdictCell,
         pointsCell(scores.get(c.id)),

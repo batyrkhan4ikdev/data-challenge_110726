@@ -1,6 +1,7 @@
 import type { Api } from '../api.js';
 import { t } from '../i18n.js';
 import type { Criterion, EvaluationSummary, EvaluationView } from '../types.gen.js';
+import { humanizeRefs } from './criterionNames.js';
 import { badge, banner, errorDetails, errorMessage, fmt, fmtDate, h, verdictLabel, verdictTone } from './dom.js';
 
 interface Side {
@@ -40,7 +41,7 @@ function cell(s: Side, c: Criterion | undefined): HTMLElement {
     badge(verdictLabel(s.finalVerdict), verdictTone(c, s.finalVerdict)),
     ` ${t.caseTools.diffPoints}: ${fmt(s.points)}`,
     s.decision ? h('div', { class: 'cqa-muted' }, s.decision) : null,
-    s.explanation ? h('div', { class: 'cqa-diff-expl' }, s.explanation) : null,
+    s.explanation ? h('div', { class: 'cqa-diff-expl' }, humanizeRefs(s.explanation)) : null,
   );
 }
 

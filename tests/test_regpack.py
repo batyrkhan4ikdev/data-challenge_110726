@@ -62,3 +62,47 @@ async def test_verify_detects_tampering(client: AsyncTestClient) -> None:
 async def test_regpack_without_evaluation_is_error(client: AsyncTestClient) -> None:
     r = await client.get(f'/api/conversations/{RECORDS[0].conversation_id}/regpack', params={'group_id': 'DEV'})
     assert r.status_code == 400
+
+
+async def test_regpack_includes_call_audio(client: AsyncTestClient, tmp_path, monkeypatch) -> None:
+    from server import regpack
+    from tests.test_api import CALL
+
+    (tmp_path / f'{CALL}.mp3').write_bytes(b'ID3' + b'\x00' * 2000)
+    monkeypatch.setattr(regpack, 'AUDIO_DIR', tmp_path)
+    view = await evaluate_one(client, CALL)
+    cid = view['evaluation']['conversation_id']
+    info = (await client.get(f'/api/conversations/{cid}/audio-info', params={'group_id': 'DEV'})).json()
+    assert info == {'size_bytes': 2003}
+    resp = await client.get(f'/api/conversations/{cid}/regpack', params={'group_id': 'DEV'})
+    assert resp.headers['x-regpack-audio'] == 'included' and resp.headers['x-regpack-selfcheck'] == 'ok'
+    files = _zip(resp.content)
+    assert files[f'audio/{CALL}.mp3'] == b'ID3' + b'\x00' * 2000
+    audio = json.loads(files['manifest.json'])['audio']
+    assert audio['status'] == 'included' and audio['file'] == f'audio/{CALL}.mp3' and audio['bytes'] == 2003
+    assert verify_regpack(resp.content)['ok']
+
+
+async def test_regpack_says_when_audio_is_missing(client: AsyncTestClient, tmp_path, monkeypatch) -> None:
+    from server import regpack
+    from tests.test_api import CALL
+
+    async def unreachable(record):
+        raise RuntimeError('ссылка истекла')
+
+    monkeypatch.setattr(regpack, 'AUDIO_DIR', tmp_path)
+    monkeypatch.setattr(regpack, '_remote_audio', unreachable)
+    view = await evaluate_one(client, CALL)
+    resp = await client.get(f'/api/conversations/{CALL}/regpack', params={'group_id': 'DEV'})
+    assert resp.headers['x-regpack-audio'] == 'missing' and resp.headers['x-regpack-selfcheck'] == 'ok'
+    assert not [n for n in _zip(resp.content) if n.startswith('audio/')]
+    audio = json.loads(_zip(resp.content)['manifest.json'])['audio']
+    assert audio == {'status': 'missing', 'reason': 'ссылка истекла'}
+    assert verify_regpack(resp.content)['ok']
+    assert view['evaluation']['conversation_id'] == CALL
+
+    monkeypatch.setattr(regpack, 'MAX_AUDIO_BYTES', 10)
+    (tmp_path / f'{CALL}.mp3').write_bytes(b'x' * 11)
+    resp = await client.get(f'/api/conversations/{CALL}/regpack', params={'group_id': 'DEV'})
+    assert resp.headers['x-regpack-audio'] == 'too_large'
+
