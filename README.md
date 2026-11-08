@@ -138,7 +138,7 @@ An `ensemble` profile (`provider = "ensemble"`, `members = ["profile:mode", …]
 
 The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). The gold is an **LLM consensus**: 4 blind labelings per dialog by GPT-6 Astra and Claude Opus 5.5. On top of it sit **20 human rows** (`bench/gold/labels.Batyrkhantzy111.arbitration.csv`), which settle the disputed verdicts and override the consensus. `--gold human` ranks models on the human rows only. We prefer a self-hosted model unless a cloud model is more than 5 pp better.
 
-**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats (two runs) and matches 16 of the 20 human rows. Per language, RU is 0.870–0.921, KZ 0.957 and EN 0.947–0.957 in those two runs (`docs/research/benchmark-phase1.md`; `bench/results/20261107-213204`, `-213616`). In an earlier round (before the final C7/C4 and courtesy rules) 99.6% of its verdicts were identical between runs (see Reproducibility). It was compared against roughly 15 other models and setups:
+**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats (two runs) and matches 16 of the 20 human rows. Per language, RU is 0.870–0.921, KZ 0.957 and EN 0.947–0.957 in those two runs (`docs/research/benchmark-phase1.md`; `bench/results/20261107-213204`, `-213616`). 98.8% of its verdicts are identical between two runs on the final notes (see Reproducibility). It was compared against roughly 15 other models and setups:
 - open-weight models: Qwen3.8-27B 0.92, Qwen3.8-Flash-Next 0.91, DeepSeek-V4.1-Flash 0.90, Kimi-K2.6 0.85;
 - frontier models via OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): each scored 1–3 pp below gemma on the same dialogs;
 - a three-judge ensemble, which tied gemma.
@@ -153,10 +153,7 @@ These numbers are in-sample: the same dialogs were used to tune the checklist no
 
 Single mode: self-hosted gemma uses about 4.2k input and 0.54k output tokens per dialog (`bench/results/20261108-030915`); Sonnet about 7.1k in and 1.0k out on the 12-dialog smoke set (`20261107-162940`). Per-criterion mode on the full DEV run uses about 25k input and 0.66k output tokens per dialog (`20261107-213204`, `-213616`).
 
-**Reproducibility.** Two independent DEV runs with the control settings agreed on 507 of 512 criterion verdicts (99.0%), across 64 dialogs. This is an earlier, pre-freeze run. The 99.6% figure (477–479 of 480 verdicts) was measured in round 3, before the final notes; the final notes were not re-measured for run-to-run stability, and their only measurement is the two-run range 0.931–0.939 above.
-- 59 dialogs were identical, and no gross-error flag changed.
-- The mean change in total was 0.73 points.
-- The 5 changes were borderline calls: p1-ru-026 c06 4→7, p4-ru-004 c06 7→10, p1-ru-003 c02 N/A→«Нет», p1-kz-012 c03 «Нет»→N/A, and p4-ru-005 c01 «Да»→«Нет» (the one that moved a total, by 18.75; `docs/research/benchmark-phase1.md`).
+**Reproducibility.** On the final notes and control settings, the submitted DEV run (`results/dev/results.json`) and a fresh full DEV run made on 2026-11-08 at 04:10 agree on **514 of 520 criterion verdicts (98.8%)**: 475/480 on chats, 39/40 on calls. Gross-error flags are identical (8 and 8). The 6 changes are borderline calls: p1-ru-012 c07 N/A→«Нет», p1-ru-015 c05 «Да»→«Нет», p1-kz-006 c07 and p1-kz-012 c07 «Нет»→«Да», p1-kz-015 c06 4→0 (its total 24.71→17.65), p4-ru-002 c06 7→10. Earlier rounds measured 99.0% (507/512) and 99.6% (477–479/480) on older notes (`docs/research/benchmark-phase1.md`).
 
 ## Benchmark and gold labels
 
@@ -180,7 +177,7 @@ Gates and queues on top of the bench runs:
 
 The organizers' call transcripts are poor ASR (e.g. «идентификацию успешно проеданная»). In the call card, the **«Транскрипт»** switch picks the source the evaluation runs on:
 - **Организатор (API):** the original transcript. The control run (chats only) always uses this one.
-- **FreedomSpeech** ([freedomspeech.kz](https://freedomspeech.kz), Kazakh/Russian STT with speaker diarization): the default view for calls.
+- **FreedomSpeech** ([freedomspeech.kz](https://freedomspeech.kz), Kazakh/Russian STT with speaker diarization), one click away; the card opens on the organizer transcript.
 - **Our ASR models** (`config/asr.toml`). Each shows a quality badge from the benchmark: CER against FreedomSpeech and «оценщик N/40», the evaluator's gold hits on that transcript.
 - **«Вставить свой транскрипт»:** a pasted text, one line per turn, with `оператор:` / `клиент:` prefixes.
 
