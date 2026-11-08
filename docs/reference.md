@@ -46,7 +46,7 @@ uvicorn server.app:app --port 8787                     # open http://localhost:8
 | `LLM_PROFILE` | Default model profile from `config/profiles.toml`. `fake` runs offline and deterministically, for demos without a GPU. |
 | `EVAL_MODE` / `EVAL_K` | `single` makes one call for all criteria; `per_criterion` makes one call per criterion. `K` is the number of samples for majority voting. |
 | `H200_*` | Base URLs and the key of the self-hosted vLLM endpoints. |
-| `AIGW_*` | Optional: an OpenAI-compatible gateway for cloud models (Claude, GPT, AlemLLM). |
+| `AIGW_*` | Optional: an OpenAI-compatible endpoint for the cloud API models (Claude, GPT, AlemLLM). |
 
 All outbound HTTP uses `server/http.py`. It trusts both the OS certificate store and certifi, because some networks fail with only one of them.
 
@@ -93,7 +93,7 @@ This prints a table and the token, time and cost totals. It writes `out/<GROUP_I
 
 `team_name` comes from `--team-name` or env `TEAM_NAME`. Commit and push both files before stop-code.
 
-A dialog that fails on the primary profile (for example, the self-hosted endpoint is unreachable) is re-run on each profile in `--fallback-profile`, in order. The chain lives in the job runner, so live evaluations from the UI fall back the same way. That is a comma-separated list, defaulting to env `FALLBACK_PROFILE` (`aigw-sonnet,aigw-luna,h200-glimmer`). The two cloud models come first; the last one is self-hosted, so neither a gateway outage nor a rate limit leaves dialogs unscored. Costs are reported per profile.
+A dialog that fails on the primary profile (for example, the self-hosted endpoint is unreachable) is re-run on each profile in `--fallback-profile`, in order. The chain lives in the job runner, so live evaluations from the UI fall back the same way. That is a comma-separated list, defaulting to env `FALLBACK_PROFILE` (`aigw-sonnet,aigw-luna,h200-glimmer`). The two cloud models come first; the last one is self-hosted, so neither a cloud API outage nor a rate limit leaves dialogs unscored. Costs are reported per profile.
 
 `--submit` scores with the organizers' checklist. If the default `chat`/`call` checklist was edited in the UI (for example, during a demo), the run aborts before evaluating. Re-run it with `--reset-defaults`, which saves `data/checklists/*.default.json` back as a new version and keeps the history.
 
@@ -132,15 +132,15 @@ Models are named profiles in `config/profiles.toml`.
 | `h200-gemma` | Gemma 4 31B | self-hosted vLLM, 4 replicas × 1 H200 |
 | `h200-kz` | ISSAI Qwen3.5-35B-A3B-Kazakh | self-hosted vLLM, 1× H200 |
 | `h200-glimmer` | Muse-Glimmer-30B | self-hosted vLLM, 1× H200 |
-| `aigw-sonnet` / `aigw-luna` / `aigw-alemllm` | Claude Sonnet 5.5 / GPT-6 Luna / AlemLLM | cloud, via gateway |
-| `alem-deepseek` / `alem-kimi` / `alem-glm` / `alem-qwen27b` / `aigw-flashnext` | DeepSeek-V4.1-Flash / Kimi-K2.6 / GLM-5.3 / Qwen3.8-27B / Qwen3.8-Flash-Next | open weights on Alem.Cloud, via gateway |
+| `aigw-sonnet` / `aigw-luna` / `aigw-alemllm` | Claude Sonnet 5.5 / GPT-6 Luna / AlemLLM | cloud API |
+| `alem-deepseek` / `alem-kimi` / `alem-glm` / `alem-qwen27b` / `aigw-flashnext` | DeepSeek-V4.1-Flash / Kimi-K2.6 / GLM-5.3 / Qwen3.8-27B / Qwen3.8-Flash-Next | open weights, H200 |
 | `ensemble` | per-criterion vote of `h200-gemma` (per criterion) + `alem-qwen27b` + `aigw-flashnext` (single) | hybrid |
 
 An `ensemble` profile (`provider = "ensemble"`, `members = ["profile:mode", …]`) runs every member on the dialog and takes, per criterion, the majority verdict; on scales it takes the median. The first member breaks ties and supplies the explanation and evidence when it agrees. A member that fails is dropped with a warning on the items; the dialog fails only if all members fail.
 
 The model is chosen by benchmark against labelled DEV dialogs (`bench/`, `docs/research/benchmark-phase1.md`). The gold is an **LLM consensus**: 4 blind labelings per dialog by GPT-6 Astra and Claude Opus 5.5. On top of it sit **20 human rows** (`bench/gold/labels.Batyrkhantzy111.arbitration.csv`), which settle the disputed verdicts and override the consensus. `--gold human` ranks models on the human rows only. We prefer a self-hosted model unless a cloud model is more than 5 pp better.
 
-**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain `aigw-sonnet,aigw-luna,h200-glimmer`. With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats (two runs) and matches 16 of the 20 human rows. Per language, RU is 0.870–0.921, KZ 0.957 and EN 0.947–0.957 in those two runs (`docs/research/benchmark-phase1.md`; `bench/results/20261107-213204`, `-213616`). 98.8% of its verdicts are identical between two runs on the final notes (see Reproducibility). It was compared against roughly 15 other models and setups:
+**Current default for the control run:** `h200-gemma`, `per_criterion` (one call per criterion), `k=1`, temperature 0, with the fallback chain Claude Sonnet 5.5 → GPT-6 Luna → h200-glimmer (`aigw-sonnet,aigw-luna,h200-glimmer`). With the current notes it scores **0.931–0.939 weighted agreement** on the 60 chats (two runs) and matches 16 of the 20 human rows. Per language, RU is 0.870–0.921, KZ 0.957 and EN 0.947–0.957 in those two runs (`docs/research/benchmark-phase1.md`; `bench/results/20261107-213204`, `-213616`). 98.8% of its verdicts are identical between two runs on the final notes (see Reproducibility). It was compared against roughly 15 other models and setups:
 - open-weight models: Qwen3.8-27B 0.92, Qwen3.8-Flash-Next 0.91, DeepSeek-V4.1-Flash 0.90, Kimi-K2.6 0.85;
 - frontier models via OpenRouter (Gemini 4 Argon, Gemini 3.8 Flash, Grok 4.7, DeepSeek-V4-Pro): each scored 1–3 pp below gemma on the same dialogs;
 - a three-judge ensemble, which tied gemma.
@@ -193,16 +193,16 @@ The organizers' call transcripts are poor ASR (e.g. «идентификацию
 | T-one + pyannote | self-hosted H200 | yes | 4.4 | **0.118** | **29/40** |
 | GigaAM-v3 + pyannote | self-hosted H200 | yes | 2.9 | 0.126 | 27/40 |
 | Gemini 3.5 Transcribe | OpenRouter | yes | 11.6 | 0.145 | 28/40 |
-| KuSpeech multilingual (= GigaAM-Multilingual) | aigw | no | 0.4 | 0.158 | **29/40** |
-| Whisper large-v3 (Alem.Cloud) | aigw | no | 0.7 | 0.203 | 28/40 |
+| KuSpeech multilingual (= GigaAM-Multilingual) | H200 | no | 0.4 | 0.158 | **29/40** |
+| Whisper large-v3 · 2 | H200 | no | 0.7 | 0.203 | 28/40 |
 | WhisperX large-v3 + pyannote | self-hosted H200 | yes | 7.7 | 0.271 | 25/40 |
-| Whisper large-v3 | aigw | no | 0.4 | 0.309 | 25/40 |
-| Whisper large-v3 turbo (Alem.Cloud) | aigw | no | 2.7 | 0.370 | 27/40 |
+| Whisper large-v3 | H200 | no | 0.4 | 0.309 | 25/40 |
+| Whisper large-v3 turbo | H200 | no | 2.7 | 0.370 | 27/40 |
 | organizer API transcript | — | — | — | — | 26/40 |
 
 Gold hits are out of 40 cells per provider, and a re-run of FreedomSpeech through our pipeline gives 27/40 both times, with one verdict flip in `bench/asr/noise-floor.md`. A one- or two-cell gap is therefore not a ranking; the hits only show that no transcript hurt scoring. CER is agreement with another ASR, not accuracy. The manual quality comparison is Batyrkhantzy111's (`bench/asr/transcripts/<provider>/<cid>.md`); his scores go into `manual_score` in `data/asr/quality.json` and replace the automatic badge. Model research: `docs/research/asr-models.md` and `docs/research/asr-hosted.md`. Calls are evaluated with the same checklist; organizers said calls are mainly for the interface (#3075).
 
-For Kazakh audio see `bench/asr/kazakh.md`: WhisperX (`language=kk`) and FreedomSpeech are the two candidates that produce Kazakh script with speaker labels. On the one 180 s Kazakh call, FreedomSpeech has 272 words and no loop, while WhisperX looped on 108 words (removed by `collapse_repeats`). The reference there is not independent (Alem Whisper with listener corrections, partly quoting KuSpeech and FreedomSpeech), so its CER table is diagnostic, not a ranking, and the share of Kazakh letters is a proxy, not accuracy.
+For Kazakh audio see `bench/asr/kazakh.md`: WhisperX (`language=kk`) and FreedomSpeech are the two candidates that produce Kazakh script with speaker labels. On the one 180 s Kazakh call, FreedomSpeech has 272 words and no loop, while WhisperX looped on 108 words (removed by `collapse_repeats`). The reference there is not independent (Whisper large-v3 · 2 with listener corrections, partly quoting KuSpeech and FreedomSpeech), so its CER table is diagnostic, not a ranking, and the share of Kazakh letters is a proxy, not accuracy.
 
 ### Running the ASR benchmark
 

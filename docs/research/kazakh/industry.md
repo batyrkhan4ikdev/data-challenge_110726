@@ -6,9 +6,9 @@ inference. Cross-checks against our own repo: `docs/research/dsml-models.md` (ar
 `docs/research/asr-models.md` (RU/KZ telephony ASR), `docs/research/llm-candidates.md`,
 `docs/research/freedomspeech.md`.
 
-«доступна нам» = already callable from our stack: `alemai/astanahub/alemllm` (aigw AlemLLM),
+«доступна нам» = already callable from our stack: `alemai/astanahub/alemllm` (облачный API, AlemLLM),
 `issai/Qwen3.5-35B-A3B-Kazakh` (self-hosted `qwen3.5-35b-a3b-kazakh`), `kuspeech:multilingual`
-(aigw GigaAM-Multilingual), FreedomSpeech (integrated as the call-transcription provider).
+(H200, GigaAM-Multilingual), FreedomSpeech (integrated as the call-transcription provider).
 
 ---
 

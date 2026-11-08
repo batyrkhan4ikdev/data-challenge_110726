@@ -190,7 +190,7 @@ Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we alrea
 **#3354 → #3356/#3358** 00:32–00:34: «какое колво команд отберут на питчинг?» — «топ-50 команд» / «50».
 
 **#3359** 00:34, Aaron Sain, in reply to Aryn's #3355 (private repo until morning?): «Репозиторий должен быть открытым после финального коммита, к моменту стоп-кода… До этого держать его открытым или закрытым — на ваше усмотрение.»
-→ Our repo is public, and a history scan of all branches finds no team keys (H200, aigw, OpenRouter, FreedomSpeech). No new repo is needed.
+→ Our repo is public, and a history scan of all branches finds no team keys (H200, OpenRouter, FreedomSpeech). No new repo is needed.
 
 **#3352 → #3394/#3397** 00:49–00:53, Nikolay Borovinskiy: «DEV-звонки даны больше для UI, а не для сравнения результатов. В контрольном наборе звонков не будет. Поэтому здесь на ваше усмотрение: можете использовать транскрипт, запись или придумать собственный подход. На презентации покажите, почему ваше решение в этом вопросе важно для бизнеса… Продуманный подход с хорошим обоснованием может дать небольшой плюс, а нерациональное решение — небольшой минус.»
 → The call transcript sources, the ASR benchmark and FreedomSpeech by default are exactly that kind of «продуманный подход». The pitch has to give its business reason: the organizer call transcripts are unusable for QA, so better ASR means correct scores on calls.

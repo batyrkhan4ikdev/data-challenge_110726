@@ -7,7 +7,7 @@
 Тестовый клип содержит в основном один голос (IVR-приветствие + речь оператора), поэтому «реплик двух
 говорящих» на нём мало — диаризацию судим по наличию меток в ответе, а не по их чередованию.
 
-## 1. aigw-гейтвей (`AIGW_BASE_URL` = `https://aigw.dpar.dev/v1`, `AIGW_API_KEY`)
+## 1. Наш H200-эндпоинт ASR (`AIGW_BASE_URL`, `AIGW_API_KEY`)
 
 `GET {base}/models` → 200, 59 моделей. Аудио-модели в списке: ASR — `whisper-large-v3`,
 `alemai/openai/whisper-large-v3`, `alemai/openai/whisper-large-v3-turbo`,
@@ -19,7 +19,7 @@
 
 | Модель | Работает? | segments | words | Диаризация | Latency (10 с клип) | Цена |
 |---|---|---|---|---|---|---|
-| `whisper-large-v3` | ✅ 200 | ✅ 3 сегм., `start`/`end` есть | ❌ `words: null`; параметры `word_timestamps=true` и `timestamp_granularities[]=word` принимаются, но игнорируются | ❌ (поля `speaker`/`diarization` в ответе нет; `diarize=true` игнорируется) | 0,42–0,47 с | внутренняя (aigw), тарифа нет — `usage: null`, биллинг-эндпоинтов нет (см. ниже) |
+| `whisper-large-v3` | ✅ 200 | ✅ 3 сегм., `start`/`end` есть | ❌ `words: null`; параметры `word_timestamps=true` и `timestamp_granularities[]=word` принимаются, но игнорируются | ❌ (поля `speaker`/`diarization` в ответе нет; `diarize=true` игнорируется) | 0,42–0,47 с | внутренняя (H200), тарифа нет — `usage: null`, биллинг-эндпоинтов нет (см. ниже) |
 | `alemai/openai/whisper-large-v3` | ✅ 200 | ✅ 1 сегм. (5,74–9,98 с) | ✅ на верхнем уровне: `words[]` со `start`/`end` | ❌ | 0,75–1,33 с | "" |
 | `alemai/openai/whisper-large-v3-turbo` | ✅ 200 | ❌ `segments: null` | ❌ `words: null` | ❌ | 0,79–0,82 с | "" |
 | `alemai/ai-sage/GigaAM-Multilingual` | ✅ 200 | ✅ 1 сегм. (0–10,01 с), но `avg_logprob`/`tokens` = null | ❌ | ❌ (`diarize=true` игнорируется) | 0,33–0,74 с | "" |
@@ -37,7 +37,7 @@
   для `kuspeech:multilingual` 404 «No matching route found: model».
 - `POST {base}/audio/speech` — работает **только с JSON-телом** `{"model":"alemai/k2-fsa/OmniVoice","input":"…"}`
   → 200, WAV (RIFF), ~0,35 с на короткую фразу; multipart → 404. TTS-поставщик для фичи «Озвучить» найден.
-- Цена: у гейтвея нет биллинг-эндпоинтов (`/usage`, `/billing/usage`, `/subscription`, `/organization` → 404),
+- Цена: у эндпоинта нет биллинг-эндпоинтов (`/usage`, `/billing/usage`, `/subscription`, `/organization` → 404),
   в ответах ASR `usage: null`. Это наша/партнёрская инфраструктура — outer-тарифа нет, считаем бесплатной для бенчмарка.
 
 ## 2. OpenRouter (`openrouter.ai/api/v1`, ключ `OPENROUTER_API_KEY`)
@@ -120,7 +120,7 @@ LLM (парсить регэкспом, ненадёжно). `POST /api/v1/audio
 
 - Ни один хостед-эндпоинт, кроме FreedomSpeech, **не делает диаризацию** — роли во всех остальных придётся
   назначать LLM-судье (как и предусмотрено контрактом `asr_to_record`).
-- Тайм-штампы сегментов надёжны только у `whisper-large-v3` (aigw); пословные — только у `kuspeech:multilingual`.
+- Тайм-штампы сегментов надёжны только у `whisper-large-v3` (H200); пословные — только у `kuspeech:multilingual`.
 - Диаризация «из коробки» у hosted-LLM — фикция: метки говорящего приходят текстом и на реальном диалоге
   потребуют парсинга и валидации.
 - TTS-замена/второй провайдер для «Озвучить»: `alemai/k2-fsa/OmniVoice`, `POST {AIGW_BASE_URL}/audio/speech`

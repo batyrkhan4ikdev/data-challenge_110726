@@ -26,7 +26,7 @@ ru+kk single model; Omnilingual/Seamless are weak on spontaneous kk.
 | Whisper large-v3 | `openai/whisper-large-v3` | ✔ | ✔ | 1.55B / Apache-2.0 | §1.1; Sber Callcenter 23.1, OpenSTT phone 27.4 ([GigaAM evaluation.md](https://github.com/salute-developers/GigaAM/blob/main/evaluation.md)); T-Bank call-centre 19.39 ([T-one card](https://huggingface.co/t-tech/T-one)) | §1.1; FLEURS 31.10 self-rep. ([FT card](https://huggingface.co/shyngys879/kazakh-whisper-large-v3-turbo)) | transformers, [faster-whisper](https://huggingface.co/Systran/faster-whisper-large-v3) (MIT), vLLM, WhisperX |
 | Whisper large-v3-turbo | `openai/whisper-large-v3-turbo` | ✔ | ✔ | 809M / MIT | n/p (independent) | FLEURS kk 19.75 self-rep.; KSC2 zero-shot 81.2 normalised ([arXiv 2603.00961](https://arxiv.org/abs/2603.00961)) | as above |
 | Whisper kk fine-tunes | `shyngys879/kazakh-whisper-large-v3-turbo`, `InflexionLab/sybyrla` (80% KSC2+20% CV-ru), `olzhasAl/whisper-large-v3-tulpar` | partial (tulpar "may hallucinate on pure Russian", per card) | ✔ | 0.8–1.6B / Apache-2.0 | n/p | FLEURS kk 11.80 (CER 4.98); KSC2 test 17.7; ISSAI KSC 10.62 — all self-rep. ([card](https://huggingface.co/InflexionLab/sybyrla)) | transformers / CT2 (`shaipro/sybyrla-ct2`) |
-| **GigaAM-Multilingual** | `ai-sage/GigaAM-Multilingual` rev. `ctc`/`large_ctc` | ✔ | ✔ (+ky,uz,en) | 220M/600M / MIT | §1.1 | §1.1 | `trust_remote_code`, ONNX `istupakov/gigaam-multilingual-large-ctc-onnx`; **already on aigw** |
+| **GigaAM-Multilingual** | `ai-sage/GigaAM-Multilingual` rev. `ctc`/`large_ctc` | ✔ | ✔ (+ky,uz,en) | 220M/600M / MIT | §1.1 | §1.1 | `trust_remote_code`, ONNX `istupakov/gigaam-multilingual-large-ctc-onnx`; **already on our H200** |
 | GigaAM-v3 | `ai-sage/GigaAM-v3` rev. `rnnt`/`ctc`/`e2e_*` | ✔ | ✘ | 220–240M / MIT | **Callcenter 9.5**, Golos farfield 3.9, RuLS 4.4, CV19 0.9, **OpenSTT phone 17.4** ([card](https://huggingface.co/ai-sage/GigaAM-v3), [paper](https://arxiv.org/abs/2506.01192)) | – | transformers/ONNX/GGUF |
 | **T-one** (T-Bank) | `t-tech/T-one` | ✔ | ✘ | 71M streaming Conformer-CTC / Apache-2.0 | **call-centre 8.63**, telephony 6.20, **named entities 5.83**, CV19 5.32, OpenSTT 20.27/7.94 — vendor; Sber's re-run gives T-one+LM 13.5 vs GigaAM-v3 9.5 ([card](https://huggingface.co/t-tech/T-one)) | – | `tone` pkg, ONNX, Docker, Triton; "telephone-channel audio" |
 | NVIDIA Canary / Parakeet | `nvidia/canary-1b-v2`, `nvidia/parakeet-tdt-0.6b-v3` | ✔ | **✘** | 1B/0.6B / CC-BY-4.0 | FLEURS ru 6.90 ([card](https://huggingface.co/nvidia/canary-1b-v2)) / 5.51 ([card](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3)) | none | NeMo/transformers/GGUF |
@@ -109,10 +109,10 @@ gemini-3.5-transcribe ≈$0.005, chirp-3 ≈$0.016 per minute.
 
 | # | Candidate | exact id | how we run it | why |
 |---|---|---|---|---|
-| 1 | **GigaAM-Multilingual `large_ctc`** | aigw `alemai/ai-sage/GigaAM-Multilingual` (alias `kuspeech:multilingual`) | **aigw `POST /audio/transcriptions`** — already live (0.3–0.8 s per 10 s clip) | best open ru+kk model in the only cross-family table (§1.1), MIT, built for KZ/KY/UZ |
+| 1 | **GigaAM-Multilingual `large_ctc`** | our H200, `alemai/ai-sage/GigaAM-Multilingual` (alias `kuspeech:multilingual`) | **H200 `POST /audio/transcriptions`** — already live (0.3–0.8 s per 10 s clip) | best open ru+kk model in the only cross-family table (§1.1), MIT, built for KZ/KY/UZ |
 | 2 | **GigaAM-v3** (`rnnt` / `e2e_rnnt`) | `ai-sage/GigaAM-v3` | GPU agent (H200) or ONNX → `H200_ASR_GIGAAM_V3` | best published RU call-centre WER of anything open: 9.5 (Sber internal), OpenSTT phone 17.4 |
 | 3 | **T-one** | `t-tech/T-one` | GPU agent, `tone` package offline mode → `H200_ASR_TONE` | RU telephony specialist, 71M/Apache-2.0, 8.63 call-centre, 5.83 named entities |
-| 4 | **Whisper large-v3 / turbo** | `openai/whisper-large-v3`, `-turbo` | aigw `whisper-large-v3`, `alemai/openai/*` — zero setup | the known reference; the numbers show exactly where it fails (kk 32–65) |
+| 4 | **Whisper large-v3 / turbo** | `openai/whisper-large-v3`, `-turbo` | H200 `whisper-large-v3`, `alemai/openai/*` — zero setup | the known reference; the numbers show exactly where it fails (kk 32–65) |
 | 5 | **NVIDIA kk+ru Conformer** | `nvidia/stt_kk_ru_fastconformer_hybrid_large` | GPU agent, NeMo Speech → `H200_ASR_KKRU` | independent (non-Sber) kk evidence: KSC2 spontaneous 15.25, Golos crowd 2.46, CC-BY-4.0, 115M |
 | 6 | **Kazakh Whisper fine-tune** | `shyngys879/kazakh-whisper-large-v3-turbo` (alt. `InflexionLab/sybyrla`) | GPU agent, faster-whisper/CT2 → `H200_ASR_KZWHISPER` | best published kk Whisper FT: FLEURS kk 11.80/CER 4.98 |
 | 7 | **Hosted arm** | `google/gemini-3.5-transcribe` via OpenRouter (≈$0.20 for all calls, fits the ~$2.6 credit); alt `elevenlabs/scribe-v2` | multipart + `provider.options` diarization | the cheapest hosted pair with ru **and** kk **and** native diarization; **Yandex SpeechKit** is the best regional API if a key is obtainable (8 kHz, ru+kk, 2-speaker labeling, KZ region) |
@@ -125,9 +125,9 @@ spontaneous kk), AssemblyAI universal-3.5-pro (no ru/kk), OpenAI gpt-4o-transcri
 unpublished).
 
 ### Caveats
-- aigw ASR endpoints return no speaker labels, and `kuspeech:multilingual` echoes the alias with no backing-model
+- Our H200 ASR endpoints return no speaker labels, and `kuspeech:multilingual` echoes the alias with no backing-model
   metadata; on a 10 s DEV clip it produced byte-identical text to `alemai/ai-sage/GigaAM-Multilingual`, so we treat it as a
-  second deployment of the same engine — **not officially documented** *(inf)*. Which revision (220M vs 600M) the gateway
+  second deployment of the same engine — **not officially documented** *(inf)*. Which revision (220M vs 600M) the endpoint
   serves is unknown *(inf)*.
 - `alemai/openai/whisper-large-v3-turbo` returns no segments/words in `verbose_json` (measured) → timestamps for that
   provider must come from the diarization pass, not from ASR.

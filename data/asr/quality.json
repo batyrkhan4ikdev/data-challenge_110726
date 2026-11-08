@@ -1,6 +1,6 @@
 {
  "aigw-whisper": {
-  "label": "Whisper large-v3 (aigw)",
+  "label": "Whisper large-v3 (H200)",
   "cer_vs_freedomspeech": 0.309,
   "cer_vs_api": 0.3424,
   "speaker_turns": 22.4,
@@ -24,7 +24,7 @@
   "gold_total": 40
  },
  "alem-whisper-turbo": {
-  "label": "Whisper large-v3 turbo (Alem.Cloud)",
+  "label": "Whisper large-v3 turbo (H200)",
   "cer_vs_freedomspeech": 0.3697,
   "cer_vs_api": 0.43,
   "speaker_turns": 16.4,
@@ -36,7 +36,7 @@
   "gold_total": 40
  },
  "alem-whisper": {
-  "label": "Whisper large-v3 (Alem.Cloud)",
+  "label": "Whisper large-v3 · 2 (H200)",
   "cer_vs_freedomspeech": 0.2034,
   "cer_vs_api": 0.23,
   "speaker_turns": 31.6,

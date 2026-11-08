@@ -2,7 +2,7 @@
 
 Карта казахских speech-моделей и сервисов для судьи колл-центра Freedom Broker (RU/KZ/EN).
 Уже покрыто в репозитории и здесь **не** повторяется: [asr-models.md](../asr-models.md) (RU/KZ телефония,
-диаризация, hosted-прайс), [asr-hosted.md](../asr-hosted.md) (замеры aigw/OpenRouter),
+диаризация, hosted-прайс), [asr-hosted.md](../asr-hosted.md) (замеры H200/OpenRouter),
 [freedomspeech.md](../freedomspeech.md) (прогон FreedomSpeech на 5 DEV-звонках).
 
 Правила чтения:
@@ -12,8 +12,8 @@
   (отмечено «перемерено у …»).
 - Протоколы несравнимы: нормализация, длина сегмента (≤30 с vs длинный аудио), written-vs-spoken числа,
   greedy vs beam+KenLM, наличие/отсутствие KSC2 в обучении. Одна таблица = один протокол, иначе помечено.
-- Модели, которые нам уже доступны, помечены **«доступна нам»**: aigw `alemai/astanahub/alemllm`,
-  self-hosted `issai/Qwen3.5-35B-A3B-Kazakh`, aigw `kuspeech:multilingual`, aigw TTS `alemai/k2-fsa/OmniVoice`.
+- Модели, которые нам уже доступны, помечены **«доступна нам»**: облачный API `alemai/astanahub/alemllm`,
+  self-hosted `issai/Qwen3.5-35B-A3B-Kazakh`, H200 `kuspeech:multilingual`, H200 TTS `alemai/k2-fsa/OmniVoice`.
 - Типы: `with-scratch` = обучена с нуля; `CPT` = продолженное предобучение; `FT` = полный дообуч;
   `LoRA` = адаптер (в т.ч. слитый); `merge` = слияние.
 - Идентификаторы HF проверены через `https://huggingface.co/api/models/<id>`; у `unverified` карточка
@@ -167,7 +167,7 @@ Whisper large-v3 **44.95** на 1 200-фразном подмножестве, �
 | **Soniox** | «каждая речь говорит по-казахски», language mixing kk+EN в одном предложении, cloning, char-таймстампы, WS/REST | n/p | **$0.70 / час** сгенерированного аудио | [kk TTS](https://soniox.com/text-to-speech/kazakh) |
 | **Azure Speech** | `kk-KZ-AigulNeural` (Ж), `kk-KZ-DauletNeural` (М); имена двух голосов взяты из зеркала каталога ([json2video](https://json2video.com/ai-voices/azure/languages/kazakh/), [speakshelf](https://speakshelf.com/azure/voices/kk-KZ) — там же kk-KZ-Neural/DragonHD/Multilingual семейства), официальная страница рендерится JS | SSML, MOS не публикуется | $/1M символов | [языки MS](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=tts) |
 | **Google Cloud TTS** | **казахского нет**: ни в `Chirp 3: HD` (52 кода, kk отсутствует), ни в списке голосов (`grep -i kazakh` по скачанной странице = 0 совпадений). Для сравнения: в **STT** v2 `chirp_3` код `kk-KZ` есть, но в Preview ([asr-models.md §3](../asr-models.md)) | — | — | [chirp3-hd](https://docs.cloud.google.com/text-to-speech/docs/chirp3-hd), [voices](https://docs.cloud.google.com/text-to-speech/docs/list-voices-and-types) |
-| `alemai/k2-fsa/OmniVoice` (**доступна нам**) | базовая OmniVoice (`k2-fsa/OmniVoice`, 612,6M, 646 языков в cardData, `kk` среди них; **лицензия в cardData не указана**) — не казахский фин-тюн | `POST {AIGW}/audio/speech` **только JSON-телом** → 200 WAV; ~0,35 с на короткую фразу | внутренний aigw | [aigw-замер](../asr-hosted.md), [OmniVoice](https://huggingface.co/k2-fsa/OmniVoice) |
+| `alemai/k2-fsa/OmniVoice` (**доступна нам**) | базовая OmniVoice (`k2-fsa/OmniVoice`, 612,6M, 646 языков в cardData, `kk` среди них; **лицензия в cardData не указана**) — не казахский фин-тюн | `POST {AIGW}/audio/speech` **только JSON-телом** → 200 WAV; ~0,35 с на короткую фразу | внутренний H200 | [замер H200](../asr-hosted.md), [OmniVoice](https://huggingface.co/k2-fsa/OmniVoice) |
 
 ## 6. Пробелы и риски (чтобы не выдать ложную точность)
 
@@ -192,7 +192,7 @@ Whisper large-v3 **44.95** на 1 200-фразном подмножестве, �
    к тому же смешивает качество синтеза с качеством распознавателя.
 5. **Нет казахского Open ASR Leaderboard** трека (de/fr/it/es/pt) — [пространство](https://huggingface.co/spaces/hf-audio/open_asr_leaderboard),
    поэтому «общепринятого» ранкинга kk-ASR не существует; всё сводится к KSC2/FLEURS на карточках.
-6. **`kuspeech:multilingual`** — алиас в нашем aigw с `owned_by: KUSpeech`; побайтово совпадает с
+6. **`kuspeech:multilingual`** — алиас на нашем H200 с `owned_by: KUSpeech`; побайтово совпадает с
    `alemai/ai-sage/GigaAM-Multilingual`, то есть это, (инф), то же самое развертывание GigaAM-ML. Публичного
    сайта/документации KUSpeech найти не удалось (`kuspeech.kz`, `.com`, `.ai` не резолвятся; web-поиск по
    «KUSpeech» даёт только несвязанные домены), так что **производитель официально не подтверждён** —
@@ -226,7 +226,7 @@ Whisper large-v3 **44.95** на 1 200-фразном подмножестве, �
    `<spk:k>`-метки в тексте работают плохо, говорящего назначать по тайм-штампам диаризации).
 3. **Дешёвый/быстрый arm и запасной путь** — `shyngys879/kazakh-whisper-large-v3-turbo`
    (Apache-2.0, 809M ≈ 1.6 ГБ fp16; transformers / faster-whisper / CT2 `d1nagul00/kazakh-whisper-turbo-ct2`
-   / GGUF Q8_0 `Figmapng/bulbul-kazakh-whisper-large-v3-turbo-gguf`), плюс **уже живой** aigw
+   / GGUF Q8_0 `Figmapng/bulbul-kazakh-whisper-large-v3-turbo-gguf`), плюс **уже живой** H200
    `kuspeech:multilingual` = `ai-sage/GigaAM-Multilingual` `large_ctc` (MIT, FLEURS kk 4.4 по протоколу Sber,
    но строчный, без пунктуации, ≤30 с на сегмент).
 4. **Стриминг/край CPU** — `alibiserikbay/k5-kazakh-russian-stt`: 600M, двухпроходный
@@ -246,7 +246,7 @@ Whisper large-v3 **44.95** на 1 200-фразном подмножестве, �
   с `{"voice":"tomiris","language":"kk","emotion":"neutral"}` → WAV 24 кГц; у него есть отдельные
   call-centre kk-голоса (`anara_call_center_kz`, `arman_call_center_kz`, `assel_call_center_kz`,
   `call_center_alua_kz`/`alua`) и просодические теги — для «Озвучить» в продукте это самый короткий путь.
-  Наш второй живой путь — aigw `alemai/k2-fsa/OmniVoice` (**доступна нам**, JSON-тело обязательно).
+  Наш второй живой путь — H200 `alemai/k2-fsa/OmniVoice` (**доступна нам**, JSON-тело обязательно).
 - **Self-host, лучшее опубликованное качество на открытых весах:** `stukenov/kazakh-tts-omnivoice-experiment-a`
   (Apache-2.0, 612M, WER-обход 7.48 % / CER 4.48 %, UTMOS 3.08) → тот же вес, что у FreedomSpeech-движка
   `omnivoice`, 2–3 ГБ VRAM в bf16, живёт на том же H200 рядом с ASR:

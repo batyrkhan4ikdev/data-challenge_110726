@@ -16,9 +16,9 @@ These numbers are proxies. Phase 2 against the 24 gold dialogs decides the defau
 | h200-gptoss · per_criterion | 12/12 | 0.83 | 28.0 | 0.715 | 0.645 | 64.6 | 0.10 |
 | h200-kz · single | 11/12 | 0.91 | 23.8 | 0.820 | 0.748 | 92.3 | 0.22 |
 | h200-kz · per_criterion | 12/12 | 1.00 | 21.8 | 0.757 | 0.761 | 75.1 | 0.18 |
-| aigw-sonnet · single | 12/12 | 1.00 | 6.9 | 0.847 | n/a | 78.7 | 0.26 |
-| aigw-luna · single | 12/12 | 1.00 | 20.6 | 0.876 | 0.802 | 84.6 | 0.23 |
-| aigw-alemllm · single | 9/12 | 0.89 | 7.4 | 0.631 | 0.648 | 70.6 | 0.18 |
+| Claude Sonnet 5.5 · single | 12/12 | 1.00 | 6.9 | 0.847 | n/a | 78.7 | 0.26 |
+| GPT-6 Luna · single | 12/12 | 1.00 | 20.6 | 0.876 | 0.802 | 84.6 | 0.23 |
+| AlemLLM · single | 9/12 | 0.89 | 7.4 | 0.631 | 0.648 | 70.6 | 0.18 |
 | h200-glimmer · single | 12/12 | 1.00 | 13.5 | 0.839 | 0.785 | 83.5 | — |
 | h200-glimmer · per_criterion | 12/12 | 1.00 | 48.0 | 0.773 | 0.777 | 66.0 | — |
 
@@ -55,7 +55,7 @@ Cost per evaluation:
 
 ## Phase 2 plan (B6, once gold labels exist)
 
-- Candidates: `h200-gemma` single and per_criterion, `aigw-sonnet` single, `aigw-luna` single, `h200-gptoss` single, plus `muse-glimmer` if its endpoint comes up.
+- Candidates: `h200-gemma` single and per_criterion, Claude Sonnet 5.5 single, GPT-6 Luna single, `h200-gptoss` single, plus `muse-glimmer` if its endpoint comes up.
 - Choose by weighted per-criterion agreement with gold. The organizers compare per criterion (#2978).
 - Prefer self-hosted unless a paid model leads by more than 5 pp.
 - For reproducibility (#2981), the control run uses temperature 0 with k=1, or k=3 with a fixed seed if voting wins.
@@ -68,9 +68,9 @@ The gold labels are `bench/gold/labels.consensus.csv` (e79aaab, Batyrkhantzy111)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | h200-gemma · per_criterion | **0.911** | 4.8 | −1.1 | 57 | 0.8 | 0.8 | 1.0 | 1.0 | 1.0 | 0.8 | 0.8 | 1.0 |
 | h200-gemma · single | 0.851 | 7.4 | +7.4 | 4.8 | 0.8 | 0.8 | 1.0 | 1.0 | 0.8 | 0.6 | 0.8 | 1.0 |
-| aigw-sonnet · single | 0.832 | 10.2 | −10.2 | 8.2 | 1.0 | 1.0 | 0.8 | 0.6 | 1.0 | 0.8 | 0.6 | 1.0 |
+| Claude Sonnet 5.5 · single | 0.832 | 10.2 | −10.2 | 8.2 | 1.0 | 1.0 | 0.8 | 0.6 | 1.0 | 0.8 | 0.6 | 1.0 |
 | h200-glimmer · single | 0.822 | **4.6** | +1.5 | 9.3 | 0.8 | 0.8 | 0.8 | 0.8 | 0.8 | 1.0 | 0.6 | 1.0 |
-| aigw-luna · single | 0.782 | 13.5 | −12.9 | 18.2 | 1.0 | 0.4 | 0.8 | 0.8 | 1.0 | 0.8 | 0.6 | 1.0 |
+| GPT-6 Luna · single | 0.782 | 13.5 | −12.9 | 18.2 | 1.0 | 0.4 | 0.8 | 0.8 | 1.0 | 0.8 | 0.6 | 1.0 |
 | h200-gptoss · single | 0.780 | 14.5 | −14.5 | 10.5 | 0.8 | 1.0 | 0.8 | 0.6 | 0.8 | 0.8 | 0.6 | 0.8 |
 | h200-kz · single | 0.772 | 9.8 | +9.6 | 43.3 | 1.0 | 0.6 | 1.0 | 0.8 | 0.8 | 0.6 | 0.2 | 1.0 |
 | h200-glimmer · per_criterion | 0.683 | 24.0 | −24.0 | 12.4 | 0.8 | 0.8 | 0.4 | 0.8 | 0.6 | 0.8 | 0.6 | 1.0 |
@@ -111,13 +111,13 @@ Results are on the 60 chats, because the control set is chats only (#2978). All 
 | run | weighted agreement | total MAE | bias | c01 | c02 | c03 | c04 | c05 | c06 | c07 | c08 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | **h200-gemma · per_criterion** | **0.918** | **4.83** | −1.77 | 60 | 56 | 57 | 52 | 57 | 50 | 56 | 60 |
-| aigw-luna · single | 0.884 | 6.48 | −2.74 | 60 | 48 | 59 | 50 | 54 | 47 | 56 | 60 |
+| GPT-6 Luna · single | 0.884 | 6.48 | −2.74 | 60 | 48 | 59 | 50 | 54 | 47 | 56 | 60 |
 | h200-glimmer · single | 0.845 | 8.18 | −2.89 | 58 | 46 | 59 | 45 | 54 | 45 | 45 | 60 |
 | h200-gptoss · single | 0.832 | 9.21 | −5.24 | 60 | 44 | 53 | 44 | 54 | 49 | 47 | 59 |
 
 Criterion columns are matches out of 60. Summaries: gemma in `bench/results/20261107-195213/summary.md`, the other three in `bench/results/20261107-195213-alt/summary.md`.
 
-**B6 decision:** keep `h200-gemma · per_criterion · k=1`. It leads on every aggregate. The best cloud model (Luna) is 3.4 pp lower, so the «self-hosted unless cloud is more than 5 pp better» rule holds. The fallback chain stays `aigw-sonnet,aigw-luna,h200-glimmer`.
+**B6 decision:** keep `h200-gemma · per_criterion · k=1`. It leads on every aggregate. The best cloud model (Luna) is 3.4 pp lower, so the «self-hosted unless cloud is more than 5 pp better» rule holds. The fallback chain stays the cloud fallback Claude Sonnet 5.5 → GPT-6 Luna → h200-glimmer.
 
 **B7 prompt iterations** (general rules in the checklist `notes`, not per-dialog fixes):
 
@@ -148,14 +148,14 @@ All runs use the final notes (C3, C7 and C8 rules) and are scored on the 60 chat
 |---|---|---|---|---|
 | **h200-gemma · per_criterion**, 3 runs | **0.929** (0.927–0.930) | 450–451 | 4.91 | −1.1 |
 | h200-gemma · per_criterion · k=3 (t=0.7, median vote) | 0.924 | 449 | 4.91 | −1.7 |
-| Qwen3.8-27B · single (Alem and hk-q27) | 0.901–0.919 | 437–446 | 5.4–6.4 | +2.8 |
+| Qwen3.8-27B · single (H200 and hk-q27) | 0.901–0.919 | 437–446 | 5.4–6.4 | +2.8 |
 | Qwen3.8-27B · per_criterion | 0.880 | 429 | 7.06 | −4.0 |
-| Qwen3.8-Flash-Next · single (aigw and hk-big1) | 0.908–0.915 | 444–446 | 4.5–5.4 | +4.3 |
+| Qwen3.8-Flash-Next · single (H200 and hk-big1) | 0.908–0.915 | 444–446 | 4.5–5.4 | +4.3 |
 | Qwen3.8-Flash-Next · per_criterion | 0.903 | 441 | 5.54 | −1.5 |
 | DeepSeek-V4.1-Flash · single | 0.896 | 439 | 6.22 | −2.3 |
 | Kimi-K2.6 · single | 0.851 | 422 | 7.63 | +0.3 |
 | **ensemble** gemma-pc + Qwen-27B + Flash-Next (per-criterion majority, median on scales), 12 offline combinations of the runs above | **0.928** (0.918–0.940) | 452 | **4.55** | +2.3 |
-| ensemble, live: 2 runs (Qwen members via aigw, then self-hosted) | 0.924, 0.926 | 449, 451 | 4.53, 4.54 | +2.5 |
+| ensemble, live: 2 runs (Qwen members first via the shared H200 endpoint, then self-hosted) | 0.924, 0.926 | 449, 451 | 4.53, 4.54 | +2.5 |
 
 All models ran with thinking off. GLM-5.3 ignores `enable_thinking=false` (4.9k reasoning characters on a one-line probe), so it was not benchmarked.
 
