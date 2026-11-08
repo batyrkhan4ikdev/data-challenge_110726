@@ -200,3 +200,20 @@ Unanswered and not ours: #3036 (expected load), #3016 (C7 goodbye only; we alrea
 
 **#3407 → #3410** 00:58, Nikolay Borovinskiy. Asked whether the product can be published on a cloud host instead of HTML in GitHub. Answer: «В гите должен быть код, в тч html, хелперы, апи и любые компоненты которые вы сами разработали. Публиковать для презентации можете в облако, доп балов за это не получите )»
 → Already satisfied: `web/index.html`, `web/*.css`, `web/src/**/*.ts`, `server/` (API), `scripts/`, `bench/` and `config/` are tracked. `web/dist` is build output (`npm run build --prefix web`, README «Run»). There is no cloud deploy, and it earns no bonus.
+
+## 2026-11-08 morning
+
+**#3518 → #3519** 08:16, Максим: «кто знает когда 10 контрольных чатов выдадут?» → «В 11».
+→ Control run starts at 11:00 (#28). Preflight and app are ready; push of `results/prod` by 11:50.
+
+**#3524 → #3526** 08:39, Максим: a demo may be shown as a video first, then the laptop goes to the jury → «Можно».
+→ Live demo stays the plan (`docs/demo.md`); a recorded fallback is allowed if the GPU is slow.
+
+**#3528 → #3532** 08:48, Максим: two cut-offs for pitching (top 50, then top 10) → «Да».
+
+**#3559 → #3560** 08:59, Максим: «Коми ты нельзя делать после 12. Когда произошел стоп код».
+→ Same as #3314: the last counted commit is before 12:00 (#29).
+
+**#3565 → #3589** 09:14, Максим, on «достаточна ли короткая вежливая концовка» and N/A vs «Нет» on a re-asked question: «1. Не понял вопроса ? 2. Как вы решите».
+**#3603 → #3611** 09:21, Nikolay Borovinskiy, on «все спорные моменты при оценивании — на наше усмотрение?»: a joke answer (the operator must bow and shout «СЛАВА КЛИЕНТУ!»; greeting twice still counts).
+→ No rule change. Disputed readings stay a team decision, as in #2814; our C7 reading (summary or offer of help **and** a goodbye) is unchanged.
