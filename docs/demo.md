@@ -21,11 +21,11 @@ One sentence: we score every operator chat and call against a versioned checklis
 ## 1. Checklist setup (60 s): «добавить критерий, изменить, поменять вес»
 
 **Чек-листы** → `chat` → edit:
-- add «Предупреждение об ожидании», yes/no/N/A, weight 5;
+- add «Предупреждение об ожидании»: answer type «Да / Нет», tick «N/A допустимо» and give the N/A condition («оператор не ставил клиента на ожидание»), weight 5;
 - change the wording of an existing criterion;
-- change the weight of c07 «Завершение» from 5 to 10.
+- change the weight of c07 «Завершение» from 5 to 10, and lower c05 from 15 to 5 so the weights still sum to 100 (the editor shows «Σ весов: … · должно быть 100» until they do).
 
-Save. A new version is created, and the previous one stays readable. Rules and edge cases live in the checklist notes, not in the code, so QA changes the rules without a developer.
+Save. A new version (v2) is created, and v1 stays readable; the page offers «К диалогам для переоценки». Rules and edge cases live in the checklist notes, not in the code, so QA changes the rules without a developer.
 
 ## 2. Getting dialogs (30 s)
 
@@ -33,7 +33,7 @@ Save. A new version is created, and the previous one stays readable. Rules and e
 
 ## 3. Evaluation (45 s)
 
-Select 2–3 dialogs → **Оценить выбранные**: progress is live, about 30 s per chat. This is also the step the jury may ask to see on their own transcripts (#3327).
+Select 2 dialogs → **Оценить выбранные**: progress is live; the batch finishes in about 35–70 s (rehearsal: 3 chats took 69 s), so start it and talk over it. Dialogs evaluated now use the new checklist v2, so their totals differ from the morning run. This is also the step the jury may ask to see on their own transcripts (#3327).
 
 ## 4. Viewing results (90 s): «результаты конкретного диалога, почему ошибка»
 
@@ -45,23 +45,23 @@ Select 2–3 dialogs → **Оценить выбранные**: progress is live
 ## 5. Appeal and manual re-evaluation (90 s)
 
 1. On p1-ru-029: «Оспорить оценку» on c06, with a comment.
-2. **Апелляции** → the appeal is in the queue → «Изменить», a new value and a reason → the final total is recomputed. The raw and the final score are both kept, and history shows who changed what.
-3. Manual re-evaluation under the new rules: open any dialog → «Переоценить по текущему чек-листу». The new criterion from step 1 gets a verdict with evidence, and the total is computed under the new version. History shows the old and the new version.
+2. **Апелляции** → the appeal is in the queue → «Изменить»: pick the new value (c06: 10), fill «Проверяющий» and the reason → the final total is recomputed (rehearsal: 46.15 → 69.23, «Исходный итог: 46,15»). The raw and the final score are both kept, and history shows who changed what. Now click «Выгрузить дело» on this evaluation: the ZIP holds the appeal and the decision.
+3. Manual re-evaluation under the new rules: open **p1-ru-028** (the operator says «Сейчас проверю путь» and later «Спасибо за ожидание») → «Переоценить по текущему чек-листу» (~15 s). The new criterion «Предупреждение об ожидании» gets a verdict with evidence, and «Сравнение оценок» shows v1 against v2 with only the changed criteria expanded. Do not re-evaluate p1-ru-029 after its appeal: a re-evaluation is a new evaluation and does not inherit appeal decisions, and there the new criterion is N/A.
 
 ## 6. Calls: our approach (60 s), per #3397 «почему это важно для бизнеса»
 
 Open the call **p4-ru-003**. The organizers' transcript is unusable for QA («идентификацию успешно проеданная»), and a wrong transcript means a wrong score. In the «Транскрипт» switch:
-- **FreedomSpeech** (Freedom's own STT) is the default;
-- 8 benchmarked models, each with a quality badge;
+- the card opens on «Организатор (API)»: click **FreedomSpeech** (Freedom's own STT) and the «проеданная» line is gone;
+- 9 benchmarked models, each with a quality badge;
 - «Вставить свой транскрипт».
 
 «Распознать заново» on T-one or GigaAM-v3 runs on our H200: ASR alone takes 19–30 s on average, 7–57 s per call (`bench/asr/summary.md`), plus role assignment and masking by the LLM. Do not re-transcribe live with Gemini or WhisperX: their slowest calls took 110 s and 163 s (per-call maxima; means 71 s and 60 s). Roles are assigned and personal data masked by our own model by default, so customer data stays on our GPU. Click an evidence turn and the audio seeks to that moment.
 
-**Your own recording.** «Диалоги» → **Загрузить звонок или чат** → pick an audio file (e.g. the Kazakh call `1234`, which the dataset labels RU), language «определить автоматически», model WhisperX (H200) → «Распознать и добавить». It takes about 1–1.5 min on WhisperX for 3 minutes of audio: the language comes out KZ, roles are assigned, personal data masked. Then «Оценить по этому транскрипту» → the usual result card, appeal and «Выгрузить дело». A pasted chat goes the same way in seconds. Everything lands in the group `UPLOADS`.
+**Your own recording.** «Диалоги» → **Загрузить звонок или чат** → pick an audio file (e.g. the Kazakh call `1234`, which the dataset labels RU), language «определить автоматически», model WhisperX (H200) → «Распознать и добавить». It takes about 1–1.5 min on WhisperX for 3 minutes of audio: the language comes out KZ, roles are assigned, personal data masked. Then «Оценить по этому транскрипту» (~70 s for this call; `up-call-001` is already evaluated on the demo machine: 84.62; a rehearsal re-run gave 88.24, so do not quote the number as fixed) → the usual result card, appeal and «Выгрузить дело». A pasted chat goes the same way in seconds. Everything lands in the group `UPLOADS`.
 
 ## If they ask for laptop access
 
-Hand over the dialogs tab. Everything above is safe to click; live evaluation of any DEV dialog takes about 30 s.
+Hand over the dialogs tab. Everything above is safe to click; live evaluation of one DEV dialog takes about 30–35 s.
 
 ## If they ask
 
